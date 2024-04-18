@@ -14,6 +14,15 @@ export interface EventDTO {
   participants: EventParticipants | Array<{ memberId: string, teamId: string}>
 }
 
+export interface EventDates {
+  debutEvent?: string
+  finEvent?: string
+  debutCFP?: string
+  finCFP?: string
+  debutInscription?: string
+  finInscription?: string
+}
+
 export class EventParticipants {
   values: Array<{ memberId: string, teamId: string }>
 

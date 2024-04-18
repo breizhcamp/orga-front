@@ -1,7 +1,7 @@
 <template>
   <h5>{{ team.name }}</h5>
   <div>
-    {{ team.description || 'Pas de description' }}
+    {{ team.description || 'No descripion' }}
   </div>
 </template>
 

@@ -5,73 +5,73 @@
         {{ event.name }}
       </a>
       <span class="float-end fs-6">
-        Année : {{ event.year }}
+        Year: {{ event.year }}
       </span>
     </h5>
     <div class="card-body row row-cols-2">
       <div class="col">
         <div class="d-flex align-items-center justify-content-between mb-1"> 
-          <h5 class="flex-grow-1 mb-0">Dates clés</h5>
-          <button type="button" class="btn btn-primary rounded-pill flex-shrink-1 float-end" @click="dateModal = true">Modifier</button>
+          <h5 class="flex-grow-1 mb-0">Key dates</h5>
+          <button type="button" class="btn btn-primary rounded-pill flex-shrink-1 float-end" @click="dateModal = true">Edit</button>
         </div>
         <ul>
-          <li>Début de l'événement : <i>{{ event.debutEvent?.toLocaleDateString() || 'Non défini' }}</i></li>
-          <li>Fin de l'événement : <i>{{ event.finEvent?.toLocaleDateString() || 'Non défini' }}</i></li>
-          <li>Début du CFP : <i>{{ event.debutCFP?.toLocaleDateString() || 'Non défini' }}</i></li>
-          <li>Fin du CFP : <i>{{ event.finCFP?.toLocaleDateString() || 'Non défini' }}</i></li>
-          <li>Début des inscriptions : <i>{{ event.debutInscription?.toLocaleDateString() || 'Non défini' }}</i></li>
-          <li>Fin des inscriptions : <i>{{ event.finInscription?.toLocaleDateString() || 'Non défini' }}</i></li>
+          <li>Event beginning: <i>{{ event.debutEvent?.toLocaleDateString() || 'Undefined' }}</i></li>
+          <li>Event end: <i>{{ event.finEvent?.toLocaleDateString() || 'Undefined' }}</i></li>
+          <li>CFP beginning: <i>{{ event.debutCFP?.toLocaleDateString() || 'Undefined' }}</i></li>
+          <li>CFP end: <i>{{ event.finCFP?.toLocaleDateString() || 'Undefined' }}</i></li>
+          <li>Inscriptions beginning: <i>{{ event.debutInscription?.toLocaleDateString() || 'Undefined' }}</i></li>
+          <li>Inscriptions end: <i>{{ event.finInscription?.toLocaleDateString() || 'Undefined' }}</i></li>
         </ul>
       </div>
       <div class="col">
-        <h5>Autres informations</h5>
+        <h5>Other information</h5>
         <div class="row row-cols-2 align-items-center gy-1">
-          <span>Membres : {{ (event.participants as EventParticipants).getMemberIds().length }}</span>
+          <span>Members: {{ (event.participants as EventParticipants).getMemberIds().length }}</span>
           <button 
             type="button" 
             class="btn btn-sm btn-primary" 
             @click="membersModal = true" 
-          >Voir la liste</button>
+          >See members</button>
 
-          <span>Équipes : {{ (event.participants as EventParticipants).getTeamIds().length }}</span>
+          <span>Teams: {{ (event.participants as EventParticipants).getTeamIds().length }}</span>
           <button 
             type="button" 
             class="btn btn-sm btn-primary" 
             @click="teamsModal = true" 
-          >Voir la liste</button>
+          >See teams</button>
         </div>
       </div>
     </div>
   </div>
 
-  <ModalForm v-model:open="dateModal" :title="'Modifier les dates de ' + event.name" @save="updateDates()">
+  <ModalForm v-model:open="dateModal" :title="'Edit dates for ' + event.name" @save="updateDates()">
     <div class="mb-3">
-      <label for="debEvent" class="form-label">Début de l'événement</label>
+      <label for="debEvent" class="form-label">Event beginning</label>
       <input type="date" id="debEvent" class="form-control" :value="dates?.debutEvent" @change="changeDebutEvent($event)">
     </div>
     <div class="mb-3">
-      <label for="finEvent" class="form-label">Fin de l'événement</label>
+      <label for="finEvent" class="form-label">Event end</label>
       <input type="date" id="finEvent" class="form-control" :value="dates?.finEvent" @change="changeFinEvent($event)">
     </div>
     <div class="mb-3">
-      <label for="debCfp" class="form-label">Début du CFP</label>
+      <label for="debCfp" class="form-label">CFP beginning</label>
       <input type="date" id="debCfp" class="form-control" :value="dates?.debutCFP" @change="changeDebutCFP($event)">
     </div>
     <div class="mb-3">
-      <label for="finCfp" class="form-label">Fin du CFP</label>
+      <label for="finCfp" class="form-label">CFP end</label>
       <input type="date" id="finCfp" class="form-control" :value="dates?.finCFP" @change="changeFinCFP($event)">
     </div>
     <div class="mb-3">
-      <label for="debIncsr" class="form-label">Début des inscriptions</label>
+      <label for="debIncsr" class="form-label">Inscriptions beginning</label>
       <input type="date" id="debInscr" class="form-control" :value="dates?.debutInscription" @change="changeDebutInscription($event)">
     </div>
     <div class="mb-3">
-      <label for="finInscr" class="form-label">Fin des inscriptions</label>
+      <label for="finInscr" class="form-label">Inscriptions end</label>
       <input type="date" id="finInscr" class="form-control" :value="dates?.finInscription" @change="changeFinInscription($event)">
     </div>
   </ModalForm>
 
-  <ModalInfo v-model:open="membersModal" v-bind:title="'Membres de ' + event.name">
+  <ModalInfo v-model:open="membersModal" v-bind:title="'Members of ' + event.name">
     <ul class="list-group">
       <li class="list-group-item" v-for="member in members.sort((a, b) => a.id.localeCompare(b.id))" :key="member.id">
         <EventMemberListItem :member="member" :event-id="Number(event.id)" :event-teams="teams" @reload="reloadMembers()" />
@@ -79,14 +79,14 @@
     </ul>
   </ModalInfo>
 
-  <ModalInfo v-model:open="teamsModal" :title="'Équipes de ' + event.name">
+  <ModalInfo v-model:open="teamsModal" :title="'Teams of ' + event.name">
     <ul class="list-group">
       <li class="list-group-item" v-for="team in teams" :key="team.id">
         <EventTeamListItem :team="team" :event-id="Number(event.id)"/>
       </li>
       <li class="list-group-item">
         <label for="team-dropdown" class="form-label text-muted" v-if="availableTeams.filter(t => !teams.map(t => t.id).includes(t.id)).length == 0">
-          <i>Ce bouton est désactivé car toutes les équipes sont déja présentes dans l'événment</i>
+          <i>This button is disabled, as all teams are already part of this event</i>
         </label>
         <div class="dropdown" id="team-dropdown">
           <button 
@@ -96,7 +96,7 @@
             :class="computeAddTeamDropdownClass()"
             @click="addTeamDropdown = !addTeamDropdown"
           >
-            Ajouter&nbsp;
+            Add&nbsp;
           </button>
           <ul class="dropdown-menu" :class="addTeamDropdown ? 'show' : ''">
             <li 
@@ -119,13 +119,13 @@
     </ul>
   </ModalInfo>
 
-  <ModalForm v-model:open="addTeamModalOpen" :title="'Ajouter l\'équipe ' + addTeamModalTeam?.name + ' à l\'événement ' + event.name" @save="addTeamWithMembers()">
-    <p>Pour ajouter l'équipe <i>{{ addTeamModalTeam?.name }}</i> à l'événement, il faut préciser au moins un membre qui y participe en en faisant partie.</p>
+  <ModalForm v-model:open="addTeamModalOpen" :title="'Add team ' + addTeamModalTeam?.name + ' to the event ' + event.name" @save="addTeamWithMembers()">
+    <p>To add <i>{{ addTeamModalTeam?.name }}</i> team to the event, at least one member has to be part of the team for the event</p>
     <form @submit.prevent="addMemberToTeam()">
-      <label for="memberList" class="form-label">Rechercher un membre</label>
+      <label for="memberList" class="form-label">Search</label>
       <div class="input-group">
         <select class="form-select" list="options" id="memberList" v-model="selectedMember">
-          <option :value="undefined"><i>Nouveau membre</i></option>
+          <option :value="undefined"><i>New member</i></option>
           <option v-for="member in availableMembers" :key="member.id" :value="member">
             {{ member.lastname + ' ' + member.firstname }}
           </option>
@@ -134,25 +134,25 @@
           type="submit" 
           class="btn btn-success" 
         >
-          Ajouter&nbsp;
+          Add&nbsp;
         </button>
       </div>
       <ul class="list-group">
         <li class="list-group-item d-flex align-items-center" v-for="member in selectedMembers" :key="member.id">
-          <button type="button" class="btn rounded-pill btn-danger btn-sm me-2" @click="removeMember(member)">Retirer</button>
+          <button type="button" class="btn rounded-pill btn-danger btn-sm me-2" @click="removeMember(member)">Remove</button>
           {{ member.firstname + ' ' + member.lastname }}
         </li>
       </ul>
     </form>
   </ModalForm>
 
-  <ModalForm v-model:open="newMemberModal" title="Ajouter un nouveau membre" @save="addMember()">
+  <ModalForm v-model:open="newMemberModal" title="Add a new member" @save="addMember()">
     <div class="mb-3">
-      <label for="lastname">Nom de famille</label>
+      <label for="lastname">Lastname</label>
       <input type="text" class="form-control" id="lastname" v-model="memberPartial.lastname">
     </div>
     <div class="mb-3">
-      <label for="firstname">Prénom</label>
+      <label for="firstname">Firstname</label>
       <input type="text" class="form-control" id="firstname" v-model="memberPartial.firstname">
     </div>
   </ModalForm>
@@ -160,7 +160,7 @@
 
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
-import { type EventDTO, EventParticipants } from '@/dto/EventDTO';
+import { type EventDTO, EventParticipants, type EventDates } from '@/dto/EventDTO';
 import { MemberParticipations, type Member } from "@/dto/Member";
 import EventMemberListItem from '@/components/EventMemberListItem.vue';
 import EventTeamListItem from '@/components/EventTeamListItem.vue';
@@ -168,15 +168,6 @@ import ModalInfo from '@/components/ModalInfo.vue';
 import ModalForm from '@/components/ModalForm.vue';
 import axios, { type AxiosResponse } from 'axios';
 import { TeamParticipations, type Team } from '@/dto/Team';
-
-interface EventDates {
-  debutEvent?: string
-  finEvent?: string
-  debutCFP?: string
-  finCFP?: string
-  debutInscription?: string
-  finInscription?: string
-}
 
 export default defineComponent({
   name: "EventCard",

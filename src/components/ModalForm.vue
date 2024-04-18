@@ -13,10 +13,10 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Fermer</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Close</button>
             <button type="submit" class="btn btn-primary" :disabled="loading">
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="loading"></span>
-              Enregistrer
+              Save
             </button>
           </div>
         </form>

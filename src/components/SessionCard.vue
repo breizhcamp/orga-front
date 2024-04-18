@@ -81,7 +81,12 @@
   <ModalInfo v-model:open="sessionModal" :title="session.title">
     <h5>Speakers</h5>
     <div class="d-flex mb-3">
-      <div v-for="speaker in session.speakers" :key="speaker.id" class="text-bg-secondary rounded-pill badge me-1 d-flex align-items-center">
+      <div 
+        v-for="speaker in session.speakers" 
+        :key="speaker.id" 
+        class="rounded-pill badge me-1 d-flex align-items-center"
+        :class="session.owner.id == speaker.id ? 'text-bg-success' : 'text-bg-secondary'"
+      >
         <img v-if="speaker.profilePicture" :src="speaker.profilePicture" class="rounded-pill" width="30">
         <span class="mx-1">{{ speaker.firstname[0] + '. ' + speaker.lastname }}</span>
       </div>
@@ -89,6 +94,9 @@
     <hr>
     <h5>Description</h5>
     <p style="white-space: pre-wrap;">{{ session.description }}</p>
+    <hr>
+    <h5>Owner Notes</h5>
+    <p style="white-space: pre-wrap;">{{ session.ownerNotes }}</p>
   </ModalInfo>
   
   <ModalForm v-model:open="hallModal" :title="'Hall selection for session : ' + session.title">

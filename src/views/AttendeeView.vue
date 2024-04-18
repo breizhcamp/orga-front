@@ -1,5 +1,5 @@
 <template>
-  <ToolBar title="Conférenciers" :actions="actions"/>
+  <ToolBar title="Attendees" :actions="actions"/>
 
   <div class="mb-3 main-content">
     <AttendeesFilter :filter="filter" @filter="(f) => load(f)"/>

@@ -43,7 +43,7 @@
           <code>Sessions</code>, 
           <code>Speakers</code> & 
           <code>Evaluation results</code>
-          worksheets as CSV</li>
+          worksheets as CSV <b>with <code>UTF-8</code> format</b></li>
       </ol>
     </div>
 

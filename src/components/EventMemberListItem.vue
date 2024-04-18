@@ -2,12 +2,12 @@
   <div>
     <img v-if="member.profilePictureLink" :src="member.profilePictureLink">
     <b>{{ member.firstname + ' ' + member.lastname }}</b><br>
-    Membre de :
+    Member of :
     <ul class="list">
       <li v-for="team in teams" :key="team.id">
         <div>
           <i>{{ team.name }}&nbsp;</i>
-          <button type="button" class="btn btn-sm btn-danger" @click="removeTeam(team.id)">Retirer</button>
+          <button type="button" class="btn btn-sm btn-danger" @click="removeTeam(team.id)">Remove</button>
         </div>
       </li>
       <li v-if="eventTeams
@@ -22,7 +22,7 @@
             :class="teamDropdown ? 'show' : null"
             @click="teamDropdown = !teamDropdown"
           >
-            Ajouter&nbsp;
+            Add&nbsp;
           </button>
           <ul 
             class="dropdown-menu" 
