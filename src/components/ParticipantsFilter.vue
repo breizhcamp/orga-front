@@ -71,9 +71,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.no-label {
-  margin-top: 45px;
-}
-</style>

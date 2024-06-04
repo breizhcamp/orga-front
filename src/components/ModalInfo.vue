@@ -1,6 +1,6 @@
 <template>
   <div class="modal show d-block" tabindex="-1" v-if="open" @click="close()">
-    <div class="modal-dialog" @click.stop>
+    <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{title}}</h5>
@@ -21,14 +21,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, type PropType } from 'vue';
+
+export type Size = "sm" | "lg" | "xl";
 
 export default defineComponent({
   name: "ModalInfo",
 
   props: {
     open: { type: Boolean, required: true, default: false },
-    title: { type: String, required: true }
+    title: { type: String, required: true },
+    size: { type: String as PropType<Size>, required: false }
   },
 
   emits: ['update:open'],

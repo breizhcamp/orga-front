@@ -1,6 +1,6 @@
 <template>
   <div class="modal show d-block" tabindex="-1" v-if="open" @click="close()">
-    <div class="modal-dialog" @click.stop>
+    <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
       <div class="modal-content">
         <form @submit.prevent="save()">
           <div class="modal-header">
@@ -27,7 +27,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, type PropType} from 'vue'
+import type { Size } from './ModalInfo.vue';
 
 export default defineComponent({
   name: 'ModalForm',
@@ -36,6 +37,7 @@ export default defineComponent({
     open: {type: Boolean, required: true, default: false},
     loading: {type: Boolean, default: false},
     title: {type: String, required: true},
+    size: { type: String as PropType<Size>, required: false }
   },
 
   emits: ['update:open', 'save'],
@@ -51,7 +53,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-
-</style>

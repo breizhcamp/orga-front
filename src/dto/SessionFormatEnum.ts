@@ -8,7 +8,7 @@ export enum SessionFormatEnum {
     KEYNOTE,
 }
 
-export const formatToColor = (value : SessionFormatEnum): BadgeInfos => {
+export const formatToBadgeInfos = (value : SessionFormatEnum): BadgeInfos => {
     switch (value) {
         case SessionFormatEnum.CONFERENCE:
             return { label: 'Conférence', color: 'primary' };
@@ -21,5 +21,20 @@ export const formatToColor = (value : SessionFormatEnum): BadgeInfos => {
         case SessionFormatEnum.KEYNOTE:
         default:
             return { label: 'Keynote', color: 'warning' };
+    }
+}
+
+export const formatToMinutes = (value: SessionFormatEnum): number | undefined => {
+    switch (value) {
+        case SessionFormatEnum.CONFERENCE:
+            return 55;
+        case SessionFormatEnum.UNIVERSITY: 
+            return 120;
+        case SessionFormatEnum.TOOL:
+            return 25;
+        case SessionFormatEnum.QUICKY:
+            return 15;
+        default:
+            return undefined;
     }
 }

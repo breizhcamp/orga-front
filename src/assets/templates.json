@@ -1,0 +1,227 @@
+[
+  {
+    "name": "University",
+    "slots": [
+      {
+        "start": "10:00",
+        "duration": "PT2H",
+	"label": "University"
+      },
+      {
+        "start": "13:30",
+        "duration": "PT2H",
+	"label": "University"
+      },
+      {
+        "start": "16:00",
+        "duration": "PT2H",
+	"label": "University"
+      }
+    ]
+  },
+  {
+    "name": "6 confs",
+    "slots": [
+      {
+        "start": "10:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "11:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "13:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "14:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "16:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "17:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      }
+    ]
+  },
+  {
+    "name": "5 confs, 2 TiA",
+    "slots": [
+      {
+        "start": "10:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "11:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "13:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "14:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "16:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "17:00",
+        "duration": "PT25M",
+	"label": "Tool in action"
+      },
+      {
+        "start": "17:30",
+        "duration": "PT25M",
+	"label": "Tool in action"
+      }
+    ]
+  },
+  {
+    "name": "5 confs, 2 TiA, Quickies",
+    "slots": [
+      {
+        "start": "10:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "11:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "12:45",
+        "duration": "PT15M",
+	"label": "Quickie"
+      },
+      {
+        "start": "13:00",
+        "duration": "PT15M",
+	"label": "Quickie"
+      },
+      {
+        "start": "13:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "14:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "16:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "17:00",
+        "duration": "PT25M",
+	"label": "Tool in action"
+      },
+      {
+        "start": "17:30",
+        "duration": "PT25M",
+	"label": "Tool in action"
+      }
+    ]
+  },
+  {
+    "name": "5 confs, 1 TiA",
+    "slots": [
+      {
+        "start": "10:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "11:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "13:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "14:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "16:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "17:00",
+        "duration": "PT25M",
+	"label": "Tool in action"
+      }
+    ]
+  },
+  {
+    "name": "5 confs, 1 TiA, Quickies",
+    "slots": [
+      {
+        "start": "10:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "11:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "12:45",
+        "duration": "PT15M",
+	"label": "Quickie"
+      },
+      {
+        "start": "13:00",
+        "duration": "PT15M",
+	"label": "Quickie"
+      },
+      {
+        "start": "13:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "14:30",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "16:00",
+        "duration": "PT55M",
+	"label": "Conference"
+      },
+      {
+        "start": "17:00",
+        "duration": "PT25M",
+	"label": "Tool in action"
+      }
+    ]
+  }
+]

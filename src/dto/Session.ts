@@ -1,8 +1,8 @@
-import type { Hall } from "./Hall"
 import { SessionFormatEnum } from "./SessionFormatEnum"
 import { SessionNiveauEnum } from "./SessionNiveauEnum"
 import { SessionStatusEnum } from "./SessionStatusEnum"
 import { SessionThemeEnum } from "./SessionThemeEnum"
+import type { Slot } from "./Slot"
 import type { Speaker } from "./Speaker"
 
 export interface Session {
@@ -18,16 +18,12 @@ export interface Session {
     status: SessionStatusEnum
     submitted: Date
     ownerNotes: string
-    hall?: Hall | null
-    beginning?: Date | null
-    end?: Date | null
     videoURL?: string | null
     rating?: number | null
-
-    checked: boolean
+    slot?: Slot | null
 }
 
-interface SessionDTO {
+export interface SessionDTO {
     id: number
 
     title: string
@@ -41,10 +37,8 @@ interface SessionDTO {
     submitted: string
     ownerNotes: string
     rating?: string | null
-    hall?: Hall | null
-    beginning?: string | null
-    end?: string | null
     videoURL?: string | null
+    slot?: Slot | null
 }
 
 export const sessionDTOToSession = (dto: SessionDTO): Session => {
@@ -60,11 +54,8 @@ export const sessionDTOToSession = (dto: SessionDTO): Session => {
         status: SessionStatusEnum[dto.status as keyof typeof SessionStatusEnum],
         submitted: new Date(dto.submitted),
         ownerNotes: dto.ownerNotes,
-        hall: dto.hall,
-        beginning: dto.beginning ? new Date(dto.beginning) : null,
-        end: dto.end ? new Date(dto.end) : null,
         videoURL: dto.videoURL,
-        checked: false,
-        rating: dto.rating ? Number(dto.rating) : null
+        rating: dto.rating ? Number(dto.rating) : null,
+        slot: dto.slot
     }
 }

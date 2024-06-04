@@ -16,7 +16,7 @@ export enum SessionThemeEnum {
     KEYNOTE,
 }
 
-export const themeToColor = (value : SessionThemeEnum): BadgeInfos => {
+export const themeToBadgeInfos = (value : SessionThemeEnum): BadgeInfos => {
     switch (value) {
         case SessionThemeEnum.WEB:
             return { label: 'Web', color: 'primary' };

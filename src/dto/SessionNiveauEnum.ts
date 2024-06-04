@@ -6,7 +6,7 @@ export enum SessionNiveauEnum {
     ADVANCED,
 }
 
-export const niveauToColor = (value : SessionNiveauEnum): BadgeInfos => {
+export const niveauToBadgeInfos = (value : SessionNiveauEnum): BadgeInfos => {
     switch (value) {
         case SessionNiveauEnum.INTRO:
             return { label: 'Introduction', color: 'primary' };

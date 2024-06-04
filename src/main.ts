@@ -11,12 +11,12 @@ import axios from 'axios'
 const app = createApp(App)
 
 axios.defaults.baseURL = ''
+
 axios.interceptors.request.use(async config => {
   await app.config.globalProperties.$keycloak.updateToken()
   config.headers.Authorization = `Bearer ${app.config.globalProperties.$keycloak.token}`
   return config
 })
-
 app.use(Vuecloak, {
   init: {
     onLoad: 'login-required',

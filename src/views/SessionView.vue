@@ -8,7 +8,7 @@
         class="btn btn-primary dropdown-toggle" 
         :class="openYearDropdown ? 'show' : null" 
         @click="openYearDropdown = !openYearDropdown"
-      >{{ currentEvent?.year }}</button>
+      >{{ currentEvent?.name }}</button>
       <ul class="dropdown-menu" :class="openYearDropdown ? 'show' : null">
         <li
           v-for="event in events" 
@@ -21,14 +21,24 @@
             :class="event.id === currentEvent?.id ? 'active' : null" 
             @click="currentEvent = event"
           >
-            {{ event.year }}
+            {{ event.name }}
           </button>
         </li>
       </ul>
-      <SessionFilter :filter="filter" @filter="(f) => loadSessions(f)"/>
+
+      <SessionFilter v-model:filter="filter" @filter="(f) => loadSessions(f)" :loseFocus="forceModalOpen" />
     </div>
 
-    <SessionCard v-for="session in sessions" :key="session.id" :session="session" :availableHalls="halls" />
+    <SessionCard 
+      v-for="session in sessions" 
+      :key="session.id" 
+      :session="session" 
+      :availableHalls="halls" 
+      :slots="currentEvent?.slots"
+      :forceModal="forceModalOpen"
+      :event-start="currentEvent?.debutEvent ? new Date(currentEvent.debutEvent) : new Date(Date.now())"
+      @reload="reloadSessions()"
+    />
   </div>
 
   <ModalForm v-model:open="importModal" :loading="loading" title="Import" @save="importCsv()">
@@ -126,6 +136,7 @@ import BiDatabaseUp from 'bootstrap-icons/icons/database-up.svg?component'
 import BiArrowUpCircleFill from 'bootstrap-icons/icons/arrow-up-circle-fill.svg?component'
 import { defineComponent, shallowRef } from 'vue';
 import type { Hall } from '@/dto/Hall';
+import type { Slot } from '@/dto/Slot';
 
 export default defineComponent({
   name: "SessionView",
@@ -139,7 +150,7 @@ export default defineComponent({
 
   data() {
     return {
-      currentEvent: null as EventDTO | null,
+      currentEvent: undefined as EventDTO | undefined,
       events: [] as EventDTO[],
       halls: [] as Hall[],
       sessions: [] as Session[],
@@ -152,7 +163,9 @@ export default defineComponent({
       evaluationsFile: null as File | null,
       actions: [] as Action[],
       filter: {} as Object,
+      filterById: false,
       eventCount: { total: 0, current: 0 },
+      forceModalOpen: false,
     }
   },
 
@@ -177,14 +190,19 @@ export default defineComponent({
     this.loadOnMounted();
   },
 
-  created() {
-    this.$watch(() => this.$route.params, () => this.loadSessions(), { immediate: true })
+  watch: {
+    currentEvent() {
+      this.loadSessions();
+      this.loadHalls();
+      this.loadSlots();
+    }
   },
 
   methods: {
     loadOnMounted() {
       this.loadEvents();
     },
+    
     loadEvents() {
       axios.get('/kalon/events')
       .then((response: AxiosResponse<number[]>) => {
@@ -198,10 +216,11 @@ export default defineComponent({
         }
       })
     },
+    
     loadEvent(eventId: number) {
       axios.get(`/kalon/events/${eventId}`)
       .then((response: AxiosResponse<EventDTO>) => {
-        this.events.push(response.data)
+        this.events.push(response.data);
         this.eventCount.current++;
 
         if (this.eventCount.total == this.eventCount.current) {
@@ -215,28 +234,49 @@ export default defineComponent({
     },
 
     loadSessions(filter?: Filter) {
-      if (this.currentEvent == null) return
+      if (this.currentEvent == null) return;
       if (filter == null) {
-        axios.get(`/konter/sessions/${this.currentEvent.year}`)
+        axios.get(`/konter/sessions/${this.currentEvent.id}`)
         .then((response) => {
           this.sessions = response.data.map(sessionDTOToSession);
         });
       } else {
+        this.filterById = filter.id != undefined;
+        this.filter = filter;
         axios.post(
-          `/konter/sessions/${this.currentEvent.year}/filter`, 
+          `/konter/sessions/${this.currentEvent.id}/filter`, 
           filter
-        ).then((response) => {
+        ).then((response: AxiosResponse<any[]>) => {
           this.sessions = response.data.map(sessionDTOToSession);
+          this.forceModalOpen = response.data.length === 1 && this.filterById;
         });
       }
+    },
+
+    reloadSessions() {
+      this.loadSessions(this.filter);
     },
 
     loadHalls() {
       const url = '/konter/halls' 
         + (this.currentEvent != null ? '/' + this.currentEvent?.id : '');
       axios.get(url).then((response: AxiosResponse<Array<Hall>>) => {
-        this.halls = response.data
+        this.halls = response.data;
       })
+    },
+
+    loadSlots() {
+      if (this.currentEvent == null) return; 
+
+      axios.get('/konter/slots/event/' + this.currentEvent.id).then(
+        (response: AxiosResponse<Map<number, Map<number, Array<Slot>>>>) => {
+          this.currentEvent!.slots = new Map(Object.entries(response.data).map(
+            row => [ Number(row[0]) , new Map(Object.entries(row[1]).map(
+              column => [ this.halls.find(h => h.id == Number(column[0]))!!, column[1] as Slot[]]
+            ))]
+          ));
+        }
+      )
     },
 
     importCsv() {
@@ -253,10 +293,10 @@ export default defineComponent({
         }
       }).then(() => {
 
-        if(!this.sessionsFile) return
+        if(!this.sessionsFile) return;
 
-        const sessionsFormData = new FormData()
-        sessionsFormData.append('file', this.sessionsFile)
+        const sessionsFormData = new FormData();
+        sessionsFormData.append('file', this.sessionsFile);
 
         axios.post(
           `/konter/sessions/${this.currentEvent?.year}/import`, 
@@ -266,11 +306,10 @@ export default defineComponent({
             }
           }
         ).then(() => {
-          
-          if(!this.evaluationsFile) return
+          if(!this.evaluationsFile) return;
 
-          const evaluationsFormData = new FormData()
-          evaluationsFormData.append('file', this.evaluationsFile)
+          const evaluationsFormData = new FormData();
+          evaluationsFormData.append('file', this.evaluationsFile);
 
           axios.post(
             '/konter/sessions/evaluations/import', 
@@ -280,32 +319,32 @@ export default defineComponent({
               }
             }
           ).then(() => {
-            this.importModal = false
-            this.loadSessions()
+            this.importModal = false;
+            this.loadSessions();
           }).catch(() => {
-            this.importModal = false
+            this.importModal = false;
           }).finally(() => {
-            this.loading = false
+            this.loading = false;
           })
 
         }).catch(() => {
-          this.importModal = false
+          this.importModal = false;
         })
 
       }).catch(() => {
-        this.importModal = false
+        this.importModal = false;
       })
     },
 
     exportPDFCards () {
       axios.get(
-        `/konter/sessions/${this.currentEvent?.year}/export`, 
+        `/konter/sessions/${this.currentEvent?.id}/export`, 
         { responseType: "blob" }
       ).then((response) => {
         const blob = new Blob([response.data], { type: "application/pdf" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `session_cards_${this.currentEvent?.year}.pdf`;
+        link.download = `session_cards_${this.currentEvent?.name}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);
         document.removeChild(link);
@@ -314,24 +353,23 @@ export default defineComponent({
     },
 
     onSpeakersFileSelected (event: Event) {
-      const target = event.target as HTMLInputElement
-      this.speakersFile = target.files?.item(0) ?? null 
+      const target = event.target as HTMLInputElement;
+      this.speakersFile = target.files?.item(0) ?? null; 
     },
     
     onSessionsFileSelected (event: Event) {
-      const target = event.target as HTMLInputElement
-      this.sessionsFile = target.files?.item(0) ?? null 
+      const target = event.target as HTMLInputElement;
+      this.sessionsFile = target.files?.item(0) ?? null; 
     },
 
     onEvaluationsFileSelected (event: Event) {
-      const target = event.target as HTMLInputElement
-      this.evaluationsFile = target.files?.item(0) ?? null
+      const target = event.target as HTMLInputElement;
+      this.evaluationsFile = target.files?.item(0) ?? null;
     },
 
     backToTop () {
-      scrollTo({ left: 0, top: 0, behavior: 'smooth' })
+      scrollTo({ left: 0, top: 0, behavior: 'smooth' });
     },
-    
   }
-})
+});
 </script>

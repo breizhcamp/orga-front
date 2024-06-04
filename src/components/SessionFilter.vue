@@ -26,7 +26,7 @@
       <select id="theme" class="form-select" v-model="f.theme">
         <option :value="undefined"></option>
         <option v-for="theme in themeEnum.filter((val) => Number.isNaN(Number(val)))" :key="theme" :value="theme">
-          {{ themeToColor(SessionThemeEnum[theme as keyof typeof SessionThemeEnum]).label }}
+          {{ themeToBadgeInfos(SessionThemeEnum[theme as keyof typeof SessionThemeEnum]).label }}
         </option>
       </select>
     </div>
@@ -35,7 +35,7 @@
       <select id="niveau" class="form-select" v-model="f.niveau">
         <option :value="undefined"></option>
         <option v-for="niveau in niveauEnum.filter((val) => Number.isNaN(Number(val)))" :key="niveau" :value="niveau">
-          {{ niveauToColor(SessionNiveauEnum[niveau as keyof typeof SessionNiveauEnum]).label }}
+          {{ niveauToBadgeInfos(SessionNiveauEnum[niveau as keyof typeof SessionNiveauEnum]).label }}
         </option>
       </select>
     </div>
@@ -44,7 +44,7 @@
       <select id="status" class="form-select" v-model="f.status">
         <option :value="undefined"></option>
         <option v-for="status in statusEnum.filter((val) => Number.isNaN(Number(val)))" :key="status" :value="status">
-          {{ statusToColor(SessionStatusEnum[status as keyof typeof SessionStatusEnum]).label }}
+          {{ statusToBadgeInfos(SessionStatusEnum[status as keyof typeof SessionStatusEnum]).label }}
         </option>
       </select>
     </div>
@@ -64,14 +64,23 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { SessionFormatEnum, SessionNiveauEnum, SessionStatusEnum, SessionThemeEnum, formatToColor, themeToColor, niveauToColor, statusToColor } from "@/dto/SessionEnums";
+import { 
+  SessionFormatEnum, 
+  SessionNiveauEnum, 
+  SessionStatusEnum, 
+  SessionThemeEnum, 
+  formatToBadgeInfos, 
+  themeToBadgeInfos, 
+  niveauToBadgeInfos, 
+  statusToBadgeInfos
+} from "@/dto/SessionEnums";
 import type { SessionFilter } from '@/dto/SessionFilter';
 
 export default defineComponent({
   name: 'SessionFilter',
 
   props: {
-    filter: { type: Object as PropType<SessionFilter>, required: true }
+    filter: { type: Object as PropType<SessionFilter>, required: true },
   },
 
   emits: ['filter'],
@@ -99,10 +108,10 @@ export default defineComponent({
       return (event.target as HTMLInputElement)?.value || undefined;
     },
 
-    formatToColor,
-    themeToColor,
-    niveauToColor,
-    statusToColor,
+    formatToColor: formatToBadgeInfos,
+    themeToBadgeInfos,
+    niveauToBadgeInfos,
+    statusToBadgeInfos,
   }
 })
 </script>

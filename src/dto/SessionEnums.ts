@@ -1,11 +1,21 @@
-import { SessionFormatEnum } from "./SessionFormatEnum";
-import { SessionNiveauEnum } from "./SessionNiveauEnum";
-import { SessionStatusEnum } from "./SessionStatusEnum";
-import { SessionThemeEnum } from "./SessionThemeEnum";
-import { formatToColor } from "./SessionFormatEnum";
-import { themeToColor } from "./SessionThemeEnum";
-import { niveauToColor } from "./SessionNiveauEnum";
-import { statusToColor } from "./SessionStatusEnum";
+import { 
+  SessionFormatEnum,
+  formatToBadgeInfos, 
+  formatToMinutes
+} from "./SessionFormatEnum";
+import { 
+  SessionNiveauEnum, 
+  niveauToBadgeInfos 
+} from "./SessionNiveauEnum";
+import { 
+  SessionStatusEnum, 
+  statusToBadgeInfos 
+} from "./SessionStatusEnum";
+import { 
+  SessionThemeEnum, 
+  themeToBadgeInfos 
+} from "./SessionThemeEnum";
 
-export { SessionFormatEnum, SessionThemeEnum, SessionNiveauEnum, SessionStatusEnum }
-export { formatToColor, themeToColor, niveauToColor, statusToColor }
+export { SessionFormatEnum, SessionThemeEnum, SessionNiveauEnum, SessionStatusEnum };
+export { formatToBadgeInfos, themeToBadgeInfos, niveauToBadgeInfos, statusToBadgeInfos };
+export { formatToMinutes };

@@ -8,7 +8,7 @@ export enum SessionStatusEnum {
     DECLINED,
 }
 
-export const statusToColor = (value : SessionStatusEnum): BadgeInfos => {
+export const statusToBadgeInfos = (value : SessionStatusEnum): BadgeInfos => {
     switch (value) {
         case SessionStatusEnum.ACCEPTED:
             return { label: 'Accepté', color: 'primary' };

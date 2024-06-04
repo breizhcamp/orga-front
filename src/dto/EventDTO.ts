@@ -1,3 +1,6 @@
+import type { Hall } from "./Hall"
+import type { Slot } from "./Slot"
+
 export interface EventDTO {
   id: number
 
@@ -12,6 +15,7 @@ export interface EventDTO {
   website?: String
 
   participants: EventParticipants | Array<{ memberId: string, teamId: string}>
+  slots: Map<number, Map<Hall, Array<Slot>>> | null
 }
 
 export interface EventDates {
