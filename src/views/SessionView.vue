@@ -137,6 +137,7 @@ import BiArrowUpCircleFill from 'bootstrap-icons/icons/arrow-up-circle-fill.svg?
 import { defineComponent, shallowRef } from 'vue';
 import type { Hall } from '@/dto/Hall';
 import type { Slot } from '@/dto/Slot';
+import { downloadPdfWithName } from '@/utils/download';
 
 export default defineComponent({
   name: "SessionView",
@@ -340,16 +341,9 @@ export default defineComponent({
       axios.get(
         `/konter/sessions/${this.currentEvent?.id}/export`, 
         { responseType: "blob" }
-      ).then((response) => {
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `session_cards_${this.currentEvent?.name}.pdf`;
-        link.click();
-        URL.revokeObjectURL(link.href);
-        document.removeChild(link);
-      })
-
+      ).then((response) => 
+        downloadPdfWithName(response, `session_cards_${this.currentEvent?.name}.pdf`)
+      )
     },
 
     onSpeakersFileSelected (event: Event) {
