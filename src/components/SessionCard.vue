@@ -331,7 +331,7 @@ export default defineComponent({
     beautifyTime(time: string): string {
       dayjs.extend(customParseFormat)
     
-      return dayjs(time, "H:mm:ss").format("hh:mm")
+      return dayjs(time, "H:mm:ss").format("HH:mm")
     },
 
     getDayName(eventStart: Date | undefined, day: number): string {
