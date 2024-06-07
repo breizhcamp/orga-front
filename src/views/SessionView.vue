@@ -259,7 +259,7 @@ export default defineComponent({
         sessionsFormData.append('file', this.sessionsFile)
 
         axios.post(
-          `/konter/sessions/${this.currentEvent?.year}/import`, 
+          `/konter/sessions/${this.currentEvent?.id}/import`, 
           sessionsFormData, {
             headers: {
               "Content-Type": 'multipart/form-data'
@@ -299,13 +299,13 @@ export default defineComponent({
 
     exportPDFCards () {
       axios.get(
-        `/konter/sessions/${this.currentEvent?.year}/export`, 
+        `/konter/sessions/${this.currentEvent?.id}/export`, 
         { responseType: "blob" }
       ).then((response) => {
         const blob = new Blob([response.data], { type: "application/pdf" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `session_cards_${this.currentEvent?.year}.pdf`;
+        link.download = `session_cards_${this.currentEvent?.name}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);
         document.removeChild(link);
