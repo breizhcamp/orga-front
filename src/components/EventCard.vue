@@ -252,9 +252,9 @@ import { type EventDTO, EventParticipants, type EventDates } from '@/dto/EventDT
 import { MemberParticipations, type Member } from "@/dto/Member";
 import EventMemberListItem from '@/components/EventMemberListItem.vue';
 import EventTeamListItem from '@/components/EventTeamListItem.vue';
-import ModalInfo from '@/components/ModalInfo.vue';
-import ModalForm from '@/components/ModalForm.vue';
-import ProgramModal from '@/components/ProgramModal.vue';
+import ModalInfo from '@/components/modals/ModalInfo.vue';
+import ModalForm from '@/components/modals/ModalForm.vue';
+import ProgramModal from '@/components/modals/ProgramModal.vue';
 import { TeamParticipations, type Team } from '@/dto/Team';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
 import dayjs, { Dayjs } from 'dayjs';

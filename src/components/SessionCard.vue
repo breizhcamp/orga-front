@@ -67,7 +67,7 @@
         </div>
         <div class="col-2 d-flex flex-column justify-content-center">
           <BiPersoVideo3 class="opacity-50 mx-auto" width="24" height="24" viewBox="0 0 16 16"/>
-          <div v-if="session.slot != undefined" class="d-inline-block mx-auto">Hall : <b>{{ session.slot.hall?.name }}</b></div>
+          <div v-if="session.slot != undefined" class="d-inline-block mx-auto">Hall : <b>{{ session.slot.halls[0]?.name }}</b></div>
           <div v-if="session.slot != undefined" class="d-inline-block mx-auto">On <b>{{ getDayName(eventStart, session.slot.day) }}</b> at <b>{{ beautifyTime(session.slot.start) }}</b></div>
           <i v-else class="d-inline-block mx-auto">No slot assigned</i>
         </div>
@@ -128,28 +128,36 @@
       <button type="button" class="btn-close" aria-label="Close" @click="slotAlert = false" ></button>
     </div>
 
-    <div v-if="slots != undefined" class="row mb-3">
-      <div class="col-4">
+    <div v-if="slots != undefined" class="row mb-3 gy-3">
+      <div class="col-6">
         <label for="day" class="form-label">Day <b style="color: red;">*</b></label>
         <select id="day" class="form-control" v-model="formValues.day">
           <option :value="undefined"></option>
-          <option v-for="day in slots.entries()" :key="day[0]" :value="day[0]">Day {{ day[0] }}</option>
+          <option 
+            v-for="day in slots.entries()" 
+            :key="day[0]" 
+            :value="day[0]"
+          >Day {{ day[0] }}</option>
         </select>
       </div>
 
-      <div class="col-4">
+      <div class="col-6">
         <label for="hall" class="form-label">Hall <b style="color: red;">*</b></label>
-        <select id="hall" class="form-control" :disabled="formValues.day == undefined" v-model="formValues.hall">
+        <select id="hall" class="form-control" :disabled="formValues.day == undefined" v-model="formValues.hallId">
           <option :value="undefined"></option>
-          <option v-for="hall in slots.get(formValues.day!)?.entries()" :key="hall[0].id" :value="hall[0]">{{ hall[0].name }} (Track {{ hall[0].trackId }})</option>
+          <option 
+            v-for="hall in slots.get(formValues.day!)?.entries()" 
+            :key="hall[0].id" 
+            :value="hall[0].id"
+          >{{ hall[0].name }}</option>
         </select>
       </div>
 
-      <div class="col-4">
+      <div class="col-12">
         <label for="slot" class="form-label">Slot <b style="color: red;">*</b></label>
-        <select id="slot" class="form-control" :disabled="formValues.day == undefined || formValues.hall == undefined" v-model="formValues.slot">
+        <select id="slot" class="form-control" :disabled="formValues.day == undefined || formValues.hallId == undefined" v-model="formValues.slotId">
           <option :value="undefined"></option>
-          <option v-for="slot in slots.get(formValues.day!)?.get(formValues.hall!)" :key="slot.id" :value="slot">
+          <option v-for="slot in (slots.get(formValues.day!) != undefined) ? Array.from(slots.get(formValues.day!)!.entries()).find(e => e[0].id === formValues.hallId)?.[1].filter(slot => slot.session == undefined || slot.session?.id == session.id) : []" :key="slot.id" :value="slot.id">
             {{ slot.start }} {{ slot.duration }}
           </option>
         </select>
@@ -169,8 +177,8 @@ import type { Session } from '@/dto/Session';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Speaker } from '@/dto/Speaker';
 import * as sessionEnums from '@/dto/SessionEnums';
-import ModalInfo from "@/components/ModalInfo.vue";
-import ModalForm from "@/components/ModalForm.vue";
+import ModalInfo from "@/components/modals/ModalInfo.vue";
+import ModalForm from "@/components/modals/ModalForm.vue";
 import SessionBadges from '@/components/SessionBadges.vue';
 import BiPersoVideo3 from 'bootstrap-icons/icons/person-video3.svg?component';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
@@ -182,8 +190,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 interface SlotFormValues {
   day?: number
-  hall?: Hall
-  slot?: Slot
+  hallId?: number
+  slotId?: string
   barcode?: string
 }
 
@@ -216,8 +224,8 @@ export default defineComponent({
       mounted: false,
       formValues: {
         day: this.session.slot?.day,
-        hall: this.session.slot?.hall,
-        slot: this.session.slot,
+        hallId: this.session.slot?.halls[0].id,
+        slotId: this.session.slot?.id,
         barcode: this.session.slot?.barcode,
       } as SlotFormValues
     };
@@ -234,6 +242,17 @@ export default defineComponent({
 
     forceModal() {
       this.initModal();
+    },
+
+    slotModal() {
+      if (this.slotModal) {
+        this.formValues = {
+          day: this.session.slot?.day,
+          hallId: this.session.slot?.halls[0].id,
+          slotId: this.session.slot?.id,
+          barcode: this.session.slot?.barcode,
+        }
+      }
     }
   },
 
@@ -283,6 +302,7 @@ export default defineComponent({
       if(this.mounted) {
         this.slotModal = this.forceModal;
         this.slotModalBarCodeFieldAutofocus = this.forceModal;
+
         try {
           if (this.forceModal) {
             (document.activeElement as HTMLInputElement).blur();
@@ -290,6 +310,7 @@ export default defineComponent({
         } catch (error) {
           console.trace("No active element to blur");
         }
+
         setTimeout(() => {
           if (this.forceModal && document.getElementById('barcode') != null) {
             (document.getElementById('barcode') as HTMLInputElement).focus();
@@ -309,8 +330,8 @@ export default defineComponent({
     saveSlotModal() {
       if ((
         this.formValues.day == undefined ||
-        this.formValues.hall == undefined ||
-        this.formValues.slot == undefined
+        this.formValues.hallId == undefined ||
+        this.formValues.slotId == undefined
       ) && this.formValues.barcode == undefined) {
         this.slotAlert = true;
         return;
@@ -318,11 +339,13 @@ export default defineComponent({
 
       if (
         this.formValues.day != undefined &&
-        this.formValues.hall != undefined &&
-        this.formValues.slot != undefined
+        this.formValues.hallId != undefined &&
+        this.formValues.slotId != undefined
       ) {
-        axios.post(`/konter/sessions/${this.session.id}/slot/id/${this.formValues.slot.id}`).then(() => {
+        axios.post(`/konter/sessions/${this.session.id}/slot/id/${this.formValues.slotId}`).then(() => {
           this.$emit('reload');
+          this.formValues = {};
+          this.slotModal = false;
         })
       }
 

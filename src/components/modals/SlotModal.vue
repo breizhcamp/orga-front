@@ -1,14 +1,13 @@
 <template>
-  <ModalForm v-model:open="modal" :title="'Add slot on ' + modalData.day?.date.format('dddd') + ' for ' + modalData.hall?.name" @save="submitSlot()">
+  <ModalForm 
+    v-model:open="modal" 
+    :title="'Add slot on ' + modalData.day?.date.format('dddd')" 
+    @save="submitSlot()"
+  >
     <div class="row row-cols-2 gy-3">
       <div class="col">
         <label for="day" class="form-label">Day<b style="color: red">*</b></label>
         <input type="text" class="form-control" id="day" :value="modalData.day?.date.format('dddd')" disabled>
-      </div>
-
-      <div class="col">
-        <label for="track" class="form-label">Track<b style="color: red">*</b></label>
-        <input type="text" class="form-control" id="track" :value="modalData.hall?.name" disabled>
       </div>
 
       <div class="col">
@@ -50,7 +49,7 @@
         </select>
       </div>
 
-      <div class="col-12">
+      <div class="col">
         <label class="form-label" for="duration">Duration (minutes)<b style="color: red">*</b></label>
         <input class="form-control" id="duration" type="number" :value="modalValues.duration" :disabled="!modalValues.customDuration"
         @change="(e) => { modalValues.duration = Number((e.target as HTMLInputElement).value) }">
@@ -58,9 +57,19 @@
 
       <div class="col-12">
         <label for="tracks" class="form-label">Tracks</label>
-        <ul id="tracks">
-          <li v-for="h in availableHalls" :key="h.id">
-            <input type="checkbox" :checked="selectedHalls.includes(h.id)" @change="toggleHall(h.id)">{{ h.name }} (Track {{ h.trackId }})
+        <ul class="list-group" id="tracks">
+          <li class="list-group-item" v-for="h in availableHalls" :key="h.id">
+            <input 
+              class="form-check-input me-1" 
+              type="checkbox" 
+              :id="'checkbox_' + h.id"
+              :checked="selectedHalls.includes(h.id)" 
+              @change="toggleHall(h.id)"
+            >
+            <label
+              class="form-check-label stretched-link" 
+              :for="'checkbox_' + h.id"
+            >{{ h.name }} (Track {{ h.trackId }})</label>
           </li>
         </ul>
       </div>

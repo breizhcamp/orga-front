@@ -184,8 +184,8 @@
 </template>
 
 <script lang="ts">
-import ModalForm from "@/components/ModalForm.vue";
-import ModalInfo from "@/components/ModalInfo.vue";
+import ModalForm from "@/components/modals/ModalForm.vue";
+import ModalInfo from "@/components/modals/ModalInfo.vue";
 import ToolBar from "@/components/ToolBar.vue";
 import EventCard, { type EventOptions } from '@/components/EventCard.vue';
 import EventHallListItem from '@/components/EventHallListItem.vue'; 

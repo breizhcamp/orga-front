@@ -182,7 +182,7 @@
 import { type PropType, defineComponent, type CSSProperties } from 'vue';
 import { MemberParticipations, type Member } from '@/dto/Member';
 import { type Team } from '@/dto/Team';
-import ModalForm from './ModalForm.vue';
+import ModalForm from './modals/ModalForm.vue';
 import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
 import BiPersonLinesFill from 'bootstrap-icons/icons/person-lines-fill.svg?component';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';

@@ -121,12 +121,12 @@
 <script lang="ts">
 /// <reference types="vite-svg-loader" />
 
-import ModalForm from '@/components/ModalForm.vue';
+import ModalForm from '@/components/modals/ModalForm.vue';
 import ToolBar from '@/components/ToolBar.vue';
 import SessionCard from '@/components/SessionCard.vue';
 import SessionFilter from '@/components/SessionFilter.vue'
 import type { SessionFilter as Filter } from '@/dto/SessionFilter';
-import type { Session } from '@/dto/Session';
+import type { Session, SessionDTO } from '@/dto/Session';
 import { sessionDTOToSession } from '@/dto/Session';
 import type { Action } from '@/dto/Action';
 import type { EventDTO } from '@/dto/EventDTO';
@@ -238,7 +238,7 @@ export default defineComponent({
       if (this.currentEvent == null) return;
       if (filter == null) {
         axios.get(`/konter/sessions/${this.currentEvent.id}`)
-        .then((response) => {
+        .then((response: AxiosResponse<Array<SessionDTO>>) => {
           this.sessions = response.data.map(sessionDTOToSession);
         });
       } else {
@@ -247,7 +247,7 @@ export default defineComponent({
         axios.post(
           `/konter/sessions/${this.currentEvent.id}/filter`, 
           filter
-        ).then((response: AxiosResponse<any[]>) => {
+        ).then((response: AxiosResponse<Array<SessionDTO>>) => {
           this.sessions = response.data.map(sessionDTOToSession);
           this.forceModalOpen = response.data.length === 1 && this.filterById;
         });

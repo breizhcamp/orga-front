@@ -56,7 +56,7 @@ import type { Registered } from '@/dto/Registered';
 import { defineComponent, shallowRef } from 'vue'
 import axios from 'axios'
 import DateView from '@/components/DateView.vue'
-import ModalForm from '@/components/ModalForm.vue'
+import ModalForm from '@/components/modals/ModalForm.vue'
 import BiChatText from 'bootstrap-icons/icons/chat-text.svg?component'
 import BiEnvelope from 'bootstrap-icons/icons/envelope.svg?component'
 import BiDatabaseUp from 'bootstrap-icons/icons/database-up.svg?component'

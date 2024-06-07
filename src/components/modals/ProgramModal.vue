@@ -83,6 +83,7 @@
                     :key="hall.id" 
                     :slot-and-span="stamp.tracks.get(hall.id)!" 
                     @reload="loadSlots()"
+                    @edit="editSlot(stamp.tracks.get(hall.id)?.slot)"
                     @click.stop="openAddSlotModal(hall, day, stamp.time)"
                   />
                 </tr>
@@ -169,6 +170,13 @@
     @close="slotModal = false"
   />
 
+  <SlotEditModal
+    :open="editSlotModal"
+    :program-slot="editSlotValue"
+    :available-halls="availableHalls"
+    @close="editSlotModal = false"
+  />
+
   <SlotTemplateModal
     :open="templateModal"
     :event="event"
@@ -188,18 +196,19 @@ import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import durationPlugin from 'dayjs/plugin/duration';
 import { type PropType, defineComponent } from 'vue';
-import type { SlotSessionTDOptions } from './SlotSessionTableData.vue';
+import type { SlotSessionTDOptions } from '../SlotSessionTableData.vue';
 import ModalInfo from './ModalInfo.vue';
-import SlotModal from '@/components/SlotModal.vue';
-import SlotTemplateModal from '@/components/SlotTemplateModal.vue';
-import SlotSessionTableData from './SlotSessionTableData.vue';
+import SlotModal from '@/components/modals/SlotModal.vue';
+import SlotEditModal from '@/components/modals/SlotEditModal.vue';
+import SlotTemplateModal from '@/components/modals/SlotTemplateModal.vue';
+import SlotSessionTableData from '../SlotSessionTableData.vue';
 import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
-import { sessionDTOToSession, type SessionDTO } from '@/dto/Session';
+import { manualSessionDTOToManualSession, sessionDTOToSession, type ManualSessionDTO, type SessionDTO } from '@/dto/Session';
 
 export default defineComponent({
   name: "ProgramModal",
 
-  components: { ModalInfo, SlotModal, SlotTemplateModal, SlotSessionTableData, BiXLg }, 
+  components: { ModalInfo, SlotModal, SlotEditModal, SlotTemplateModal, SlotSessionTableData, BiXLg }, 
 
   props: {
     event: { type: Object as PropType<EventDTO>, required: true },
@@ -220,6 +229,9 @@ export default defineComponent({
       slotModalHalls: [] as Array<Hall>,
       slotModalDay: undefined as {index: number, date: Dayjs} | undefined,
       slotModalTime: undefined as Dayjs | undefined,
+
+      editSlotModal: false, 
+      editSlotValue: undefined as Slot | undefined,
 
       templateModal: false, 
       templateModalHall: undefined as Hall | undefined,
@@ -454,6 +466,29 @@ export default defineComponent({
         })
       })
     },
+
+    async editSlot(slot: Slot | undefined) {
+      if (slot == undefined) {
+        return;
+      }
+
+      if (slot.halls.length == 0) {
+        await axios.get('/konter/slots/' + slot.id).then((response) => {
+          slot = response.data as Slot
+          if (response.data.session != undefined) {
+            slot.session = sessionDTOToSession(response.data.session as SessionDTO)
+          }
+          if (response.data.manualSession != undefined) {
+            slot.manualSession = manualSessionDTOToManualSession(response.data.manualSession as ManualSessionDTO)
+          }
+        })
+      }
+
+      console.log(slot)
+
+      this.editSlotValue = slot;
+      this.editSlotModal = true;
+    }
 
   }
 })

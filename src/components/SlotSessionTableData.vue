@@ -19,19 +19,15 @@
       <div class="card-body p-1 d-flex align-items-center align-middle">
         <div class="d-flex flex-grow-1 flex-column justify-content-center">
           <div class="row mx-auto">
-            <b><i>{{ slotAndSpan.slot.session?.title || 'Empty' }}</i></b>
+            <b>{{ slotAndSpan.slot.session?.title || 'Empty' }}</b>
           </div>
-          <SessionBadges 
-            v-if="slotAndSpan.slot.session != undefined" 
-            :session="slotAndSpan.slot.session"
-          />
         </div>
         <div class="row d-flex flex-row flex-wrap ms-0 me-0 my-0 p-0">
           <button
             type="button"
             class="d-flex align-items-center px-1 justify-content-center btn btn-sm btn-outline-dark btn-light mb-1"
             aria-roledescription="Edit Slot"
-            @click.stop="() => {}"
+            @click.stop="$emit('edit')"
           >
             Edit <BiPencilSquare class="me-0 ms-1" aria-hidden="true" />
           </button>
@@ -55,7 +51,6 @@
 import type { Slot } from '@/dto/Slot';
 import { themeToBadgeInfos } from "@/dto/SessionEnums";
 import { defineComponent, type PropType } from 'vue';
-import SessionBadges from './SessionBadges.vue';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
 import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
 import axios from 'axios';
@@ -65,13 +60,13 @@ export interface SlotSessionTDOptions { slot?: Slot, rowspan?: number, colspan?:
 export default defineComponent({
   name: 'SlotSessionTableData',
 
-  components: { SessionBadges, BiPencilSquare, BiTrash },
+  components: { BiPencilSquare, BiTrash },
 
   props: {
     slotAndSpan: { type: Object as PropType<SlotSessionTDOptions>, required: true }
   },
 
-  emits: ['reload'],
+  emits: ['reload', 'edit'],
 
   methods: {
     themeToBadgeInfos,

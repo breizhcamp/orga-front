@@ -62,7 +62,7 @@
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
 import type { Hall } from '@/dto/Hall'; 
-import ModalForm from './ModalForm.vue';
+import ModalForm from './modals/ModalForm.vue';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
 import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
 import axios from 'axios';
