@@ -12,10 +12,12 @@ export interface Session {
     description: string
     owner: Speaker
     speakers: Array<Speaker>
+
     format: SessionFormatEnum
     theme: SessionThemeEnum
     niveau: SessionNiveauEnum
     status: SessionStatusEnum
+
     submitted: Date
     ownerNotes: string
     videoURL?: string | null
@@ -30,10 +32,12 @@ export interface SessionDTO {
     description: string
     owner: Speaker
     speakers: Array<Speaker>
+
     format: string
     theme: string
     niveau: string
     status: string
+
     submitted: string
     ownerNotes: string
     rating?: string | null
@@ -57,5 +61,33 @@ export const sessionDTOToSession = (dto: SessionDTO): Session => {
         videoURL: dto.videoURL,
         rating: dto.rating ? Number(dto.rating) : null,
         slot: dto.slot
+    }
+}
+
+export interface ManualSession {
+    id: number
+
+    title: string
+    description: string
+    format: SessionFormatEnum
+    theme: SessionThemeEnum
+}
+
+export interface ManualSessionDTO {
+    id: number
+    
+    title: string
+    description: string
+    format: string
+    theme: string
+}
+
+export const manualSessionDTOToManualSession = (dto: ManualSessionDTO): ManualSession => {
+    return {
+        id: dto.id,
+        title: dto.title,
+        description: dto.description,
+        format: SessionFormatEnum[dto.format as keyof typeof SessionFormatEnum],
+        theme: SessionThemeEnum[dto.theme as keyof typeof SessionThemeEnum],
     }
 }

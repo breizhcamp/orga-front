@@ -1,12 +1,13 @@
 import type { Hall } from "./Hall"
-import type { Session } from "./Session"
+import type { Session, ManualSession } from "./Session"
 
 export interface Slot {
   id: string
 
   day: number
   session?: Session
-  hall?: Hall
+  manualSession?: ManualSession
+  halls: Array<Hall>
   start: string
   duration: string
   barcode?: string
