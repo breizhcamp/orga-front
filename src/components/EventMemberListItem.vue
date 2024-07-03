@@ -1,19 +1,7 @@
 <template>
   <div class="d-flex flex-grow-1 align-items-center justify-content-between">
     <div class="d-flex align-items-center me-auto flex-wrap">
-      <img
-        v-if="member.profilePictureLink"
-        :src="member.profilePictureLink"
-        class="member-profile"
-        style="object-fit: cover;"
-      >
-      <div
-        v-else
-        class="member-profile d-inline-flex fs-6"
-        :style="nameToStyle(member)"
-      >
-        <b class="m-auto">{{ member.firstname[0] }}</b>
-      </div>
+      <ProfilePicture :src="member.profilePictureLink" :name="member.firstname + ' ' + member.lastname" />
       <b class="ms-1 text-wrap">{{ member.firstname + ' ' + member.lastname }}</b>
       <i class="text-muted text-wrap" v-if="editable">&nbsp;({{ member.contacts.length }} contact methods)</i>
     </div>
@@ -179,10 +167,11 @@
 </template>
 
 <script lang="ts">
-import { type PropType, defineComponent, type CSSProperties } from 'vue';
+import { type PropType, defineComponent } from 'vue';
 import { MemberParticipations, type Member } from '@/dto/Member';
 import { type Team } from '@/dto/Team';
 import ModalForm from './modals/ModalForm.vue';
+import ProfilePicture from './ProfilePicture.vue';
 import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
 import BiPersonLinesFill from 'bootstrap-icons/icons/person-lines-fill.svg?component';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
@@ -193,7 +182,7 @@ import axios, { type AxiosResponse } from 'axios';
 export default defineComponent({
   name: "EventMemberListItem",
 
-  components: { ModalForm, BiXLg, BiPersonLinesFill, BiPencilSquare, BiTrash, BiUpload },
+  components: { ModalForm, ProfilePicture, BiXLg, BiPersonLinesFill, BiPencilSquare, BiTrash, BiUpload },
 
   props: {
     member: { type: Object as PropType<Member>, required: true },
@@ -270,41 +259,6 @@ export default defineComponent({
 
       this.editAlert = false;
       axios.post('')
-    },
-    
-    nameToStyle(member: Member): CSSProperties {
-      const name = member.lastname + member.firstname + "padding"
-      let value = 0;
-      
-      // Simple hash to get icon color as hex
-      for(let i = 0; i < name.length; i++) {
-        const code = name.charCodeAt(i);
-        value += (code + code * value);
-        value &= 0xFFFFFF;
-      }
-
-      const backgroundColor = "#" + value.toString(16);
-      const [r, g, b] = [
-        (value >> 16) & 0xFF,
-        (value >> 8) & 0xFF,
-        value & 0xFF,
-      ];
-
-      // Text and border color determined by the luminance of the background to
-      // maximise contrast
-      const textColor = (
-        0.2126 * r / 256 + 
-        0.7152 * g / 256 + 
-        0.0722 * b / 256
-      ) < 0.5 ? "#EAEAEA" : "#181818";
-
-      return {
-        backgroundColor,
-        color: textColor,
-        borderColor: textColor,
-        borderWidth: "1px",
-        borderStyle: "solid"
-      } as CSSProperties
     }
   }
 })

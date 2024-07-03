@@ -5,6 +5,7 @@ export interface Slot {
   id: string
 
   day: number
+  title?: string
   session?: Session
   manualSession?: ManualSession
   halls: Array<Hall>
@@ -12,4 +13,5 @@ export interface Slot {
   duration: string
   barcode?: string
   span: number
+  assignable: boolean
 }

@@ -24,6 +24,20 @@ export const formatToBadgeInfos = (value : SessionFormatEnum): BadgeInfos => {
     }
 }
 
+export const formatToSlotTitle = (value: SessionFormatEnum): string | undefined => {
+    switch (value) {
+        case SessionFormatEnum.CONFERENCE:
+        case SessionFormatEnum.UNIVERSITY: 
+            return formatToBadgeInfos(value).label.substring(0, 4);
+        case SessionFormatEnum.TOOL:
+            return 'TiA';
+        case SessionFormatEnum.QUICKY:
+            return 'Quickie';
+        default:
+            return undefined;
+    }
+}
+
 export const formatToMinutes = (value: SessionFormatEnum): number | undefined => {
     switch (value) {
         case SessionFormatEnum.CONFERENCE:

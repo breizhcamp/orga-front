@@ -1,25 +1,35 @@
 <template>
   <div class="card">
-    <h5 class="card-header">
-      <a :href="event.website?.toString()">
+    <h5 class="card-header px-2 d-flex align-items-center">
+      <a v-if="event.website" class="flex-grow-1 nav-link" :href="event.website.toString()">
         {{ event.name }}
       </a>
-      <span class="float-end fs-6">
-        Year: {{ event.year }}
-      </span>
+      <div v-else class="flex-grow-1 nav-link">
+        {{ event.name }}
+      </div>
+      <div class="float-end fs-6 d-flex align-items-center">
+        Year: {{ event.year }} 
+        <button 
+          type="button" 
+          class="btn mx-1 btn-sm btn-warning opacity-75 flex-shrink-1 float-end d-flex align-items-center" 
+          @click="eventModal = true"
+        >
+          <BiPencilSquare class="me-1" />
+          Edit
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-sm btn-danger d-flex align-items-center" 
+          @click="deleteEvent()"
+        >
+          <BiTrash class="me-1"/>Delete
+        </button>
+      </div>
     </h5>
     <div class="card-body row row-cols-2">
       <div class="col">
         <div class="d-flex align-items-center justify-content-between mb-1"> 
           <h5 class="flex-grow-1 mb-0">Key dates</h5>
-          <button 
-            type="button" 
-            class="btn btn-sm btn-warning opacity-75 flex-shrink-1 float-end d-flex align-items-center" 
-            @click="dateModal = true"
-          >
-            <BiPencilSquare class="me-1" />
-            Edit
-          </button>
         </div>
         <ul class="p-0">
           <li class="d-flex justify-content-between">
@@ -51,31 +61,33 @@
       <div class="col">
         <h5>Slots</h5>
         <div class="row row-cols-2 align-items-center gy-1">
-          <span class="col-7">Days: {{ getEventDays(event).length }}</span>
-          <button 
-            type="button" 
-            class="btn btn-sm btn-primary col-5"
-            @click="programModal = true" 
-          >See slots</button>
+          <span class="col">Days: {{ getEventDays(event).length }}</span>
+          <RouterLink :to="'/events/program/'+event.id" custom v-slot="{ navigate }">
+            <button 
+              type="button" 
+              class="btn mx-auto btn-sm btn-primary col-5"
+              @click="navigate" 
+            >See program</button>
+          </RouterLink>
         </div>
 
         <h5>Other information</h5>
         <div class="row row-cols-2 align-items-center gy-1">
-          <span class="col-7">Members: {{ 
+          <span class="col">Members: {{ 
             (event.participants as EventParticipants).getMemberIds().length 
           }}</span>
           <button 
             type="button" 
-            class="btn btn-sm btn-primary col-5"
+            class="btn mx-auto btn-sm btn-primary col-5"
             @click="membersModal = true" 
           >See members</button>
 
-          <span class="col-7">Teams: {{ 
+          <span class="col">Teams: {{ 
             (event.participants as EventParticipants).getTeamIds().length 
           }}</span>
           <button 
             type="button" 
-            class="btn btn-sm btn-primary col-5"
+            class="btn mx-auto btn-sm btn-primary col-5"
             @click="teamsModal = true" 
           >See teams</button>
         </div>
@@ -84,80 +96,103 @@
   </div>
 
   <ModalForm 
-    v-model:open="dateModal" 
-    :title="'Edit dates for ' + event.name" 
-    @save="updateDates()"
+    v-model:open="eventModal" 
+    :title="'Edit ' + event.name" 
+    @save="updateEvent()"
   >
-    <div class="mb-3">
-      <label for="debEvent" class="form-label">Event start</label>
-      <input 
-        type="date" 
-        id="debEvent" 
-        class="form-control" 
-        :value="dates?.debutEvent" 
-        @change="changeDebutEvent($event)"
-      >
-    </div>
-    <div class="mb-3">
-      <label for="finEvent" class="form-label">Event end</label>
-      <input 
-        type="date" 
-        id="finEvent" 
-        class="form-control" 
-        :value="dates?.finEvent" 
-        @change="changeFinEvent($event)"
-      >
-    </div>
-    <div class="mb-3">
-      <label for="debCfp" class="form-label">CFP start</label>
-      <input 
-        type="date" 
-        id="debCfp" 
-        class="form-control" 
-        :value="dates?.debutCFP" 
-        @change="changeDebutCFP($event)"
-      >
-    </div>
-    <div class="mb-3">
-      <label for="finCfp" class="form-label">CFP end</label>
-      <input 
-        type="date" 
-        id="finCfp" 
-        class="form-control" 
-        :value="dates?.finCFP" 
-        @change="changeFinCFP($event)"
-      >
-    </div>
-    <div class="mb-3">
-      <label for="debIncsr" class="form-label">Inscriptions start</label>
-      <input 
-        type="date" 
-        id="debInscr" 
-        class="form-control" 
-        :value="dates?.debutInscription" 
-        @change="changeDebutInscription($event)"
-      >
-    </div>
-    <div class="mb-3">
-      <label for="finInscr" class="form-label">Inscriptions end</label>
-      <input 
-        type="date" 
-        id="finInscr" 
-        class="form-control" 
-        :value="dates?.finInscription" 
-        @change="changeFinInscription($event)"
-      >
+    <div class="row row-cols-2 gy-3">
+      <div class="col-12">
+        <label for="eventName" class="form-label">Name</label>
+        <input 
+          type="text" 
+          id="eventName" 
+          class="form-control" 
+          :value="formValues.name"
+          @input="e => formValues.name = (e.target as HTMLInputElement).value"
+        >
+      </div>
+      <div>
+        <label for="eventYear" class="form-label">Year</label>
+        <input
+          type="number"
+          id="eventYear"
+          class="form-control"
+          :value="formValues.year"
+          @input="e => formValues.year = Number((e.target as HTMLInputElement).value)"
+        >
+      </div>
+      <div>
+        <label for="eventWebsite" class="form-label">Website</label>
+        <input 
+          type="url" 
+          id="eventWebsite" 
+          class="form-control" 
+          :value="formValues.website"
+          @input="e => formValues.website = (e.target as HTMLInputElement).value"
+        >
+      </div>
+      <div>
+        <label for="debEvent" class="form-label">Event start</label>
+        <input
+          type="date"
+          id="debEvent"
+          class="form-control"
+          :value="formValues?.debutEvent"
+          @change="changeDebutEvent($event)"
+        >
+      </div>
+      <div>
+        <label for="finEvent" class="form-label">Event end</label>
+        <input
+          type="date"
+          id="finEvent"
+          class="form-control"
+          :value="formValues?.finEvent"
+          @change="changeFinEvent($event)"
+        >
+      </div>
+      <div>
+        <label for="debCfp" class="form-label">CFP start</label>
+        <input
+          type="date"
+          id="debCfp"
+          class="form-control"
+          :value="formValues?.debutCFP"
+          @change="changeDebutCFP($event)"
+        >
+      </div>
+      <div>
+        <label for="finCfp" class="form-label">CFP end</label>
+        <input
+          type="date"
+          id="finCfp"
+          class="form-control"
+          :value="formValues?.finCFP"
+          @change="changeFinCFP($event)"
+        >
+      </div>
+      <div>
+        <label for="debIncsr" class="form-label">Inscriptions start</label>
+        <input
+          type="date"
+          id="debInscr"
+          class="form-control"
+          :value="formValues?.debutInscription"
+          @change="changeDebutInscription($event)"
+        >
+      </div>
+      <div>
+        <label for="finInscr" class="form-label">Inscriptions end</label>
+        <input
+          type="date"
+          id="finInscr"
+          class="form-control"
+          :value="formValues?.finInscription"
+          @change="changeFinInscription($event)"
+        >
+      </div>
     </div>
   </ModalForm>
-
-  <ProgramModal
-    :open="programModal"
-    @close="programModal = false"
-    @reload="$emit('reload-slots')"
-    :event="event"
-    :available-halls="availableHalls"
-    :halls="halls"
-  />
 
   <ModalInfo v-model:open="membersModal" v-bind:title="'Members of ' + event.name">
     <ul class="list-group">
@@ -248,15 +283,15 @@
 
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
-import { type EventDTO, EventParticipants, type EventDates } from '@/dto/EventDTO';
+import { type EventDTO, EventParticipants, type EventInfos } from '@/dto/EventDTO';
 import { MemberParticipations, type Member } from "@/dto/Member";
 import EventMemberListItem from '@/components/EventMemberListItem.vue';
 import EventTeamListItem from '@/components/EventTeamListItem.vue';
 import ModalInfo from '@/components/modals/ModalInfo.vue';
 import ModalForm from '@/components/modals/ModalForm.vue';
-import ProgramModal from '@/components/modals/ProgramModal.vue';
 import { TeamParticipations, type Team } from '@/dto/Team';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
+import BiTrash from 'bootstrap-icons/icons/trash.svg?component'
 import dayjs, { Dayjs } from 'dayjs';
 import type { Hall } from '@/dto/Hall';
 import axios, { type AxiosResponse } from 'axios';
@@ -264,13 +299,12 @@ import axios, { type AxiosResponse } from 'axios';
 export interface EventOptions {
   members: boolean
   teams: boolean
-  slots: boolean
 }
 
 export default defineComponent({
   name: "EventCard",
 
-  components: { ModalInfo, ModalForm, EventMemberListItem, EventTeamListItem, ProgramModal, BiPencilSquare },
+  components: { ModalInfo, ModalForm, EventMemberListItem, EventTeamListItem, BiPencilSquare, BiTrash },
 
   props: {
     event: { type: Object as PropType<EventDTO>, required: true },
@@ -278,7 +312,7 @@ export default defineComponent({
     halls: { type: Array<Hall>, required: true }
   },
 
-  emits: ['reload', 'reload-members', 'reload-teams', 'reload-slots'],
+  emits: ['reload', 'reload-members', 'reload-teams'],
 
   data() {
     return {
@@ -296,9 +330,8 @@ export default defineComponent({
       selectedMembers: new Set<Member>() as Set<Member>,
       newMemberModal: false,
       memberPartial: {} as { lastname: string, firstname: string },
-      dateModal: false,
-      dates: undefined as EventDates | undefined,
-      programModal: this.options.slots,
+      eventModal: false,
+      formValues: {} as EventInfos,
     }
   },
 
@@ -310,13 +343,16 @@ export default defineComponent({
 
   mounted() {
     this.load()
-    this.dates = {
+    this.formValues = {
       debutEvent: this.event.debutEvent?.toISOString().split('T')[0],
       finEvent: this.event.finEvent?.toISOString().split('T')[0],
       debutCFP: this.event.debutCFP?.toISOString().split('T')[0],
       finCFP: this.event.finCFP?.toISOString().split('T')[0],
       debutInscription: this.event.debutInscription?.toISOString().split('T')[0],
-      finInscription: this.event.finInscription?.toISOString().split('T')[0]
+      finInscription: this.event.finInscription?.toISOString().split('T')[0],
+      name: this.event.name,
+      year: this.event.year,
+      website: this.event.website
     }
   },
 
@@ -440,8 +476,8 @@ export default defineComponent({
       return className.join(' ')
     },
 
-    updateDates() {
-      axios.post('/kalon/events/' + this.event.id, this.dates).then(
+    updateEvent() {
+      axios.post('/kalon/events/' + this.event.id, this.formValues).then(
         () => this.$emit('reload')
       )
     },
@@ -451,39 +487,39 @@ export default defineComponent({
     },
 
     changeDebutEvent(event: Event) {
-      if (this.dates == undefined) return;
+      if (this.formValues == undefined) return;
       const target = event.target as HTMLInputElement;
-      this.dates.debutEvent = target.value.toString();
+      this.formValues.debutEvent = target.value.toString();
     },
 
     changeFinEvent(event: Event) {
-      if (this.dates == undefined) return;
+      if (this.formValues == undefined) return;
       const target = event.target as HTMLInputElement;
-      this.dates.finEvent = target.value.toString();
+      this.formValues.finEvent = target.value.toString();
     },
 
     changeDebutCFP(event: Event) {
-      if (this.dates == undefined) return;
+      if (this.formValues == undefined) return;
       const target = event.target as HTMLInputElement;
-      this.dates.debutCFP = target.value.toString();
+      this.formValues.debutCFP = target.value.toString();
     },
 
     changeFinCFP(event: Event) {
-      if (this.dates == undefined) return;
+      if (this.formValues == undefined) return;
       const target = event.target as HTMLInputElement;
-      this.dates.finCFP = target.value.toString();
+      this.formValues.finCFP = target.value.toString();
     },
 
     changeDebutInscription(event: Event) {
-      if (this.dates == undefined) return;
+      if (this.formValues == undefined) return;
       const target = event.target as HTMLInputElement;
-      this.dates.debutInscription = target.value.toString();
+      this.formValues.debutInscription = target.value.toString();
     },
 
     changeFinInscription(event: Event) {
-      if (this.dates == undefined) return;
+      if (this.formValues == undefined) return;
       const target = event.target as HTMLInputElement;
-      this.dates.finInscription = target.value.toString();
+      this.formValues.finInscription = target.value.toString();
     },
 
     getEventDays(event: EventDTO): { index: number, date: Dayjs }[] {
@@ -503,6 +539,10 @@ export default defineComponent({
           date: dayjs(event.debutEvent).add(n, "days")
         }}) 
     },
+
+    deleteEvent() {
+      axios.delete("/kalon/events/" + this.event.id).then(() => this.$emit('reload'))
+    }
   }
 })
 </script>

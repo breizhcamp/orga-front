@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ToolBar title="Events" :actions="actions" />
+    <ToolBar title="Events" :actions="[]" />
 
     <div class="main-content">
       <div class="mb-3 card h-25">
@@ -21,12 +21,11 @@
               <div class="col mb-3" v-for="event in events" :key="event.id">
                 <EventCard 
                   :event="event" 
-                  :options="eventsOptions.get(event.id) || { members: false, teams: false, slots: false }"
+                  :options="eventsOptions.get(event.id) || { members: false, teams: false }"
                   :halls="halls"
                   @reload="reloadEvent(event.id)"
                   @reload-members="reloadEvent(event.id, { memberModal: true })" 
                   @reload-teams="reloadEvent(event.id, { teamModal: true })"
-                  @reload-slots="reloadEvent(event.id, { slotModal: true })"
                 />
               </div>
             </div>
@@ -165,39 +164,20 @@
       </div>
     </div>
   </ModalForm>
-
-  <ModalInfo v-model:open="exportProgramModal" title="Export program to PDF">
-    <div class="row">
-      <div class="col-9">
-        <label class="form-label" for="event">Event</label>
-        <select class="form-select" id="event" @change="e => exportSelectEvent(Number((e.target as HTMLSelectElement).value))">
-          <option v-for="event in events" :key="event.id" :selected="event.id === exportSelectedEvent?.id">
-            {{ event.name }} - {{ event.year }}
-          </option>
-        </select>
-      </div>
-      <div class="col-3 no-label">
-        <button class="btn btn-primary" @click="exportPdf()">Export</button>
-      </div>
-    </div>
-  </ModalInfo>
 </template>
 
 <script lang="ts">
 import ModalForm from "@/components/modals/ModalForm.vue";
-import ModalInfo from "@/components/modals/ModalInfo.vue";
 import ToolBar from "@/components/ToolBar.vue";
 import EventCard, { type EventOptions } from '@/components/EventCard.vue';
 import EventHallListItem from '@/components/EventHallListItem.vue'; 
-import { EventParticipants, type EventDTO, type EventDates } from "@/dto/EventDTO";
+import { EventParticipants, type EventDTO, type EventInfos } from "@/dto/EventDTO";
 import type { Hall } from "@/dto/Hall";
 import type { Member } from "@/dto/Member";
 import axios, { type AxiosResponse } from "axios";
-import { defineComponent, shallowRef } from "vue";
+import { defineComponent } from "vue";
 import EventMemberListItem from "@/components/EventMemberListItem.vue";
-import BiFilePdf from 'bootstrap-icons/icons/file-pdf.svg?component'
-import type { Action } from "@/dto/Action";
-import { downloadPdfWithName } from "@/utils/download";
+import type { MonoFieldAlertValues } from "@/dto/Alert";
 
 export interface EventCreationReq {
   name?: string
@@ -216,7 +196,7 @@ export interface HallCreationReq {
 
 export default defineComponent({
   name: "EventView",
-  components: { ToolBar, ModalForm, ModalInfo, EventCard, EventMemberListItem, EventHallListItem },
+  components: { ToolBar, ModalForm, EventCard, EventMemberListItem, EventHallListItem },
 
   data() {
     return {
@@ -232,29 +212,18 @@ export default defineComponent({
       eventCreationReq: {} as EventCreationReq,
       memberCreationReq: {} as MemberCreationReq,
       hallCreationReq: {} as HallCreationReq,
-      datesReq: {} as EventDates,
+      datesReq: {} as EventInfos,
       addEventAlert: false,
       addMemberAlert: false, 
       addHallAlert: false,
-      actions: [] as Array<Action>,
       exportProgramModal: false,
-      exportProgramModalAlert: false,
+      exportModalAlert: {} as MonoFieldAlertValues,
       exportSelectedEvent: undefined as EventDTO | undefined
     }
   },
 
   mounted() {
     this.loadOnMounted();
-
-    this.actions = [
-      { 
-        label: "Exporter en PDF", 
-        title: "Export", 
-        function: () => this.exportProgramModal = true, 
-        // @ts-ignore : We pass a shallowRef instead of the component
-        icon: shallowRef(BiFilePdf)
-      }
-    ]
   },
 
   methods: {
@@ -277,8 +246,7 @@ export default defineComponent({
 
     loadEvent(id: number, options?: { 
       memberModal?: boolean, 
-      teamModal?: boolean, 
-      slotModal?: boolean 
+      teamModal?: boolean
     }) {
       axios.get('/kalon/events/' + id).then((response: AxiosResponse<EventDTO>) => {
         let event = { ...response.data };
@@ -305,10 +273,9 @@ export default defineComponent({
 
         this.events.push(event);
         if (options) {
-          let fullOptions: EventOptions = { members: false, teams: false, slots: false };
+          let fullOptions: EventOptions = { members: false, teams: false };
           fullOptions.members = options.memberModal || false;
           fullOptions.teams = options.teamModal || false;
-          fullOptions.slots = options.slotModal || false;
           this.eventsOptions.set(id, fullOptions);
         }
 
@@ -322,8 +289,7 @@ export default defineComponent({
 
     reloadEvent(id: number, options?: { 
       memberModal?: boolean, 
-      teamModal?: boolean,
-      slotModal?: boolean
+      teamModal?: boolean
     }) {
       this.events = this.events.filter((e) => e.id != id);
       this.eventCount.current--;
@@ -426,24 +392,6 @@ export default defineComponent({
           this.loadHalls();
         })
     },
-
-    exportSelectEvent(eventId: number) {
-      this.exportSelectedEvent = this.events.find(e => e.id === eventId)
-    },
-
-    exportPdf() {
-      if (this.exportSelectedEvent == undefined) {
-        this.exportProgramModalAlert = true;
-        return;
-      }
-
-      this.exportProgramModalAlert = false;
-      axios.get("/konter/slots/program/" + this.exportSelectedEvent.id, { responseType: "blob" })
-      .then((response) => {
-        downloadPdfWithName(response, `program_${this.exportSelectedEvent?.name}.pdf`);
-        this.exportProgramModal = false;
-      })
-    }
   }
 })
 </script>

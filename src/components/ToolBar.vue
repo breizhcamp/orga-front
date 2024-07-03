@@ -1,10 +1,20 @@
 <template>
   <header>
     <nav class="navbar navbar-expand-lg bg-secondary">
-      <div class="container">
-        <a class="navbar-brand text-white mx-2">
+      <div class="d-flex flex-row flex-grow-1 align-items-center ms-2">
+        <div v-if="subView">
+          <RouterLink :to="parentRoute" custom v-slot="{ navigate }">
+            <button 
+              type="button" 
+              class="btn btn-dark"
+              role="link"
+              @click="navigate"
+            >Back to {{ parentTitle }}</button>
+          </RouterLink>
+        </div>
+        <div class="navbar-brand text-white mx-2">
           {{ title }}
-        </a>
+        </div>
       </div>
 
       <div v-if="actions.length">
@@ -30,7 +40,10 @@ export default defineComponent({
 
   props: {
     title: { type: String, required: true },
-    actions: { type: Array<Action>, required: true }
+    actions: { type: Array<Action>, required: true },
+    subView: { type: Boolean, required: false, default: false },
+    parentTitle: { type: String, required: false } ,
+    parentRoute: { type: String, required: false, default: "" }
   }
 })
 </script>

@@ -19,26 +19,34 @@
             class="dropdown-item" 
 
             :class="event.id === currentEvent?.id ? 'active' : null" 
-            @click="currentEvent = event"
+            @click="currentEvent = event; openYearDropdown = false"
           >
             {{ event.name }}
           </button>
         </li>
       </ul>
-
-      <SessionFilter v-model:filter="filter" @filter="(f) => loadSessions(f)" :loseFocus="forceModalOpen" />
+    </div>
+    
+    <SessionFilter v-model:filter="filter" @filter="(f) => loadSessions(f)" :loseFocus="forceModalOpen" />
+    <div id="infinite-scroll">
+      <SessionCard
+        v-for="session in sessions"
+        :key="session.id"
+        :session="session"
+        :availableHalls="halls"
+        :slots="currentEvent?.slots"
+        :forceModal="forceModalOpen"
+        :event-start="currentEvent?.debutEvent ? new Date(currentEvent.debutEvent) : new Date(Date.now())"
+        @reload="reloadSessions()"
+      />
     </div>
 
-    <SessionCard 
-      v-for="session in sessions" 
-      :key="session.id" 
-      :session="session" 
-      :availableHalls="halls" 
-      :slots="currentEvent?.slots"
-      :forceModal="forceModalOpen"
-      :event-start="currentEvent?.debutEvent ? new Date(currentEvent.debutEvent) : new Date(Date.now())"
-      @reload="reloadSessions()"
-    />
+    <div v-if="loading" class="d-flex justify-content-center">
+      <div class="spinner-border mt-3" style="width: 6rem; height: 6rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    
   </div>
 
   <ModalForm v-model:open="importModal" :loading="loading" title="Import" @save="importCsv()">
@@ -138,6 +146,61 @@ import { defineComponent, shallowRef } from 'vue';
 import type { Hall } from '@/dto/Hall';
 import type { Slot } from '@/dto/Slot';
 import { downloadPdfWithName } from '@/utils/download';
+import type { Page } from '@/dto/Page';
+
+const equalsFilter = (that?: Filter, other?: Filter): boolean => {
+  if (that == undefined || other == undefined) return true;
+  if ((that == undefined && other != undefined) && (that != undefined && other == undefined)) return false;
+
+  if (that == null && other == null) return true;
+  if ((that == null && other != null) || (that != null && other == null)) return false;
+
+  if (that == other) return true;
+
+  if (that.format != other.format) return false;
+  if (that.id != other.id) return false;
+  if (that.niveau != other.niveau) return false;
+  if (that.rated != other.rated) return false;
+  if (that.speakerName != other.speakerName) return false;
+  if (that.status != other.status) return false;
+  if (that.theme != other.theme) return false;
+  if (that.title != other.title) return false;
+
+  return true;
+}
+
+const cleanFilter = (filter: Filter): Filter => {
+  let result: Filter = {};
+  if (filter.format != undefined) { 
+    result.format = filter.format;
+  }
+  if (filter.id != undefined) { 
+    result.id = filter.id;
+  }
+  if (filter.niveau != undefined) { 
+    result.niveau = filter.niveau; 
+  }
+  if (filter.rated != undefined) { 
+    result.rated = filter.rated;
+  }
+  if (filter.speakerName != undefined) { 
+    result.speakerName = filter.speakerName;
+  }
+  if (filter.status != undefined) { 
+    result.status = filter.status;
+  }
+  if (filter.theme != undefined) { 
+    result.theme = filter.theme;
+  }
+  if (filter.title != undefined) { 
+    result.title = filter.title;
+  }
+  if (filter.format != undefined) { 
+    result.format = filter.format;
+  }
+
+  return result
+}
 
 export default defineComponent({
   name: "SessionView",
@@ -152,6 +215,8 @@ export default defineComponent({
   data() {
     return {
       currentEvent: undefined as EventDTO | undefined,
+      currentPage: 0 as number,
+      hasNext: true as boolean,
       events: [] as EventDTO[],
       halls: [] as Hall[],
       sessions: [] as Session[],
@@ -171,6 +236,7 @@ export default defineComponent({
   },
 
   mounted() {
+    window.addEventListener("scroll", this.handleScroll);
     this.actions = [
       { 
         label: "Importer", 
@@ -191,9 +257,14 @@ export default defineComponent({
     this.loadOnMounted();
   },
 
+  unmounted() {
+    window.removeEventListener("scroll", this.handleScroll)
+  },
+
   watch: {
     currentEvent() {
-      this.loadSessions();
+      this.resetPage();
+      this.loadSessions(this.filter);
       this.loadHalls();
       this.loadSlots();
     }
@@ -228,33 +299,64 @@ export default defineComponent({
           this.events.sort((a, b) => b.year - a.year);
           this.currentEvent = this.events[0];
           
-          this.loadSessions();
+          this.resetPage();
+          this.loadSessions(this.filter);
           this.loadHalls();
         }
       })
     },
 
-    loadSessions(filter?: Filter) {
+    resetPage() {
+      this.hasNext = true;
+      this.currentPage = 0;
+      this.sessions = [];
+    },
+
+    loadSessions(filter: Filter) {
+      filter = cleanFilter(filter)
+      if (!equalsFilter(filter, this.filter)) {
+        this.resetPage();
+      }
+      if (this.loading) return;
+      if (!this.hasNext) return;
       if (this.currentEvent == null) return;
+
+      this.loading = true;
       if (filter == null) {
-        axios.get(`/konter/sessions/${this.currentEvent.id}`)
-        .then((response: AxiosResponse<Array<SessionDTO>>) => {
-          this.sessions = response.data.map(sessionDTOToSession);
+        this.filter = {}
+
+        axios.get(`/konter/sessions/${this.currentEvent.id}/${this.currentPage}`)
+        .then((response: AxiosResponse<Page<SessionDTO>>) => {
+          this.sessions = this.sessions.concat(response.data.content.map(sessionDTOToSession));
+          this.hasNext = !response.data.last;
+          this.loading = false;
+          this.currentPage++;
         });
+
       } else {
+
         this.filterById = filter.id != undefined;
-        this.filter = filter;
+        if (!equalsFilter(this.filter, filter)) {
+          this.filter = { ...filter }
+          this.resetPage();
+        }
+
         axios.post(
-          `/konter/sessions/${this.currentEvent.id}/filter`, 
+          `/konter/sessions/${this.currentEvent.id}/filter/${this.currentPage}`, 
           filter
-        ).then((response: AxiosResponse<Array<SessionDTO>>) => {
-          this.sessions = response.data.map(sessionDTOToSession);
-          this.forceModalOpen = response.data.length === 1 && this.filterById;
+        ).then((response: AxiosResponse<Page<SessionDTO>>) => {
+          this.sessions = this.sessions.concat(response.data.content.map(sessionDTOToSession));
+          this.hasNext = !response.data.last;
+          this.loading = false;
+          this.currentPage++;
+          this.forceModalOpen = response.data.content.length === 1 && this.filterById;
         });
+
       }
     },
 
     reloadSessions() {
+      this.resetPage();
       this.loadSessions(this.filter);
     },
 
@@ -321,7 +423,7 @@ export default defineComponent({
             }
           ).then(() => {
             this.importModal = false;
-            this.loadSessions();
+            this.loadSessions({});
           }).catch(() => {
             this.importModal = false;
           }).finally(() => {
@@ -364,6 +466,13 @@ export default defineComponent({
     backToTop () {
       scrollTo({ left: 0, top: 0, behavior: 'smooth' });
     },
+
+    handleScroll() {
+      const infiniteScroll = document.getElementById('infinite-scroll')!;
+      if (infiniteScroll.getBoundingClientRect().bottom < window.innerHeight) {
+        this.loadSessions(this.filter);
+      }
+    }
   }
 });
 </script>

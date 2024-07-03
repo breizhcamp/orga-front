@@ -12,13 +12,16 @@ export interface EventDTO {
   finCFP?: Date
   debutInscription?: Date
   finInscription?: Date
-  website?: String
+  website?: string
 
   participants: EventParticipants | Array<{ memberId: string, teamId: string}>
   slots: Map<number, Map<Hall, Array<Slot>>> | null
 }
 
-export interface EventDates {
+export interface EventInfos {
+  name?: string
+  year?: number
+  website?: string
   debutEvent?: string
   finEvent?: string
   debutCFP?: string

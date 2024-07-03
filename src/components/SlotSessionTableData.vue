@@ -1,6 +1,7 @@
 <template>
   <td 
     v-if="
+      slotAndSpan != undefined &&
       slotAndSpan.rowspan != undefined && 
       slotAndSpan.colspan != undefined && 
       slotAndSpan.slot != undefined" 
@@ -19,10 +20,11 @@
       <div class="card-body p-1 d-flex align-items-center align-middle">
         <div class="d-flex flex-grow-1 flex-column justify-content-center">
           <div class="row mx-auto">
-            <b>{{ slotAndSpan.slot.session?.title || 'Empty' }}</b>
+            <b class="truncate" v-if="slotAndSpan.slot.session?.title || slotAndSpan.slot.title">{{ slotAndSpan.slot.session?.title || slotAndSpan.slot.title }}</b>
+            <i v-else>Empty</i>
           </div>
         </div>
-        <div class="row d-flex flex-row flex-wrap ms-0 me-0 my-0 p-0">
+        <div class="row d-flex flex-row flex-wrap m-0 p-0">
           <button
             type="button"
             class="d-flex align-items-center px-1 justify-content-center btn btn-sm btn-outline-dark btn-light mb-1"
@@ -44,7 +46,7 @@
       </div>
     </div>
   </td>
-  <td v-else-if="slotAndSpan.display" class="assignable"></td>
+  <td v-else-if="slotAndSpan != undefined && slotAndSpan.display" class="assignable"></td>
 </template>
 
 <script lang="ts">
@@ -84,10 +86,17 @@ export default defineComponent({
 .assignable:hover {
   cursor: pointer;
   background-color: lightblue;
-  font-weight: bold
+  font-weight: bold;
 }
 
 .assignable:hover::before {
   content: "Add slot here";
+}
+
+.truncate {
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  display: -webkit-box;
 }
 </style>

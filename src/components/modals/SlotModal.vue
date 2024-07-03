@@ -36,7 +36,7 @@
                 .filter(f => typeof f === typeof SessionFormatEnum.CONFERENCE) as SessionFormatEnum[]
               ).filter(f => formatToMinutes(f) != undefined)" 
             :key="format" 
-            :value="formatToMinutes(format)"
+            :value="format"
           >
             {{ 
               formatToBadgeInfos(format).label 
@@ -55,8 +55,39 @@
         @change="(e) => { modalValues.duration = Number((e.target as HTMLInputElement).value) }">
       </div>
 
+      <div class="col">
+        <label class="form-label" for="title">Title</label>
+        <input 
+          class="form-control"
+          type="text"
+          placeholder="Empty"
+          :disabled="!modalValues.customDuration"
+          :value="modalValues.title"
+          @change="(e) => modalValues.title = (e.target as HTMLInputElement).value"
+        >
+      </div>
+
+      <div class="col no-label">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <div class="form-check form-switch">
+              <input type="checkbox" class="form-check-input me-1" id="assignable" :checked="modalValues.assignable" @change="toggleAssignable()">
+              <label for="assignable" class="form-check-label stretched-link">Assignable</label>
+            </div>
+          </li>
+        </ul>
+      </div>
+
       <div class="col-12">
-        <label for="tracks" class="form-label">Tracks</label>
+        <label for="tracks" class="form-label d-flex align-items-center">
+          Tracks
+          <button 
+            class="btn btn-sm btn-success ms-1" 
+            type="button" 
+            aria-details="All tracks are assigned to this slot"
+            @click="checkAllHalls()"
+          >All tracks</button>
+        </label>
         <ul class="list-group" id="tracks">
           <li class="list-group-item" v-for="h in availableHalls" :key="h.id">
             <input 
@@ -84,34 +115,35 @@
       <button type="button" class="btn-close" aria-label="Close" @click="modalAlert.display = false"></button>
     </div>
 
-    <div class="alert alert-warning alert-dismissible mt-3" role="alert" v-if="modalConflictAlert.display">
-      <div>
-        This slot creates a time conflict with an existing slot<br>
-        <code>{{ modalConflictAlert.content }}</code><br>
-        <i v-if="modalData.time === undefined">
-          Hint: check if the beginning of the slot is not later than you thought, or if the duration does not overlap with the following one
-        </i>
-        <i v-else>
-          Hint: check if the duration does not overlap with the following one
-        </i>
-      </div>
-      <button type="button" class="btn-close" aria-label="Close" @click="modalConflictAlert.display = false"></button>
-    </div>
+    <MonoFieldAlert 
+      title="This slot creates a time conflict with an existing slot" 
+      :alert="modalConflictAlert" 
+      @dismiss="modalConflictAlert.display = false"
+    >
+      <i v-if="modalData.time === undefined">
+        Hint: check if the beginning of the slot is not later than you thought, 
+        or if the duration does not overlap with the following one
+      </i>
+      <i v-else>
+        Hint: check if the duration does not overlap with the following one
+      </i>
+    </MonoFieldAlert>
   </ModalForm>
 </template>
 
 <script lang="ts">
 import type { EventDTO } from '@/dto/EventDTO';
 import type { Hall } from '@/dto/Hall';
-import { SessionFormatEnum, formatToBadgeInfos, formatToMinutes } from '@/dto/SessionFormatEnum';
-import axios, { type AxiosResponse } from 'axios';
+import { SessionFormatEnum, formatToBadgeInfos, formatToMinutes, formatToSlotTitle } from '@/dto/SessionFormatEnum';
+import axios, { AxiosError, type AxiosResponse } from 'axios';
 import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
 import { defineComponent, type PropType } from 'vue';
-import relativeTime from 'dayjs/plugin/relativeTime'
-import durationPlugin from 'dayjs/plugin/duration';
 import ModalForm from './ModalForm.vue';
 import type { Slot } from '@/dto/Slot';
+import type { MultiFieldAlertValues, MonoFieldAlertValues } from '@/dto/Alert';
+import MonoFieldAlert from '../MonoFieldAlert.vue';
+import type { SlotCreationReq } from '@/dto/Requests';
+import { beautifyDuration } from '@/utils/time';
 
 const CUSTOM: number = -1;
 const UNDEFINED_FORMAT: number = -2;
@@ -120,30 +152,14 @@ interface SlotFormValues {
   customDuration: boolean
   duration?: number
   time?: string
-  span?: number
-}
-
-interface SlotCreationReq {
-  start: string
-  day: number
-  duration: string
-  span?: number
-}
-
-interface MultiFieldAlert {
-  display: boolean
-  fields: Array<string>
-}
-
-interface MonoFieldAlert {
-  display: boolean
-  content: string
+  title?: string
+  assignable: boolean
 }
 
 export default defineComponent({
   name: "SlotModal",
 
-  components: { ModalForm },
+  components: { ModalForm, MonoFieldAlert },
 
   props: {
     event: { type: Object as PropType<EventDTO>, required: true },
@@ -160,10 +176,10 @@ export default defineComponent({
   data() {
     return {
       modal: this.open,
-      modalAlert: { display: false, fields: [] } as MultiFieldAlert,
+      modalAlert: { display: false, fields: [] } as MultiFieldAlertValues,
       modalData: {} as { hall?: Hall, day?: { index: number, date: Dayjs }, time?: Dayjs },
-      modalValues: { customDuration: false } as SlotFormValues,
-      modalConflictAlert: { display: false, content: "" } as MonoFieldAlert,
+      modalValues: { customDuration: false, assignable: true } as SlotFormValues,
+      modalConflictAlert: { display: false, content: "" } as MonoFieldAlertValues,
       selectedHalls: this.halls.map(h => h.id),
       SessionFormatEnum,
       CUSTOM, UNDEFINED_FORMAT
@@ -173,9 +189,12 @@ export default defineComponent({
   watch: {
     open() {
       if (this.open) {
-        this.modalValues.time = this.time?.format("HH:mm");
-        this.modalValues.duration = undefined;
-        this.modalValues.span = this.span?.valueOf()
+        this.modalValues = {
+          customDuration: false,
+          assignable: true,
+          time: this.time?.format("HH:mm")
+        }
+
         this.modalData.day = this.day
         this.modalData.hall = this.halls[0]
         this.modalData.time = this.time
@@ -186,6 +205,9 @@ export default defineComponent({
     },
 
     modal() {
+      if (this.modal) {
+        this.init();
+      }
       if (!this.modal) {
         this.$emit('close')
       }
@@ -197,6 +219,10 @@ export default defineComponent({
   },
 
   methods: {
+    init() {
+      this.modalConflictAlert = { display: false, content: "" }
+    },
+
     submitSlot() {
       // Validation
 
@@ -233,7 +259,9 @@ export default defineComponent({
         start: this.modalValues.time!,
         day: this.modalData.day!.index,
         duration: `PT${this.modalValues.duration!}M`,
-        span: this.modalValues.span
+        title: this.modalValues.title,
+        hallIds: this.selectedHalls,
+        assignable: this.modalValues.assignable
       }
 
       this.modalConflictAlert.display = false;
@@ -243,20 +271,23 @@ export default defineComponent({
         return
       }
 
-      const hallsToAdd = Array.from(this.selectedHalls)
-      const firstHall = hallsToAdd.pop()
-      axios.post(`/konter/slots/${this.event.id}/${firstHall}`, req).then(
+      axios.post(`/konter/slots/${this.event.id}`, req).then(
         (response: AxiosResponse<Slot>) => {
           if (response.status < 400) {
-            const slotId = response.data.id
-            Promise.all(hallsToAdd.map(h => this.assignHalltoSlot(h, slotId)))
-            .then(() => {
-              this.$emit('reload');
-              this.closeSlotModal();
-            })
+            this.$emit('reload')
+            this.closeSlotModal()
           }
         }
-      )
+      ).catch((error: AxiosError) => {
+        if (error.response != undefined) {
+          if (error.response.status === 409) {
+            this.modalConflictAlert = {
+              content: error.response.data as string,
+              display: true
+            }
+          }
+        }
+      })
     },
 
     assignHalltoSlot(hallId: number, slotId: string): Promise<AxiosResponse<any, any>> {
@@ -270,16 +301,19 @@ export default defineComponent({
         case UNDEFINED_FORMAT:
           this.modalValues.customDuration = false;
           this.modalValues.duration = undefined;
+          this.modalValues.title = undefined;
           break;
 
         case CUSTOM:
           this.modalValues.customDuration = true;
           this.modalValues.duration = undefined;
+          this.modalValues.title = undefined;
           break;
       
         default:
           this.modalValues.customDuration = false;
-          this.modalValues.duration = Number(target.value);
+          this.modalValues.duration = formatToMinutes(Number(target.value) as SessionFormatEnum);
+          this.modalValues.title = formatToSlotTitle(Number(target.value) as SessionFormatEnum);
           break;
       }
     
@@ -294,14 +328,6 @@ export default defineComponent({
     
       this.modal = false
     },
-    
-    beautifyDuration(duration: string): string {
-      dayjs.extend(durationPlugin)
-      dayjs.extend(relativeTime)
-
-      const dayJsDuration = dayjs.duration(duration)
-      return dayJsDuration.locale('en').humanize()
-    },
 
     toggleHall(id: number){
       if (this.selectedHalls.includes(id)) {
@@ -311,8 +337,23 @@ export default defineComponent({
       }
     },
 
+    checkAllHalls() {
+      this.selectedHalls = this.availableHalls.map((h) => h.id)
+    },
+
+    toggleAssignable() {
+      this.modalValues.assignable = !this.modalValues.assignable
+    },
+
     formatToMinutes,
-    formatToBadgeInfos
+    formatToBadgeInfos,
+    beautifyDuration
   }
 })
 </script>
+
+<style scoped>
+input.form-control::placeholder {
+  font-style: italic;
+}
+</style>

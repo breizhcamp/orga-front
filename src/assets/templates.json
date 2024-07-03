@@ -5,17 +5,20 @@
       {
         "start": "10:00",
         "duration": "PT2H",
-	"label": "University"
+	      "label": "University",
+        "title": "Univ"
       },
       {
         "start": "13:30",
         "duration": "PT2H",
-	"label": "University"
+	      "label": "University",
+        "title": "Univ"
       },
       {
         "start": "16:00",
         "duration": "PT2H",
-	"label": "University"
+	      "label": "University",
+        "title": "Univ"
       }
     ]
   },
@@ -25,32 +28,38 @@
       {
         "start": "10:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "11:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "13:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "14:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "16:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "17:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       }
     ]
   },
@@ -60,37 +69,44 @@
       {
         "start": "10:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "11:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "13:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "14:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "16:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "17:00",
         "duration": "PT25M",
-	"label": "Tool in action"
+	      "label": "Tool in action",
+        "title": "TiA"
       },
       {
         "start": "17:30",
         "duration": "PT25M",
-	"label": "Tool in action"
+	      "label": "Tool in action",
+        "title": "TiA"
       }
     ]
   },
@@ -100,47 +116,56 @@
       {
         "start": "10:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "11:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "12:45",
         "duration": "PT15M",
-	"label": "Quickie"
+	      "label": "Quickie",
+        "title": "Quickie"
       },
       {
         "start": "13:00",
         "duration": "PT15M",
-	"label": "Quickie"
+	      "label": "Quickie",
+        "title": "Quickie"
       },
       {
         "start": "13:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "14:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "16:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "17:00",
         "duration": "PT25M",
-	"label": "Tool in action"
+	      "label": "Tool in action",
+        "title": "TiA"
       },
       {
         "start": "17:30",
         "duration": "PT25M",
-	"label": "Tool in action"
+	      "label": "Tool in action",
+        "title": "TiA"
       }
     ]
   },
@@ -150,32 +175,38 @@
       {
         "start": "10:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "11:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "13:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "14:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "16:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "17:00",
         "duration": "PT25M",
-	"label": "Tool in action"
+	      "label": "Tool in action",
+        "title": "TiA"
       }
     ]
   },
@@ -185,42 +216,50 @@
       {
         "start": "10:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "11:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "12:45",
         "duration": "PT15M",
-	"label": "Quickie"
+	      "label": "Quickie",
+        "title": "Quickie"
       },
       {
         "start": "13:00",
         "duration": "PT15M",
-	"label": "Quickie"
+	      "label": "Quickie",
+        "title": "Quickie"
       },
       {
         "start": "13:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "14:30",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "16:00",
         "duration": "PT55M",
-	"label": "Conference"
+	      "label": "Conference",
+        "title": "Conf"
       },
       {
         "start": "17:00",
         "duration": "PT25M",
-	"label": "Tool in action"
+	      "label": "Tool in action",
+        "title": "TiA"
       }
     ]
   }

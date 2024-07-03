@@ -88,34 +88,7 @@
     </div>
   </div>
 
-  <ModalInfo v-model:open="sessionModal" :title="session.title">
-    <SessionBadges :session="session" />
-    <hr>
-    <h5>Speakers</h5>
-    <div class="d-flex mb-3">
-      <div 
-        v-for="speaker in session.speakers" 
-        :key="speaker.id" 
-        class="rounded-pill badge me-1 d-flex align-items-center"
-        :class="session.owner.id == speaker.id ? 'text-bg-success' : 'text-bg-secondary'"
-      >
-        <img v-if="speaker.profilePicture" :src="speaker.profilePicture" class="rounded-pill" width="30">
-        <span class="mx-1">{{ speaker.firstname[0] + '. ' + speaker.lastname }}</span>
-      </div>
-    </div>
-
-    <div id="description">
-      <hr>
-      <h5>Description</h5>
-      <p style="white-space: pre-wrap;">{{ session.description }}</p>
-    </div>
-
-    <div id="owner-notes" v-if="session.ownerNotes.trim().length > 0">
-      <hr>
-      <h5>Owner Notes</h5>
-      <p style="white-space: pre-wrap;">{{ session.ownerNotes }}</p>
-    </div>
-  </ModalInfo>
+  <SessionModal :open="sessionModal" @close="sessionModal = false" :session="session" />
   
   <ModalForm v-model:open="slotModal" :title="'Slot selection for session : ' + session.title" @save="saveSlotModal()">
     <div class="mb-3">
@@ -157,8 +130,8 @@
         <label for="slot" class="form-label">Slot <b style="color: red;">*</b></label>
         <select id="slot" class="form-control" :disabled="formValues.day == undefined || formValues.hallId == undefined" v-model="formValues.slotId">
           <option :value="undefined"></option>
-          <option v-for="slot in (slots.get(formValues.day!) != undefined) ? Array.from(slots.get(formValues.day!)!.entries()).find(e => e[0].id === formValues.hallId)?.[1].filter(slot => slot.session == undefined || slot.session?.id == session.id) : []" :key="slot.id" :value="slot.id">
-            {{ slot.start }} {{ slot.duration }}
+          <option v-for="slot in (slots.get(formValues.day!) != undefined) ? Array.from(slots.get(formValues.day!)!.entries()).find(e => e[0].id === formValues.hallId)?.[1].filter(slot => slot.assignable && (slot.session == undefined || slot.session?.id == session.id)) : []" :key="slot.id" :value="slot.id">
+            {{ beautifyTime(slot.start) }} {{ beautifyDuration(slot.duration) }}
           </option>
         </select>
       </div>
@@ -177,7 +150,7 @@ import type { Session } from '@/dto/Session';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Speaker } from '@/dto/Speaker';
 import * as sessionEnums from '@/dto/SessionEnums';
-import ModalInfo from "@/components/modals/ModalInfo.vue";
+import SessionModal from "@/components/modals/SessionModal.vue";
 import ModalForm from "@/components/modals/ModalForm.vue";
 import SessionBadges from '@/components/SessionBadges.vue';
 import BiPersoVideo3 from 'bootstrap-icons/icons/person-video3.svg?component';
@@ -186,7 +159,7 @@ import type { Hall } from '@/dto/Hall';
 import type { Slot } from '@/dto/Slot';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { beautifyDuration, beautifyTime } from '@/utils/time';
 
 interface SlotFormValues {
   day?: number
@@ -198,12 +171,12 @@ interface SlotFormValues {
 export default defineComponent({
   name: "SessionCard",
 
-  components: { ModalInfo, ModalForm, SessionBadges, BiPersoVideo3, BiPencilSquare },
+  components: { SessionModal, ModalForm, SessionBadges, BiPersoVideo3, BiPencilSquare },
 
   props: {
     session: { type: Object as PropType<Session>, required: true },
     availableHalls: { type: Array<Hall>, required: true },
-    slots: { type: Object as PropType<Map<number, Map<Hall, Array<Slot>>> | null | undefined>, required: true }, 
+    slots: { type: Object as PropType<Map<number, Map<Hall, Array<Slot>>> | null>, required: false }, 
     eventStart: { type: Date, required: false },
     forceModal: { type: Boolean, required: true },
   },
@@ -221,7 +194,6 @@ export default defineComponent({
       slotAlert: false,
       slotModalBarCodeFieldAutofocus: this.forceModal,
       size: 60,
-      mounted: false,
       formValues: {
         day: this.session.slot?.day,
         hallId: this.session.slot?.halls[0].id,
@@ -231,14 +203,11 @@ export default defineComponent({
     };
   },
 
-  mounted() {
-    this.mounted = true;
+  created() {
+    this.initModal();
   },
 
   watch: {
-    mounted() {
-      this.initModal();
-    },
 
     forceModal() {
       this.initModal();
@@ -252,6 +221,7 @@ export default defineComponent({
           slotId: this.session.slot?.id,
           barcode: this.session.slot?.barcode,
         }
+        this.slotAlert = false;
       }
     }
   },
@@ -299,24 +269,22 @@ export default defineComponent({
     },
 
     initModal() {
-      if(this.mounted) {
-        this.slotModal = this.forceModal;
-        this.slotModalBarCodeFieldAutofocus = this.forceModal;
+      this.slotModal = this.forceModal;
+      this.slotModalBarCodeFieldAutofocus = this.forceModal;
 
-        try {
-          if (this.forceModal) {
-            (document.activeElement as HTMLInputElement).blur();
-          }
-        } catch (error) {
-          console.trace("No active element to blur");
+      try {
+        if (this.forceModal) {
+          (document.activeElement as HTMLInputElement).blur();
         }
-
-        setTimeout(() => {
-          if (this.forceModal && document.getElementById('barcode') != null) {
-            (document.getElementById('barcode') as HTMLInputElement).focus();
-          }
-        }, 100)
+      } catch (error) {
+        console.trace("No active element to blur");
       }
+
+      setTimeout(() => {
+        if (this.forceModal && document.getElementById('barcode') != null) {
+          (document.getElementById('barcode') as HTMLInputElement).focus();
+        }
+      }, 100)
     },
 
     getValue(e: Event) {
@@ -347,14 +315,18 @@ export default defineComponent({
           this.formValues = {};
           this.slotModal = false;
         })
+        return;
       }
 
-    },
+      if (this.formValues.barcode != undefined) {
+        axios.post(`/konter/sessions/${this.session.id}/slot/barcode/${this.formValues.barcode}`).then(() => {
+          this.$emit('reload');
+          this.formValues = {};
+          this.slotModal = false;
+        })
+        return;
+      }
 
-    beautifyTime(time: string): string {
-      dayjs.extend(customParseFormat)
-    
-      return dayjs(time, "H:mm:ss").format("HH:mm")
     },
 
     getDayName(eventStart: Date | undefined, day: number): string {
@@ -363,7 +335,10 @@ export default defineComponent({
       }
 
       return dayjs(eventStart).add(day - 1, 'days').format("dddd")
-    }
+    },
+
+    beautifyTime,
+    beautifyDuration
   }
 });
 </script>

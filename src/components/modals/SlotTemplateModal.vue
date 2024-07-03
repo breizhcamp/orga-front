@@ -54,23 +54,26 @@ import durationPlugin from 'dayjs/plugin/duration';
 import __templates from "@/assets/templates.json";
 import axios from 'axios';
 import type { EventDTO } from '@/dto/EventDTO';
+import type { SlotCreationReq } from '@/dto/Requests';
 
 interface RawTemplate {
   name: string
-  slots: Array<{ start: string, duration: string, label: string }>
+  slots: Array<{ 
+    start: string, 
+    duration: string, 
+    label: string,
+    title: string
+  }>
 }
 
 interface Template {
   name: string 
-  slots: Map<Dayjs, { span: number, label: string }>
+  slots: Map<Dayjs, { 
+    span: number, 
+    label: string,
+    title: string 
+  }>
   rawTemplate: RawTemplate
-}
-
-interface SlotCreationReq {
-  start: string
-  day: number
-  duration: string
-  span?: number
 }
 
 export default defineComponent({
@@ -90,7 +93,7 @@ export default defineComponent({
   data() {
     return {
       modal: false,
-      modalData: {} as { hall?: Hall, day?: { index: number, date: Dayjs } },
+      modalData: {} as { hall?: Hall, day?: { index: number, date: Dayjs }, title?: string },
       modalAlert: false,
       templates: [] as Template[],
       templateHours: [] as { time: Dayjs, cells: Map<string, { span: number, display: boolean, pause: boolean, label?: string }>}[],
@@ -125,7 +128,7 @@ export default defineComponent({
       let maxHour: Dayjs = dayjs().hour(0)
 
       this.templates = (__templates as RawTemplate[]).map(raw => {
-        const slotMap: Map<Dayjs, { span: number, label: string }> = new Map();
+        const slotMap: Map<Dayjs, { span: number, label: string, title: string }> = new Map();
         raw.slots.forEach(s => {
           const start = dayjs(s.start, "HH:mm");
           if (minHour == undefined || minHour.isAfter(start)) {
@@ -140,7 +143,7 @@ export default defineComponent({
           const key = start.minute(Math.floor(start.minute() / 15) * 15)
           const value = Math.ceil(duration.asMinutes() / 15)
         
-          slotMap.set(key, { span: value, label: s.label })
+          slotMap.set(key, { span: value, label: s.label, title: s.title })
         })
       
       
@@ -192,6 +195,9 @@ export default defineComponent({
         // Should not be able to submit a template outside of a called template modal
         return;
       }
+
+      let hall = this.modalData.hall;
+      let day = this.modalData.day;
     
       if (this.selectedTemplate == undefined) {
         this.modalAlert = true;
@@ -205,11 +211,14 @@ export default defineComponent({
       slots.forEach(slot => {
         const req: SlotCreationReq = {
           start: dayjs(slot.start, "HH:mm").format("HH:mm:ss"),
-          day: this.modalData.day!!.index,
-          duration: slot.duration
+          day: day.index,
+          duration: slot.duration,
+          title: slot.title,
+          hallIds: [ hall.id ],
+          assignable: true
         };
       
-        axios.post(`/konter/slots/${this.event.id}/${this.modalData.hall!!.id}`, req).then(() => {
+        axios.post("/konter/slots/" + this.event.id, req).then(() => {
           slotsCount.resolved++;
         
           if (slotsCount.resolved === slotsCount.total) {
