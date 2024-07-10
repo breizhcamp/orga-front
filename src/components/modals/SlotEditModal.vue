@@ -1,17 +1,34 @@
 <template>
-  <SessionModal v-if="programSlot?.session != undefined" :open="modalOpen" @close="modalOpen = false" :session="programSlot.session" />
+  <SessionModal 
+    v-if="programSlot?.session != undefined"
+    :open="modalOpen"
+    :session="programSlot.session"
+    @close="modalOpen = false"
+  />
   <ModalForm v-else v-model:open="modalOpen" :title="'Edit slot'" @save="submit()">
     <div class="row row-cols-2 gy-3">
       <div class="col">
         <label for="title" class="form-label">Title</label>
-        <input type="text" id="title" class="form-control" :value="programSlot?.title" @input="e => title = (e.target as HTMLInputElement).value">
+        <input
+          type="text"
+          id="title"
+          class="form-control"
+          :value="programSlot?.title"
+          @input="e => title = (e.target as HTMLInputElement).value"
+        >
       </div>
       <div class="col no-label">
         <ul class="list-group">
           <li class="list-group-item">
             <div class="form-check form-switch">
               <label for="assignable" class="form-check-label stretched-link">Assignable</label>
-              <input type="checkbox" class="form-check-input me-1" id="assignable" :checked="programSlot?.assignable" @change="toggleAssignable()">
+              <input
+                type="checkbox"
+                class="form-check-input me-1"
+                id="assignable"
+                :checked="programSlot?.assignable"
+                @change="toggleAssignable()"
+              >
             </div>
           </li>
         </ul>
@@ -32,8 +49,8 @@
             aria-label="Copy to clipboard"
             @click="copy(programSlot?.barcode)"
           >
-            <BiCheckLg v-if="copied" aria-disabled />
-            <BiCopy v-else aria-disabled />
+            <BiCheckLg v-if="copied" aria-hidden="true" />
+            <BiCopy v-else aria-hidden="true" />
           </button>
         </div>
       
@@ -42,13 +59,25 @@
         <label for="tracks">Tracks</label>
         <ul class="list-group" id="tracks">
           <li class="list-group-item" v-for="hall in availableHalls" :key="hall.id" >
-            <input type="checkbox" name="" :id="'checkbox_' + hall.id" class="form-check-input me-1" :checked="hallIds.includes(hall.id)" @change="(e) => toggleTrack(hall.id, e.target as HTMLInputElement)">
-            <label :for="'checkbox_' + hall.id" class="form-check-label stretched-link">{{ hall.name }}</label>
+            <input 
+              type="checkbox"
+              :id="'checkbox_' + hall.id"
+              class="form-check-input me-1"
+              :checked="hallIds.includes(hall.id)"
+              @change="(e) => toggleTrack(hall.id, e.target as HTMLInputElement)"
+            >
+            <label :for="'checkbox_' + hall.id" class="form-check-label stretched-link">
+              {{ hall.name }}
+            </label>
           </li>
         </ul>
       </div>
     </div>
-    <MonoFieldAlert title="This slot creates a conflict with an existing slot" :alert="alert" @dismiss="alert.display = false"/>
+    <MonoFieldAlert 
+      title="This slot creates a conflict with an existing slot" 
+      :alert="alert" 
+      @dismiss="alert.display = false"
+    />
   </ModalForm>
 </template>
 

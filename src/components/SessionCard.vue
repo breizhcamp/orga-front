@@ -1,99 +1,110 @@
 <template>
-  <div class="card d-flex m-1 bg-secondary bg-opacity-25" @click="sessionModal = true">
-    <div class="card-body bg-opacity-75">
+  <button style="cursor: pointer" class="card w-100 d-flex flex-row m-1 bg-secondary bg-opacity-25" @click="sessionModal = true" @keyup.stop="focusTopButton">
+    <div class="card-body text-start bg-opacity-100">
       <div class="row">
         <div class="align-self-start" :class="editRights ? 'col-8' : 'col-10'">
-          <div class="row">
-            <div class="align-self-center w-4">
-              <!-- 
-                SVG object representing the evaluation gauge 
+          <div class="d-flex flex-row align-items-start">
+            <div class="w-4" aria-hidden="true"> 
+              <!--
+                SVG object representing the evaluation gauge
 
-                Whole object is rotated by -90 degrees so that the 
+                Whole object is rotated by -90 degrees so that the
                 foreground circle arc starts at 0 o'clock
               -->
               <svg class="col" :width="size" :height="size" :view-box="`0 0 ${size} ${size}`"  style="transform: rotate(-90deg)">
                 <!-- Background gray circle -->
-                <circle 
-                  :r="size * 0.4" 
-                  :cx="size * 0.5" 
-                  :cy="size * 0.5" 
-                  fill="transparent" 
-                  stroke="#eaeaea" 
+                <circle
+                  :r="size * 0.4"
+                  :cx="size * 0.5"
+                  :cy="size * 0.5"
+                  fill="transparent"
+                  stroke="#eaeaea"
                   :stroke-width="`${size / 10}px`"
                 />
                 <!-- Foreground circle arc, with length computed from rating between 0 and 5 -->
-                <circle 
-                  :r="size * 0.4" 
-                  :cx="size * 0.5" 
-                  :cy="size * 0.5" 
-                  fill="transparent" 
-                  :stroke="colorFromRating(session.rating)" 
+                <circle
+                  :r="size * 0.4"
+                  :cx="size * 0.5"
+                  :cy="size * 0.5"
+                  fill="transparent"
+                  :stroke="colorFromRating(session.rating)"
                   :stroke-width="`${size / 10}px`"
                   :stroke-dasharray="2 * Math.PI * size * 0.4"
                   :stroke-dashoffset="2 * Math.PI * size * 0.4 * (session.rating ? (5 - session.rating) / 5 : 0)"
                   stroke-linecap="round"
                 />
-                <!-- 
+                <!--
                   Displayed evaluation
                   If rating is null, the displayed text is N/A
 
                   Text is rotated by 90 degrees because the whole object is rotated by -90 degrees
                 -->
-                <text 
-                  :font-size="size / 3.5" 
-                  x="50%" 
-                  y="-48%" 
-                  font-weight="bold" 
-                  dominant-baseline="middle" 
-                  text-anchor="middle" 
+                <text
+                  :font-size="size / 3.5"
+                  x="50%"
+                  y="-48%"
+                  font-weight="bold"
+                  dominant-baseline="middle"
+                  text-anchor="middle"
                   transform="rotate(90)"
                 >{{ session.rating ? Math.round(session.rating * 10) / 10 : "N/A" }}</text>
               </svg>
             </div>
-            <div class="align-self-center col">
-              <div class="col">
-                <div class="session-title fs-5 text-truncate"><b>{{ session.title }}</b></div>
-                <div class="text-secondary fs-7">
-                  <i>
-                    {{ session.speakers.map((speaker: Speaker) => 
-                      speaker.firstname + ' ' + speaker.lastname
-                    ).join(', ') }}
-                  </i>
-                </div>
-              </div>
+            <div class="col ms-2">
+              <h3 class="fs-5 mb-0"><b>{{ session.title }}</b></h3>
+              <i>
+                {{ session.speakers.map((speaker: Speaker) =>
+                  speaker.firstname + ' ' + speaker.lastname
+                ).join(', ') }}
+              </i>
             </div>
           </div>
-          <SessionBadges :session="session"/>
+          <SessionBadges :session="session" aria-hidden="true"/>
         </div>
         <div class="col-2 d-flex flex-column justify-content-center">
-          <BiPersoVideo3 class="opacity-50 mx-auto" width="24" height="24" viewBox="0 0 16 16"/>
-          <div v-if="session.slot != undefined" class="d-inline-block mx-auto">Hall : <b>{{ session.slot.halls[0]?.name }}</b></div>
-          <div v-if="session.slot != undefined" class="d-inline-block mx-auto">On <b>{{ getDayName(eventStart, session.slot.day) }}</b> at <b>{{ beautifyTime(session.slot.start) }}</b></div>
-          <i v-else class="d-inline-block mx-auto">No slot assigned</i>
+          <BiPersoVideo3
+            class="opacity-50 mx-auto"
+            width="24"
+            height="24"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+          />
+          <span v-if="session.slot != undefined" class="d-inline-block mx-auto text-center">
+            Hall : <b>{{ session.slot.halls[0]?.name }}</b>
+            <br>
+            On <b>
+              {{ getDayName(eventStart, session.slot.day) }}
+            </b> at <b>
+              {{ beautifyTime(session.slot.start) }}
+            </b>
+          </span>
+          <i v-else class="d-inline-block mx-auto text-center">
+            No slot assigned
+          </i>
         </div>
         <div v-if="editRights" class="col-2 d-flex align-items-center justify-content-center">
           <button
             type="button"
-            class="btn btn-warning btn-outline-dark rounded-pill d-flex align-items-center"
+            class="btn btn-warning btn-outline-dark d-flex align-items-center"
             @click="(e) => {
               // Stopping propagation to prevent the sessionModal from opening
               e.stopPropagation();
               slotModal = true;
             }"
           >
-            Edit <BiPencilSquare class="ms-1" />
+            Edit <BiPencilSquare class="ms-1" aria-hidden="true"/>
           </button>
         </div>
       </div>
     </div>
-  </div>
+  </button>
 
   <SessionModal :open="sessionModal" @close="sessionModal = false" :session="session" />
   
   <ModalForm v-model:open="slotModal" :title="'Slot selection for session : ' + session.title" @save="saveSlotModal()">
     <div class="mb-3">
       <b>Session infos : </b>
-      <SessionBadges :session="session"/>
+      <SessionBadges :session="session" aria-hidden="true"/>
     </div>
 
     <div class="alert alert-warning alert-dismissible" role="alert" v-if="slotAlert">
@@ -131,7 +142,7 @@
         <select id="slot" class="form-control" :disabled="formValues.day == undefined || formValues.hallId == undefined" v-model="formValues.slotId">
           <option :value="undefined"></option>
           <option v-for="slot in (slots.get(formValues.day!) != undefined) ? Array.from(slots.get(formValues.day!)!.entries()).find(e => e[0].id === formValues.hallId)?.[1].filter(slot => slot.assignable && (slot.session == undefined || slot.session?.id == session.id)) : []" :key="slot.id" :value="slot.id">
-            {{ beautifyTime(slot.start) }} {{ beautifyDuration(slot.duration) }}
+            {{ slot.title }} - {{ beautifyTime(slot.start) }} - {{ beautifyDuration(slot.duration) }}
           </option>
         </select>
       </div>
@@ -184,7 +195,8 @@ export default defineComponent({
   },
 
   emits: [
-    'reload'
+    'reload',
+    'focus-back-to-top'
   ],
 
   data() {
@@ -340,6 +352,15 @@ export default defineComponent({
       return dayjs(eventStart).add(day - 1, 'days').format("dddd")
     },
 
+    focusTopButton(e: KeyboardEvent) {
+      if (e.key == "Escape") {
+        if (document.activeElement != null) {
+          (document.activeElement as HTMLElement).blur();
+        }
+        this.$emit('focus-back-to-top');
+      }
+    },
+
     beautifyTime,
     beautifyDuration
   }
@@ -356,11 +377,5 @@ export default defineComponent({
   width: v-bind('size')px;
   min-width: v-bind('size')px;
   max-width: v-bind('size')px;
-}
-
-.session-title {
-  min-width: 0;
-  max-width: 75vw;
-  white-space: nowrap;
 }
 </style>

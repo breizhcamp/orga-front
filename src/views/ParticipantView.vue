@@ -182,7 +182,7 @@ export default defineComponent({
   mounted() {
     this.actions = [
       // @ts-ignore : We pass a shallowRef instead of the component
-      { label: "Tirer", title: "Draw", function: this.draw, icon: shallowRef(BiShuffle) }
+      { label: "Draw places", title: "Draw", function: this.draw, icon: shallowRef(BiShuffle) }
     ]
   },
 

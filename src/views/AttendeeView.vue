@@ -81,7 +81,7 @@ export default defineComponent({
   mounted() {
     this.actions = [
       // @ts-ignore : We pass a shallowRef instead of the component
-      { label: "Exporter", title: "Export", function: this.exportAll, icon: shallowRef(BiDatabaseDown) }
+      { label: "Export all attendees", title: "Export", function: this.exportAll, icon: shallowRef(BiDatabaseDown) }
     ]
   },
 

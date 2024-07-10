@@ -5,8 +5,8 @@
     <div class="main-content">
       <div class="mb-3 card h-25">
         <div class="card-header d-flex flex-row">
-          <h5 class="flex-grow-1 align-self-center">Events</h5>
-          <button 
+          <h3 class="flex-grow-1 align-self-center m-auto">Events</h3>
+          <button
             v-if="editRights" 
             type="button" 
             @click="addEventModal = true" 
@@ -65,7 +65,7 @@
         <div class="col">
           <div class="card">
             <div class="card-header d-flex flex-row">
-              <h5 class="flex-grow-1 align-self-center">Halls</h5>
+              <h3 class="flex-grow-1 align-self-center m-auto">Halls</h3>
               <button 
                 v-if="editRights"
                 type="button" 

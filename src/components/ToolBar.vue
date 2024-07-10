@@ -12,9 +12,9 @@
             >Back to {{ parentTitle }}</button>
           </RouterLink>
         </div>
-        <div class="navbar-brand text-white mx-2">
+        <h2 class="navbar-brand text-white mx-2 my-1">
           {{ title }}
-        </div>
+        </h2>
       </div>
 
       <div v-if="actions.length">

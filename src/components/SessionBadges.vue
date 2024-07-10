@@ -2,11 +2,12 @@
   <div class="row">
     <div class="col float-end">
       <span 
-        v-for="info in infos"
+        v-for="[title, info] in infos.entries()"
         :key="info.label"
         class="badge rounded-pill ms-1" 
         :class="'text-bg-' + info.color"
       >
+        <span class="visually-hidden">{{ title }}</span>
         {{ info.label }}
       </span>
     </div>
@@ -28,12 +29,12 @@ export default defineComponent({
 
   data() {
     return { 
-      infos: [
-        sessionEnums.formatToBadgeInfos(this.session.format),
-        sessionEnums.themeToBadgeInfos(this.session.theme),
-        sessionEnums.niveauToBadgeInfos(this.session.niveau),
-        sessionEnums.statusToBadgeInfos(this.session.status),
-      ] as BadgeInfos[]
+      infos: new Map<string, BadgeInfos>([
+        [ "format", sessionEnums.formatToBadgeInfos(this.session.format)], 
+        [ "theme", sessionEnums.themeToBadgeInfos(this.session.theme)], 
+        [ "niveau", sessionEnums.niveauToBadgeInfos(this.session.niveau)], 
+        [ "status", sessionEnums.statusToBadgeInfos(this.session.status)], 
+      ])
     }
   }
 })

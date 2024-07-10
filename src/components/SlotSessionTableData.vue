@@ -10,7 +10,7 @@
     :colspan="slotAndSpan.colspan"
   >
     <div 
-      class="h-100 card d-flex bg-opacity-75" 
+      class="h-100 card d-flex" 
       :class="'text-bg-' + (
         slotAndSpan.slot.session != undefined ? 
         themeToBadgeInfos(slotAndSpan.slot.session?.theme).color :
@@ -36,7 +36,7 @@
             aria-roledescription="Edit Slot"
             @click.stop="$emit('edit')"
           >
-            Edit <BiPencilSquare class="me-0 ms-1" aria-hidden="true" />
+            Edit <BiPencilSquare class="me-0 ms-1" aria-hidden="true"/>
           </button>
           
           <button

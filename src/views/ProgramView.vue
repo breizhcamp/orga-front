@@ -24,7 +24,7 @@
             aria-label="Move track to the left"
             @click="swapOrder(index - 1, index)"
           >
-            <BiCaretLeft aria-disabled />
+            <BiCaretLeft aria-hidden="true" />
           </button>
           <div class="input-group-text text-bg-info">
             {{ hall.name }}
@@ -44,7 +44,7 @@
             aria-label="Move track to the right"
             @click="swapOrder(index, index + 1)"
           >
-            <BiCaretRight aria-disabled />
+            <BiCaretRight aria-hidden="true" />
           </button>
         </div>
         <div class="dropdown col-auto" v-if="halls.length !== availableHalls.length">
@@ -78,74 +78,74 @@
         <div class="mt-3" v-for="day in getEventDays(event)" :key="day.index">
           <div v-if="Array.from(slots.keys()).includes(day.index)" class="text-center">
             <h3>{{ day.date.format("dddd - D/M/YYYY") }}</h3>
-              <table style="width: 100%;" class="border">
-                <thead>
-                  <tr class="text-center">
-                    <th class="border"></th>
-                    <th
-                      class="border"
-                      v-for="hall in availableHalls"
-                      :key="hall.id"
-                      :style="{ width: 90 / availableHalls.length + '%'}"
-                    >
-                      {{ hall.name }}
-                      <i class="text-muted">{{ `(Track ${hall.trackId})` }}</i>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="stamp in getTimestamps(slots.get(day.index)!, availableHalls)" :key="stamp.time.unix()">
-                    <td
-                      v-if="Array.from(stamp.tracks.values()).filter(s => s.slot != undefined || !s.display).length == 0"
+            <table style="width: 100%;" class="border">
+              <thead>
+                <tr class="text-center">
+                  <th class="border"></th>
+                  <th
+                    class="border"
+                    v-for="hall in availableHalls"
+                    :key="hall.id"
+                    :style="{ width: 90 / availableHalls.length + '%'}"
+                  >
+                    {{ hall.name }}
+                    <i class="text-muted">{{ `(Track ${hall.trackId})` }}</i>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="stamp in getTimestamps(slots.get(day.index)!, availableHalls)" :key="stamp.time.unix()">
+                  <td
+                    v-if="Array.from(stamp.tracks.values()).filter(s => s.slot != undefined || !s.display).length == 0"
                     class="border"
                     :class="editable ? 'empty-row' : ''"
-                      @click="openAddSlotModal(availableHalls[0], day, stamp.time, true)"
-                    >
-                      {{ stamp.time.format("HH:mm") }}
-                    </td>
-                    <td v-else class="border" style="width: 10%;">
-                      {{ stamp.time.format("HH:mm") }}
-                    </td>
-                    <SlotSessionTableData
-                      class="border"
-                      v-for="hall in availableHalls"
-                      :key="hall.id"
-                      :slot-and-span="stamp.tracks.get(hall.id)!"
-                      @reload="loadSlots()"
-                      @edit="editSlot(stamp.tracks.get(hall.id)?.slot)"
-                      @click.stop="openAddSlotModal(hall, day, stamp.time)"
+                    @click="openAddSlotModal(availableHalls[0], day, stamp.time, true)"
+                  >
+                    {{ stamp.time.format("HH:mm") }}
+                  </td>
+                  <td v-else class="border" style="width: 10%;">
+                    {{ stamp.time.format("HH:mm") }}
+                  </td>
+                  <SlotSessionTableData
+                    class="border"
+                    v-for="hall in availableHalls"
+                    :key="hall.id"
+                    :slot-and-span="stamp.tracks.get(hall.id)!"
+                    @reload="loadSlots()"
+                    @edit="editSlot(stamp.tracks.get(hall.id)?.slot)"
+                    @click.stop="openAddSlotModal(hall, day, stamp.time)"
                     :editable="editable"
-                    />
-                  </tr>
+                  />
+                </tr>
               </tbody>
               <tfoot v-if="editable">
-                  <tr>
-                    <td></td>
-                    <td class="border text-align-center" v-for="hall in availableHalls" :key="hall.id">
-                      <div class="d-flex justify-content-center">
-                        <button
-                          type="button"
-                          class="btn btn-success d-inline-block m-1"
-                          @click.stop="openAddSlotModal(hall, day)"
-                        >Add slot</button>
-                        <button
-                          type="button"
-                          class="btn btn-warning d-inline-block m-1"
-                          v-if="Array.from(slots.get(day.index)!.entries()).filter(e => e[0].id === hall.id && e[1].length > 0).length === 0"
-                          @click.stop="openTemplateModal(hall, day)"
-                        >Add template</button>
-                        <button
-                          type="button"
-                          class="btn btn-danger d-inline-block m-1"
-                          v-else
-                          @click.stop="emptyTrack(day.index, hall.id)"
-                        >Remove all slots</button>
-                      </div>
-                    </td>
-                  </tr>
+                <tr>
+                  <td></td>
+                  <td class="border text-align-center" v-for="hall in availableHalls" :key="hall.id">
+                    <div class="d-flex justify-content-center">
+                      <button
+                        type="button"
+                        class="btn btn-success d-inline-block m-1"
+                        @click.stop="openAddSlotModal(hall, day)"
+                      >Add slot</button>
+                      <button
+                        type="button"
+                        class="btn btn-warning d-inline-block m-1"
+                        v-if="Array.from(slots.get(day.index)!.entries()).filter(e => e[0].id === hall.id && e[1].length > 0).length === 0"
+                        @click.stop="openTemplateModal(hall, day)"
+                      >Add template</button>
+                      <button
+                        type="button"
+                        class="btn btn-danger d-inline-block m-1"
+                        v-else
+                        @click.stop="emptyTrack(day.index, hall.id)"
+                      >Remove all slots</button>
+                    </div>
+                  </td>
+                </tr>
               </tfoot>
-              </table>
-            </div>
+            </table>
+          </div>
           <div v-else class="text-center">
             <h3>{{ day.date.format("dddd - D/M/YYYY") }}</h3>
             <div>
@@ -327,6 +327,10 @@ export default defineComponent({
         this.loadSlots()
         this.editSlotModal = false;
       }
+    },
+
+    event() {
+      document.title = `${this.event.name} - ${document.title}`
     }
   },
 
@@ -626,7 +630,7 @@ export default defineComponent({
 
       this.editSlotValue = slot;
       if ((slot.manualSession != undefined || slot.session != undefined) || this.editable) {
-      this.editSlotModal = true;
+        this.editSlotModal = true;
       }
     },
 

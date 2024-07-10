@@ -4,57 +4,77 @@
       <div class="position-sticky">
         <div class="mx-1 mt-4">
           <div class="sidebar-header text-white">
-            <h5 class="brand">
-              <Logo width="30" height="30"/>
-              <span :class="expanded ? 'text' : 'no-text'">
+            <div class="brand">
+              <Logo width="30" height="30" aria-hidden="true"/>
+              <h1 :class="expanded ? 'text fs-5' : 'no-text'">
                 Organisation
-              </span>
-            </h5>
+              </h1>
+            </div>
           </div>
         
           <ul class="nav flex-column">
-            <li class="nav-item">
-              <a 
-                class="nav-link btn btn-dark rounded-pill" 
-                v-on:click="expanded = !expanded" 
+            <li class="nav-item mb-3">
+              <button 
+                class="nav-link btn btn-dark rounded-pill expand" 
+                @click="expanded = !expanded" 
                 :class="expanded ? '' : 'protruding'" 
-                aria-label="Plier/déplier la barre de navigation"
+                :aria-label="expanded ? 'Collapse the navbar' : 'Expand the navbar'"
               >
                 <component 
                   :is="expanded ? 'BiArrowLeft' : 'BiArrowRight'" 
                   class="nav-icon" 
+                  aria-hidden="true" 
                 />
                 <span :class="expanded ? 'text' : 'no-text'">Collapse</span>
-              </a>
+              </button>
             </li>
-            <hr class="small-hr"/>
             <li class="nav-item">
-              <router-link to="/registered" class="nav-link">
-                <BiPersonDown class="nav-icon" :class="expanded ? '' : 'big'" />
+              <router-link
+                to="/registered" 
+                class="nav-link"
+                aria-label="Go to registered"
+              >
+                <BiPersonDown class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Registered</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/participants" class="nav-link">
-                <BiPersonCheck class="nav-icon" :class="expanded ? '' : 'big'" />
+              <router-link
+                to="/participants"
+                class="nav-link"
+                aria-label="Go to participants"
+              >
+                <BiPersonCheck class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Participants</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/attendees" class="nav-link">
-                <BiChatLeftText class="nav-icon" :class="expanded ? '' : 'big'" />
+              <router-link 
+                to="/attendees" 
+                class="nav-link" 
+                aria-label="Go to attendees"
+              >
+                <BiChatLeftText class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Attendees</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/sessions" class="nav-link">
-                <BiCalendarWeek class="nav-icon" :class="expanded ? '' : 'big'" />
+              <router-link 
+                to="/sessions" 
+                class="nav-link" 
+                aria-label="Go to sessions"
+              >
+                <BiCalendarWeek class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Sessions</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/events" class="nav-link">
-                <BiGear class="nav-icon" />
+              <router-link 
+                to="/events" 
+                class="nav-link"
+                aria-label="Go to events"
+              >
+                <BiGear class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Events</span>
               </router-link>
             </li>
@@ -133,7 +153,6 @@ export default defineComponent({
   z-index: 600;
   width: auto;
   display: block;
-  transition: all 0.3s;
 }
 
 .brand {
@@ -141,7 +160,6 @@ export default defineComponent({
   align-items: center;
   width: max-content;
   margin-left: 5px;
-  transition: all 0.3s;
 }
 
 .wrapper {
@@ -172,7 +190,17 @@ export default defineComponent({
   display: inline-flex;
   align-items: center;
   color: #fff;
-  transition: all 0.3s;
+}
+
+.nav-link:focus-visible {
+  all: unset;
+  width: max-content;
+  padding: 15px;
+  font-size: 1.1em;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  border: 4px dashed orangered;
 }
 
 .nav-link:hover {
@@ -198,30 +226,35 @@ export default defineComponent({
 }
 
 .text {
-  margin-left: 5px;
+  margin-left: 10px;
   transition: all 0.3s;
 }
 
-.small-hr {
-  margin: 0.5rem 0;
-}
-
-.protruding {
+.protruding,
+.protruding:focus {
   transform: translateX(80%);
   padding: 5px;
 }
 
-.protruding:hover {
+.protruding:hover,
+.protruding:focus-visible {
   transform: translateX(100%);
+  padding: 5px;
+}
+
+.protruding:focus-visible {
+  border: 3px dashed orangered;
+  box-shadow: none;
+  background-color: var(--bs-btn-bg);
 }
 
 .btn-dark {
   padding-top: 5px;
   padding-bottom: 5px;
-}
+} 
 
-.btn-dark:hover {
-  --bs-btn-hover-bg: var(--bs-btn-bg);
-  --bs-btn-hover-border-color: var(--bs-btn-border-color);
+.nav-link.expand {
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 </style>

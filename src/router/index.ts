@@ -12,33 +12,39 @@ const router = createRouter({
     { path: '/', redirect: '/registered' },
     {
       path: '/registered',
-      name: 'registered',
+      name: 'Registered',
       component: RegisteredView
     },{
       path: '/participants',
-      name: 'persons',
+      name: 'Participants',
       component: ParticipantView
     },{
       path: '/attendees',
-      name: 'attendees',
+      name: 'Attendees',
       component: AttendeeView
     },
     {
       path: '/sessions',
-      name: 'sessions',
+      name: 'Sessions',
       component: SessionView
     },
     {
       path: '/events',
-      name: 'events',
+      name: 'Events',
       component: EventView
     },
     {
       path: '/events/program/:eventId',
-      name: 'program',
+      name: 'Program',
       component: ProgramView
     }
-  ]
+  ],
+
+})
+
+router.beforeEach((to, _, next) => {
+  document.title = `${to.name?.toString()} - Breizhcamp` 
+  next()
 })
 
 export default router

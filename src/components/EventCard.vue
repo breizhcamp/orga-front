@@ -1,21 +1,22 @@
 <template>
   <div class="card">
-    <h5 class="card-header px-2 d-flex align-items-center">
-      <a v-if="event.website" class="flex-grow-1 nav-link" :href="event.website.toString()">
-        {{ event.name }}
-      </a>
-      <div v-else class="flex-grow-1 nav-link">
-        {{ event.name }}
-      </div>
-      <div class="float-end fs-6 d-flex align-items-center">
-        Year: {{ event.year }} 
+    <div class="card-header px-3 d-flex align-items-center">
+      <h4 class="flex-grow-1 m-0">
+        <a v-if="event.website" class="nav-link" :href="event.website.toString()">
+          {{ event.name }}
+        </a>
+        <span v-else class="nav-link">
+          {{ event.name }}
+        </span>
+      </h4>
+      <div class="float-end d-flex align-items-center">
         <button 
           v-if="editRights"
           type="button" 
           class="btn mx-1 btn-sm btn-warning opacity-75 flex-shrink-1 float-end d-flex align-items-center" 
           @click="eventModal = true"
         >
-          <BiPencilSquare class="me-1" />
+          <BiPencilSquare class="me-1" aria-hidden="true"/>
           Edit
         </button>
         <button 
@@ -24,10 +25,10 @@
           class="btn btn-sm btn-danger d-flex align-items-center" 
           @click="deleteEvent()"
         >
-          <BiTrash class="me-1"/>Delete
+          <BiTrash class="me-1" aria-hidden="true"/>Delete
         </button>
       </div>
-    </h5>
+    </div>
     <div class="card-body row row-cols-2">
       <div class="col">
         <div class="d-flex align-items-center justify-content-between mb-1"> 
@@ -209,10 +210,7 @@
       <li class="list-group-item" v-for="team in teams" :key="team.id">
         <EventTeamListItem :team="team" :event-id="Number(event.id)" :editable="editRights"/>
       </li>
-      <li class="list-group-item">
-        <label for="team-dropdown" class="form-label text-muted" v-if="availableTeams.filter(t => !teams.map(t => t.id).includes(t.id)).length == 0">
-          <i>This button is disabled, as all teams are already part of this event</i>
-        </label>
+      <li v-if="availableTeams.length !== teams.length" class="list-group-item">
         <div class="dropdown" id="team-dropdown">
           <button 
             type="button" 

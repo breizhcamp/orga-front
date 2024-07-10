@@ -8,26 +8,26 @@
     <div class="d-flex flex-row-reverse flex-wrap align-items-center flex-shrink-1">
       <button 
         type="button"
-        class="btn btn-sm btn-info opacity-75 d-flex align-items-center m-1"
+        class="btn btn-sm btn-info d-flex align-items-center m-1"
         @click="contactsModal = true"
       >
-        <BiPersonLinesFill class="me-1"/> Contacts
+        <BiPersonLinesFill aria-hidden="true" class="me-1"/> Contacts
       </button>
       <button 
         v-if="editable"
         type="button" 
-        class="btn btn-sm btn-warning opacity-75 d-flex align-items-center m-1"
+        class="btn btn-sm btn-warning d-flex align-items-center m-1"
         @click="openEditModal()"
       >
-        <BiPencilSquare class="me-1"/> Edit
+        <BiPencilSquare aria-hidden="true" class="me-1"/> Edit
       </button>
       <button 
         v-if="editable"
         type="button"   
-        class="btn btn-sm btn-danger opacity-75 d-flex align-items-center m-1"
+        class="btn btn-sm btn-danger d-flex align-items-center m-1"
         @click="deleteModal = true"
       >
-        <BiTrash class="me-1"/> Delete
+        <BiTrash aria-hidden="true" class="me-1"/> Delete
       </button>
     </div>
   </div>
@@ -36,7 +36,7 @@
       <div v-for="team in teams" :key="team.id" class="col-auto btn-group">
         <div class="btn btn-sm btn-primary disabled">{{ team.name }}&nbsp;</div>
         <button type="button" v-if="editable" class="btn btn-sm btn-danger d-flex align-items-center" @click="removeTeam(team.id)" title="Remove team">
-          <BiXLg />
+          <BiXLg aria-hidden="true"/>
         </button>
       </div>
       <div
@@ -128,6 +128,7 @@
         >
           <img
             :src="memberValues.profilePictureLink"
+            alt="Profile picture"
             class="member-profile"
             style="object-fit: cover; z-index: 1;"
           >
@@ -138,7 +139,7 @@
             d-flex align-items-center justify-content-center" 
             style="font-size: 0px; padding: 1%; aspect-ratio: 1; top: 0%;"
           >
-            <BiTrash aria-hidden viewBox="0 0 16 16" height="8" width="8"/>
+            <BiTrash aria-hidden="true" viewBox="0 0 16 16" height="8" width="8"/>
           </button>
           <button 
             type="button" 
@@ -147,15 +148,16 @@
             d-flex align-items-center justify-content-center" 
             style="font-size: 0px; padding: 1%; aspect-ratio: 1; top: 35%"
           >
-            <BiUpload aria-hidden viewBox="0 0 16 16" height="8" width="8"/>
+            <BiUpload aria-hidden="true" viewBox="0 0 16 16" height="8" width="8"/>
           </button>
         </div>
         <button
           v-else
           class="member-profile form-picture d-inline-flex fs-6 
           align-items-center justify-content-center btn btn-sm btn-light"
+          title="Upload profile picture"
         >
-          <BiUpload />
+          <BiUpload aria-hidden="true" />
         </button>
       </div>
       <div class="col-10">
@@ -246,8 +248,8 @@
                   @click="displayedContactId = contact.id"
                 >
                   <BiEye aria-hidden="true"/>
-              </button>
-            </div>
+                </button>
+              </div>
             </td>
             <td class="p-1" style="text-align: center;">
               <BiLock class="m-auto" aria-label="Private"/>
@@ -284,7 +286,7 @@
                   v-model="contactFormValues.public"
                 >
                 <label class="form-check-label ms-1" for="public">Public</label>
-          </div>
+              </div>
             </td>
             <td class="p-1 d-flex justify-content-center">
               <button type="button" class="btn btn-success">Add</button>

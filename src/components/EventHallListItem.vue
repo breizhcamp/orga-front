@@ -8,17 +8,18 @@
   <button 
     v-if="editable"
     type="button" 
-    class="btn btn-sm btn-warning opacity-75 d-flex align-items-center me-1"
+    class="btn btn-sm btn-warning d-flex align-items-center me-1"
     @click="editModal = true"
   >
-    <BiPencilSquare class="me-1"/> Edit
+    <BiPencilSquare class="me-1" aria-hidden="true"/> Edit
   </button>
   <button 
+    v-if="editable"
     type="button"   
-    class="btn btn-sm btn-danger opacity-75 d-flex align-items-center"
+    class="btn btn-sm btn-danger d-flex align-items-center"
     @click="deleteModal = true"
   >
-    <BiTrash class="me-1"/> Delete
+    <BiTrash class="me-1" aria-hidden="true"/> Delete
   </button>
 
   <ModalForm v-if="editable" v-model:open="editModal" :title="'Edit hall ' + hall.name" @save="submit()">

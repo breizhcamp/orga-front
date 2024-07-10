@@ -1,8 +1,9 @@
 <template>
   <ModalInfo v-model:open="modalOpen" :title="session.title" size="lg">
+    <h2 class="fs-4">Badges</h2>
     <SessionBadges :session="session" />
     <hr>
-    <h5>Speakers</h5>
+    <h2 class="fs-4">Speakers</h2>
     <div class="d-flex mb-3">
       <div 
         v-for="speaker in session.speakers" 
@@ -11,19 +12,24 @@
         :class="session.owner.id == speaker.id ? 'text-bg-success' : 'text-bg-secondary'"
       >
         <ProfilePicture :src="speaker.profilePicture" :name="speaker.firstname + ' ' + speaker.lastname" />
-        <span class="mx-1">{{ speaker.firstname[0] + '. ' + speaker.lastname }}</span>
+        <span class="visually-hidden">
+          {{ speaker.firstname }} {{ speaker.lastname }}
+        </span>
+        <span class="mx-1" aria-hidden="true">
+          {{ speaker.firstname[0] + '. ' + speaker.lastname }}
+        </span>
       </div>
     </div>
 
     <div id="description">
       <hr>
-      <h5>Description</h5>
+      <h2 class="fs-4">Description</h2>
       <p style="white-space: pre-wrap;" class="text-break">{{ session.description }}</p>
     </div>
 
     <div id="owner-notes" v-if="session.ownerNotes.trim().length > 0">
       <hr>
-      <h5>Owner Notes</h5>
+      <h2 class="fs-4">Owner Notes</h2>
       <p style="white-space: pre-wrap;" class="text-break">{{ session.ownerNotes }}</p>
     </div>
   </ModalInfo>

@@ -4,11 +4,13 @@
     :src="src"
     class="member-profile"
     style="object-fit: cover;"
+    :alt="name + '\'s profile picture'"
   >
   <div
     v-else
     class="member-profile d-inline-flex fs-6"
     :style="nameToStyle(name)"
+    aria-hidden="true"
   >
     <b class="m-auto">{{ name[0] }}</b>
   </div>

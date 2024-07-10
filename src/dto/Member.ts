@@ -5,6 +5,7 @@ export interface Member {
   firstname: string
   contacts: Array<Contact>
   profilePictureLink?: string
+  keycloakId: string
 
   participations: MemberParticipations | Array<{ teamId: string, eventId: number }>
 }

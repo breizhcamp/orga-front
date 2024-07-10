@@ -81,7 +81,7 @@ export default defineComponent({
   mounted() {
     this.actions = [
       // @ts-ignore : We pass a shallowRef instead of the component
-      { label: "Importer", title: "Import", function: () => { this.importModal = true }, icon: shallowRef(BiDatabaseUp) }
+      { label: "Import from CSV", title: "Import", function: () => { this.importModal = true }, icon: shallowRef(BiDatabaseUp) }
     ]
   },
 

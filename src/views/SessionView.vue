@@ -38,6 +38,7 @@
         :forceModal="forceModalOpen"
         :event-start="currentEvent?.debutEvent ? new Date(currentEvent.debutEvent) : new Date(Date.now())"
         @reload="reloadSessions()"
+        @focus-back-to-top="focusBackToTop()"
       />
     </div>
 
@@ -117,6 +118,7 @@
 
   <button 
     type="button" 
+    id="back-to-top"
     class="btn btn-light border border-dark border-2 m-1 rounded-pill position-fixed bottom-0 end-0" 
     @click="backToTop"
   >
@@ -470,6 +472,12 @@ export default defineComponent({
 
     backToTop () {
       scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+    },
+
+    focusBackToTop() {
+      setTimeout(() => {
+        document.getElementById('back-to-top')?.focus();
+      }, 100);
     },
 
     handleScroll() {
