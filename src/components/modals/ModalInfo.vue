@@ -1,5 +1,5 @@
 <template>
-  <div class="modal show d-block" tabindex="-1" v-if="open" @click="close()">
+  <div id="session" class="modal show d-block" tabindex="-1" v-if="open" @click="close()" @keyup.stop="closeIfEscape">
     <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
       <div class="modal-content">
         <div class="modal-header">
@@ -36,9 +36,28 @@ export default defineComponent({
 
   emits: ['update:open'],
 
+  watch: {
+    open() {
+      if (this.open) {
+        if (document.activeElement != null) {
+          (document.activeElement as HTMLElement).blur()
+        }
+        setTimeout(() =>
+          document.getElementById('session')?.focus()
+          , 100)
+      }
+    }
+  },
+
   methods: {
     close() {
       this.$emit('update:open', false)
+    },
+
+    closeIfEscape(e: KeyboardEvent) {
+      if (e.key == "Escape") {
+        this.close()
+      }
     }
   }
 })

@@ -1,5 +1,5 @@
 <template>
-  <div class="modal show d-block" tabindex="-1" v-if="open" @click="close()">
+  <div class="modal show d-block" role="dialog" tabindex="-1" v-if="open" @click="close()" @keyup.stop="closeIfEscape">
     <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
       <div class="modal-content">
         <form @submit.prevent="save()">
@@ -49,6 +49,12 @@ export default defineComponent({
 
     save() {
       this.$emit('save')
+    },
+
+    closeIfEscape(e: KeyboardEvent) {
+      if (e.key == "Escape") {
+        this.close()
+      }
     }
   }
 })
