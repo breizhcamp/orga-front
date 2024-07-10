@@ -58,6 +58,13 @@
                 <span :class="expanded ? 'text' : 'no-text'">Events</span>
               </router-link>
             </li>
+            <li class="nav-item fixed-bottom d-flex flex-column" style="width: fit-content;">
+              <IdentityBadge :expanded="expanded"/>
+              <button role="button" type="button" class="btn nav-link" @click="logout">
+                <BiBoxArrowLeft class="nav-icon" />
+                <span :class="expanded ? 'text' : 'no-text'">Logout</span>
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -72,7 +79,8 @@
 
 <script lang="ts">
 /// <reference types="vite-svg-loader" />
-import { defineComponent } from 'vue'
+import { defineComponent, inject } from 'vue'
+import IdentityBadge from "@/components/IdentityBadge.vue";
 import Logo from '@/assets/logo-breizhcamp-icone.svg?component'
 import BiPersonDown from 'bootstrap-icons/icons/person-down.svg?component'
 import BiPersonCheck from 'bootstrap-icons/icons/person-check.svg?component'
@@ -81,10 +89,14 @@ import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
 import BiGear from 'bootstrap-icons/icons/gear.svg?component'
 import BiArrowLeft from "bootstrap-icons/icons/arrow-left-short.svg?component";
 import BiArrowRight from "bootstrap-icons/icons/arrow-right-short.svg?component";
+import BiBoxArrowLeft from "bootstrap-icons/icons/box-arrow-left.svg?component";
+import type Keycloak from "keycloak-js"
+import { keycloakKey } from './provide-keys';
 
 export default defineComponent({
   name: "AppView",
   components: { 
+    IdentityBadge,
     Logo, 
     BiPersonDown, 
     BiPersonCheck, 
@@ -92,11 +104,20 @@ export default defineComponent({
     BiCalendarWeek, 
     BiGear, 
     BiArrowLeft, 
-    BiArrowRight 
+    BiArrowRight,
+    BiBoxArrowLeft
   },
+
   data() {
     return {
       expanded: false
+    }
+  },
+  methods: {
+    logout() {
+      this.$.appContext.app.runWithContext(() => 
+        (inject(keycloakKey) as Keycloak).logout()
+      );
     }
   }
 })
