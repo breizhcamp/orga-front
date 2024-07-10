@@ -142,11 +142,13 @@ import axios, { type AxiosResponse } from 'axios';
 import BiFilePdf from 'bootstrap-icons/icons/file-pdf.svg?component'
 import BiDatabaseUp from 'bootstrap-icons/icons/database-up.svg?component'
 import BiArrowUpCircleFill from 'bootstrap-icons/icons/arrow-up-circle-fill.svg?component'
-import { defineComponent, shallowRef } from 'vue';
+import { defineComponent, inject, shallowRef } from 'vue';
 import type { Hall } from '@/dto/Hall';
 import type { Slot } from '@/dto/Slot';
 import { downloadPdfWithName } from '@/utils/download';
 import type { Page } from '@/dto/Page';
+import { keycloakKey } from '@/provide-keys'
+import type Keycloak from 'keycloak-js'
 
 const equalsFilter = (that?: Filter, other?: Filter): boolean => {
   if (that == undefined || other == undefined) return true;
@@ -232,27 +234,30 @@ export default defineComponent({
       filterById: false,
       eventCount: { total: 0, current: 0 },
       forceModalOpen: false,
+      editRights: (inject(keycloakKey) as Keycloak).hasRealmRole("admin")
     }
   },
 
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
-    this.actions = [
-      { 
-        label: "Importer", 
+
+    this.actions = [{ 
+      label: "Export session cards as PDF", 
+      title: "Export", 
+      function: () => { this.exportPDFCards() }, 
+      // @ts-ignore : We pass a shallowRef instead of the component
+      icon: shallowRef(BiFilePdf) 
+    }];
+
+    if (this.editRights) {
+      this.actions.push({ 
+        label: "Import data as CSV", 
         title: "Import", 
         function: () => { this.importModal = true }, 
         // @ts-ignore : We pass a shallowRef instead of the component
         icon: shallowRef(BiDatabaseUp) 
-      },       
-      { 
-        label: "Exporter", 
-        title: "Export", 
-        function: () => { this.exportPDFCards() }, 
-        // @ts-ignore : We pass a shallowRef instead of the component
-        icon: shallowRef(BiFilePdf) 
-      },       
-    ]
+      })
+    }
 
     this.loadOnMounted();
   },

@@ -16,15 +16,20 @@
         themeToBadgeInfos(slotAndSpan.slot.session?.theme).color :
         'secondary'
       )"
-      @click.stop="() => {}">
+      @click.stop="$emit('edit')">
       <div class="card-body p-1 d-flex align-items-center align-middle">
         <div class="d-flex flex-grow-1 flex-column justify-content-center">
-          <div class="row mx-auto">
-            <b class="truncate" v-if="slotAndSpan.slot.session?.title || slotAndSpan.slot.title">{{ slotAndSpan.slot.session?.title || slotAndSpan.slot.title }}</b>
+          <div class="row mx-auto user-select-none">
+            <b 
+              class="truncate" 
+              v-if="slotAndSpan.slot.session?.title || slotAndSpan.slot.title"
+            >
+              {{ slotAndSpan.slot.session?.title || slotAndSpan.slot.title }}
+            </b>
             <i v-else>Empty</i>
           </div>
         </div>
-        <div class="row d-flex flex-row flex-wrap m-0 p-0">
+        <div v-if="editable" class="row d-flex flex-row flex-wrap m-0 p-0">
           <button
             type="button"
             class="d-flex align-items-center px-1 justify-content-center btn btn-sm btn-outline-dark btn-light mb-1"
@@ -46,7 +51,7 @@
       </div>
     </div>
   </td>
-  <td v-else-if="slotAndSpan != undefined && slotAndSpan.display" class="assignable"></td>
+  <td v-else-if="slotAndSpan != undefined && slotAndSpan.display" :class="editable ? 'assignable': ''"></td>
 </template>
 
 <script lang="ts">
@@ -65,7 +70,8 @@ export default defineComponent({
   components: { BiPencilSquare, BiTrash },
 
   props: {
-    slotAndSpan: { type: Object as PropType<SlotSessionTDOptions>, required: true }
+    slotAndSpan: { type: Object as PropType<SlotSessionTDOptions>, required: true },
+    editable: { type: Boolean, required: true }
   },
 
   emits: ['reload', 'edit'],

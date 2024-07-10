@@ -2,7 +2,7 @@
   <div class="card d-flex m-1 bg-secondary bg-opacity-25" @click="sessionModal = true">
     <div class="card-body bg-opacity-75">
       <div class="row">
-        <div class="col-9 align-self-start">
+        <div class="align-self-start" :class="editRights ? 'col-8' : 'col-10'">
           <div class="row">
             <div class="align-self-center w-4">
               <!-- 
@@ -71,7 +71,7 @@
           <div v-if="session.slot != undefined" class="d-inline-block mx-auto">On <b>{{ getDayName(eventStart, session.slot.day) }}</b> at <b>{{ beautifyTime(session.slot.start) }}</b></div>
           <i v-else class="d-inline-block mx-auto">No slot assigned</i>
         </div>
-        <div class="col-1 d-flex align-items-center">
+        <div v-if="editRights" class="col-2 d-flex align-items-center justify-content-center">
           <button
             type="button"
             class="btn btn-warning btn-outline-dark rounded-pill d-flex align-items-center"
@@ -144,7 +144,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import type { PropType } from 'vue';
 import type { Session } from '@/dto/Session';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -160,6 +160,8 @@ import type { Slot } from '@/dto/Slot';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { beautifyDuration, beautifyTime } from '@/utils/time';
+import type Keycloak from 'keycloak-js';
+import { keycloakKey } from '@/provide-keys'
 
 interface SlotFormValues {
   day?: number
@@ -199,7 +201,8 @@ export default defineComponent({
         hallId: this.session.slot?.halls[0].id,
         slotId: this.session.slot?.id,
         barcode: this.session.slot?.barcode,
-      } as SlotFormValues
+      } as SlotFormValues,
+      editRights: (inject(keycloakKey) as Keycloak).hasRealmRole("admin")
     };
   },
 

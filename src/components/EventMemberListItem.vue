@@ -3,9 +3,9 @@
     <div class="d-flex align-items-center me-auto flex-wrap">
       <ProfilePicture :src="member.profilePictureLink" :name="member.firstname + ' ' + member.lastname" />
       <b class="ms-1 text-wrap">{{ member.firstname + ' ' + member.lastname }}</b>
-      <i class="text-muted text-wrap" v-if="editable">&nbsp;({{ member.contacts.length }} contact methods)</i>
+      <i class="text-muted text-wrap">&nbsp;({{ member.contacts.length }} contact methods)</i>
     </div>
-    <div v-if="editable" class="d-flex flex-row-reverse flex-wrap align-items-center flex-shrink-1">
+    <div class="d-flex flex-row-reverse flex-wrap align-items-center flex-shrink-1">
       <button 
         type="button"
         class="btn btn-sm btn-info opacity-75 d-flex align-items-center m-1"
@@ -14,6 +14,7 @@
         <BiPersonLinesFill class="me-1"/> Contacts
       </button>
       <button 
+        v-if="editable"
         type="button" 
         class="btn btn-sm btn-warning opacity-75 d-flex align-items-center m-1"
         @click="openEditModal()"
@@ -21,6 +22,7 @@
         <BiPencilSquare class="me-1"/> Edit
       </button>
       <button 
+        v-if="editable"
         type="button"   
         class="btn btn-sm btn-danger opacity-75 d-flex align-items-center m-1"
         @click="deleteModal = true"
@@ -30,16 +32,15 @@
     </div>
   </div>
   <div v-if="!short">
-    Member of :
-    <div class="row">
+    <div class="row mt-2">
       <div v-for="team in teams" :key="team.id" class="col-auto btn-group">
         <div class="btn btn-sm btn-primary disabled">{{ team.name }}&nbsp;</div>
-        <button type="button" class="btn btn-sm btn-danger d-flex align-items-center" @click="removeTeam(team.id)" title="Remove team">
+        <button type="button" v-if="editable" class="btn btn-sm btn-danger d-flex align-items-center" @click="removeTeam(team.id)" title="Remove team">
           <BiXLg />
         </button>
       </div>
       <div
-        v-if="eventTeams && eventTeams
+        v-if="editable && eventTeams && eventTeams
           .filter(t => !teams.map(t => t.id).includes(t.id)).length !== 0"
         class="col-auto"
       >
@@ -72,7 +73,7 @@
     </div>
   </div>
 
-  <ModalForm v-model:open="editModal" :title="`Edit ${member.firstname} ${member.lastname}'s information`" @save="submitMember()">
+  <ModalForm v-if="short && editable" v-model:open="editModal" :title="`Edit ${member.firstname} ${member.lastname}'s information`" @save="submitMember()">
     <div class="alert alert-warning alert-dismissible" role="alert" v-if="editAlert">
       <div>A field with <b style="color: red;">*</b> is empty</div>
       <button type="button" class="btn-close" aria-label="Close" @click="editAlert = false"></button>
@@ -86,6 +87,38 @@
       <div class="col">
         <label for="lastname" class="form-label">Firstname<b style="color: red;">*</b></label>
         <input type="text" id="lastname" class="form-control" v-model="memberValues.firstname">
+      </div>
+
+      <div class="col-12">
+        <label for="keycloakId" class="form-label">Keycloak ID</label>
+        <div class="input-group">
+          <input
+            type="text"
+            id="keycloakId"
+            class="form-control"
+            :disabled="!displayKeycloakId"
+            :value="displayKeycloakId 
+              ? member.keycloakId 
+              : '•'.repeat(member.keycloakId.length)"
+          >
+          <button
+            type="button" 
+            class="btn btn-outline-dark d-flex align-items-center" 
+            @click="displayKeycloakId = !displayKeycloakId" 
+          >
+            <BiEye v-if="displayKeycloakId" aria-hidden="true"/>
+            <BiEyeSlash v-else aria-hidden="true"/>
+          </button>
+          <button
+            type="button"
+            class="btn d-flex align-items-center"
+            :class="keycloakIdCopied ? 'btn-outline-success' : 'btn-outline-secondary'"
+            @click="copyKeycloakId(member.keycloakId)"
+          >
+            <BiCheckLg v-if="keycloakIdCopied"/>
+            <BiCopy v-else />
+          </button>
+        </div>
       </div>
 
       <div class="col-2">
@@ -143,46 +176,176 @@
     </div>
   </ModalForm>
 
-  <ModalForm v-model:open="contactsModal" :title="`Edit ${member.firstname} ${member.lastname}'s contact methods`">
+  <ModalInfo v-model:open="contactsModal" size="lg" :title="`${member.firstname} ${member.lastname}'s contact methods`">
     <div class="col">
-      <ul class="list-group">
-        <li v-for="[index, contact] in member.contacts.entries()" :key="index" class="list-group-item" :class="index % 2 === 0 ? 'list-group-item-dark' : 'list-group-item-light'">
-          <b>{{ contact.platform }}</b>: {{ contact.link }}
-        </li>
-        <li class="list-group-item" :class="member.contacts.length % 2 === 0 ? 'list-group-item-dark' : 'list-group-item-light'">
-          <div class="row">
-            <div class="col col-5"><input type="text" class="form-control"></div>
-            <div class="col col-5"><input type="text" class="form-control"></div>
-            <div class="col col-2">
-              <button type="button" class="btn btn-success">
-                Add
+      <table width="100%">
+        <thead>
+          <tr>
+            <th class="p-1" style="text-align: center; width: 30%;" id="method">Method</th>
+            <th class="p-1" style="text-align: center; width: 40%;" id="handle">Handle</th>
+            <th class="p-1" style="text-align: center; width: 15%;" id="visibility">Visibility</th>
+            <th class="p-1" style="text-align: center; width: 15%;" id="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="contact in member.contacts" :key="contact.id">
+            <td class="p-1">{{ contact.platform }}</td>
+            <td class="p-1">{{ contact.link }}</td>
+            <td class="p-1" style="text-align: center;">
+              <BiUnlock class="m-auto" aria-label="Public"/>
+            </td>
+            <td class="p-1 d-flex justify-content-around">
+              <button
+                type="button"
+                class="btn btn-sm d-flex align-items-center"
+                :class="copiedContactId == contact.id ? 'btn-success' : 'btn-secondary'"
+                aria-label="Copy to clipboard"
+                @click="copyContact(contact)"
+              >
+                <BiCheckLg v-if="copiedContactId == contact.id" aria-hidden="true" />
+                <BiCopy v-else aria-hidden="true" />
+              </button>
+              <button type="button" v-if="editable" class="btn btn-sm btn-warning d-flex align-items-center">
+                <BiPencilSquare aria-hidden="true"/>
+              </button>
+              <button type="button" v-if="editable" class="btn btn-sm btn-danger d-flex align-items-center">
+                <BiTrash aria-hidden="true"/>
+              </button>
+            </td>
+          </tr>
+          <tr v-if="editable">
+            <th colspan="3">
+              Private methods
+            </th>
+            <th style="text-align: center;">
+              <button type="button" class="btn" @click="privateVisible = !privateVisible">
+                <BiChevronDown v-if="privateVisible" aria-label="Hide private methods"/>
+                <BiChevronUp v-else aria-label="Display private methods"/>
+              </button>
+            </th>
+          </tr>
+          <tr v-for="contact in privateVisible ? privateContacts : []" :key="contact.id">
+            <td class="p-1">{{ contact.platform }}</td>
+            <td class="p-1" >
+              <div class="d-flex justify-content-between">
+                <span class="text-truncate">{{ displayedContactId == contact.id ? contact.link : '•'.repeat(contact.link.length) }}</span>
+                <button
+                  v-if="displayedContactId == contact.id"
+                  type="button"
+                  class="btn btn-sm d-inline-flex align-items-center float-end"
+                  :aria-label="'Hide the link for ' + contact.platform"
+                  @click="displayedContactId = ''"
+                >
+                  <BiEyeSlash aria-hidden="true"/>
+                </button>
+                <button 
+                  v-else
+                  type="button" 
+                  class="btn btn-sm d-inline-flex align-items-center float-end" 
+                  :aria-label="'Display the link for ' + contact.platform"
+                  @click="displayedContactId = contact.id"
+                >
+                  <BiEye aria-hidden="true"/>
               </button>
             </div>
+            </td>
+            <td class="p-1" style="text-align: center;">
+              <BiLock class="m-auto" aria-label="Private"/>
+            </td>
+            <td class="p-1 d-flex justify-content-center">
+              <button
+                type="button"
+                class="btn d-flex align-items-center"
+                :class="copiedContactId == contact.id ? 'btn-success' : 'btn-secondary'"
+                aria-label="Copy to clipboard"
+                @click="copyContact(contact)"
+              >
+                <BiCheckLg v-if="copiedContactId == contact.id" aria-hidden="true" />
+                <BiCopy v-else aria-hidden="true" />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot v-if="editable">
+          <tr>
+            <td class="p-1">
+              <input type="text" aria-labelledby="#method" class="form-control">
+            </td>
+            <td class="p-1">
+              <input type="text" aria-labelledby="#handle" class="form-control">
+            </td>
+            <td class="p-1">
+              <div class="d-flex justify-content-center">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  name="public" 
+                  id="public" 
+                  v-model="contactFormValues.public"
+                >
+                <label class="form-check-label ms-1" for="public">Public</label>
           </div>
-        </li>
-      </ul>
+            </td>
+            <td class="p-1 d-flex justify-content-center">
+              <button type="button" class="btn btn-success">Add</button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
-  </ModalForm>
+  </ModalInfo>
 
 </template>
 
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue';
-import { MemberParticipations, type Member } from '@/dto/Member';
+import { MemberParticipations, type Contact, type Member } from '@/dto/Member';
 import { type Team } from '@/dto/Team';
 import ModalForm from './modals/ModalForm.vue';
+import ModalInfo from './modals/ModalInfo.vue';
 import ProfilePicture from './ProfilePicture.vue';
+import BiChevronDown from 'bootstrap-icons/icons/chevron-down.svg?component';
+import BiChevronUp from 'bootstrap-icons/icons/chevron-up.svg?component';
 import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
 import BiPersonLinesFill from 'bootstrap-icons/icons/person-lines-fill.svg?component';
 import BiPencilSquare from 'bootstrap-icons/icons/pencil-square.svg?component';
 import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
 import BiUpload from 'bootstrap-icons/icons/upload.svg?component';
+import BiCopy from 'bootstrap-icons/icons/copy.svg?component';
+import BiCheckLg from 'bootstrap-icons/icons/check-lg.svg?component';
+import BiUnlock from 'bootstrap-icons/icons/unlock.svg?component';
+import BiLock from 'bootstrap-icons/icons/lock.svg?component';
+import BiEye from 'bootstrap-icons/icons/eye.svg?component';
+import BiEyeSlash from 'bootstrap-icons/icons/eye-slash.svg?component';
 import axios, { type AxiosResponse } from 'axios';
+
+interface ContactFormValues {
+  method?: string
+  handle?: string
+  public: boolean
+}
 
 export default defineComponent({
   name: "EventMemberListItem",
 
-  components: { ModalForm, ProfilePicture, BiXLg, BiPersonLinesFill, BiPencilSquare, BiTrash, BiUpload },
+  components: { 
+    ModalForm,
+    ModalInfo,
+    ProfilePicture,
+    BiXLg,
+    BiChevronDown,
+    BiChevronUp,
+    BiPersonLinesFill,
+    BiPencilSquare,
+    BiTrash,
+    BiUpload,
+    BiCopy,
+    BiCheckLg,
+    BiUnlock,
+    BiLock,
+    BiEye,
+    BiEyeSlash
+  },
 
   props: {
     member: { type: Object as PropType<Member>, required: true },
@@ -200,19 +363,43 @@ export default defineComponent({
       teamDropdown: false,
       editModal: false,
       editAlert: false,
+      displayKeycloakId: false,
+      keycloakIdCopied: false,
       deleteModal: false,
       memberValues: { 
         lastname: this.member.lastname, 
         firstname: this.member.firstname, 
         profilePictureLink: this.member.profilePictureLink 
       },
-      contactsModal: false
+      contactsModal: false,
+      contactFormValues: { public: true } as ContactFormValues,
+      copiedContactId: "",
+      copyTimeoutId: undefined as undefined | number,
+      privateVisible: false,
+      privateContacts: [] as Array<Contact>,
+      privateContactsLoading: false,
+      privateContactsLoadedOnce: false,
+      displayedContactId: ""
     }
   },
 
   mounted() {
     if (!this.short && this.eventId) {
       this.loadTeams((this.member.participations as MemberParticipations).getTeamIds(this.eventId))
+    }
+    this.privateContactsLoadedOnce = false
+  },
+
+  watch: {
+    privateVisible() {
+      if (this.editable && this.privateVisible && !this.privateContactsLoadedOnce) {
+        this.privateContactsLoading = true
+        axios.get(`/kalon/members/${this.member.id}/contact/private`).then((response: AxiosResponse<Array<Contact>>) => {
+          this.privateContacts = response.data;
+          this.privateContactsLoading = false;
+          this.privateContactsLoadedOnce = true;
+        })
+      }
     }
   },
 
@@ -259,6 +446,30 @@ export default defineComponent({
 
       this.editAlert = false;
       axios.post('')
+    },
+
+    async copy(value: string, resetFn: Function): Promise<void> {
+      window.clearTimeout(this.copyTimeoutId)
+      await navigator.clipboard.writeText(value);
+      this.copyTimeoutId = window.setTimeout(resetFn, 1500);
+    },
+
+    copyKeycloakId(id: string) {
+      this.copy(id, () => this.keycloakIdCopied = false)
+        .then(() => this.keycloakIdCopied = true)
+    },
+
+    copyContact(contact: Contact) {
+      this.copy(
+        `${contact.platform}: ${contact.link}`, 
+        () => this.copiedContactId = ""
+      ).then(() => {
+        this.copiedContactId = contact.id;
+      })
+    },
+
+    submitContactMethod() {
+      
     }
   }
 })

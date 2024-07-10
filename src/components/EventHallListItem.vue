@@ -6,6 +6,7 @@
     </i>
   </div>
   <button 
+    v-if="editable"
     type="button" 
     class="btn btn-sm btn-warning opacity-75 d-flex align-items-center me-1"
     @click="editModal = true"
@@ -20,7 +21,7 @@
     <BiTrash class="me-1"/> Delete
   </button>
 
-  <ModalForm v-model:open="editModal" :title="'Edit hall ' + hall.name" @save="submit()">
+  <ModalForm v-if="editable" v-model:open="editModal" :title="'Edit hall ' + hall.name" @save="submit()">
     <div class="row row-cols-1 gy-3">
       <div class="col">
         <label for="hallName" class="form-label">Name</label>
@@ -38,7 +39,7 @@
     </div>
   </ModalForm>
 
-  <div class="modal show d-block" tabindex="-1" v-if="deleteModal" @click="deleteClose()">
+  <div class="modal show d-block" tabindex="-1" v-if="editable && deleteModal" @click="deleteClose()">
     <div class="modal-dialog" @click.stop>
       <div class="modal-content">
         <div class="modal-header">
@@ -73,7 +74,8 @@ export default defineComponent({
 
   props: {
     hall: { type: Object as PropType<Hall>, required: true },
-    existingTrackIds: { type: Array<Number>, required: true }
+    existingTrackIds: { type: Array<Number>, required: true },
+    editable: { type: Boolean, required: true }
   },
 
   data() {

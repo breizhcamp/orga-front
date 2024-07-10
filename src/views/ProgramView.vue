@@ -8,10 +8,11 @@
       parent-route="/events"
     />
 
-    <div class="container minh mt-3 ms-3">
-      <div class="row d-flex align-items-center">
+    <div class="minh m-3">
+      <div v-if="editable" class="d-flex flex-nowrap align-items-center justify-content-center">
         <div 
-          class="col-auto btn-group rounded" 
+          class="input-group input-group-sm mx-2"
+          style="width: fit-content;" 
           role="group"
           v-for="(hall, index) in availableHalls" 
           :key="hall.id"
@@ -25,7 +26,7 @@
           >
             <BiCaretLeft aria-disabled />
           </button>
-          <div class="btn btn-sm btn-primary disabled">
+          <div class="input-group-text text-bg-info">
             {{ hall.name }}
           </div>
           <button 
@@ -75,9 +76,8 @@
 
       <div v-else>
         <div class="mt-3" v-for="day in getEventDays(event)" :key="day.index">
-          <div v-if="Array.from(slots.keys()).includes(day.index)" class="row text-center">
+          <div v-if="Array.from(slots.keys()).includes(day.index)" class="text-center">
             <h3>{{ day.date.format("dddd - D/M/YYYY") }}</h3>
-            <div class="row">
               <table style="width: 100%;" class="border">
                 <thead>
                   <tr class="text-center">
@@ -97,7 +97,8 @@
                   <tr v-for="stamp in getTimestamps(slots.get(day.index)!, availableHalls)" :key="stamp.time.unix()">
                     <td
                       v-if="Array.from(stamp.tracks.values()).filter(s => s.slot != undefined || !s.display).length == 0"
-                      class="border empty-row"
+                    class="border"
+                    :class="editable ? 'empty-row' : ''"
                       @click="openAddSlotModal(availableHalls[0], day, stamp.time, true)"
                     >
                       {{ stamp.time.format("HH:mm") }}
@@ -113,8 +114,11 @@
                       @reload="loadSlots()"
                       @edit="editSlot(stamp.tracks.get(hall.id)?.slot)"
                       @click.stop="openAddSlotModal(hall, day, stamp.time)"
+                    :editable="editable"
                     />
                   </tr>
+              </tbody>
+              <tfoot v-if="editable">
                   <tr>
                     <td></td>
                     <td class="border text-align-center" v-for="hall in availableHalls" :key="hall.id">
@@ -139,13 +143,12 @@
                       </div>
                     </td>
                   </tr>
-                </tbody>
+              </tfoot>
               </table>
             </div>
-          </div>
-          <div v-else class="row text-center">
+          <div v-else class="text-center">
             <h3>{{ day.date.format("dddd - D/M/YYYY") }}</h3>
-            <div class="row">
+            <div>
               <table style="width: 100%;" class="border">
                 <thead>
                   <tr class="text-center">
@@ -161,7 +164,7 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tfoot v-if="editable">
                   <tr>
                     <td></td>
                     <td class="border text-align-center" v-for="hall in availableHalls" :key="hall.id">
@@ -179,7 +182,7 @@
                       </div>
                     </td>
                   </tr>
-                </tbody>
+                </tfoot>
               </table>
             </div>
           </div>
@@ -226,7 +229,7 @@ import { EventParticipants, type EventDTO } from '@/dto/EventDTO';
 import type { Hall } from '@/dto/Hall';
 import type { Slot } from '@/dto/Slot';
 import axios, { type AxiosResponse } from 'axios';
-import { defineComponent, shallowRef } from 'vue';
+import { defineComponent, inject, shallowRef } from 'vue';
 import SlotModal from '@/components/modals/SlotModal.vue';
 import SlotEditModal from '@/components/modals/SlotEditModal.vue';
 import SlotTemplateModal from '@/components/modals/SlotTemplateModal.vue';
@@ -242,6 +245,8 @@ import BiFilePdf from 'bootstrap-icons/icons/file-pdf.svg?component'
 import BiBraces from 'bootstrap-icons/icons/braces.svg?component'
 import BiCaretLeft from 'bootstrap-icons/icons/caret-left.svg?component';
 import BiCaretRight from 'bootstrap-icons/icons/caret-right.svg?component';
+import { keycloakKey } from '@/provide-keys';
+import type Keycloak from 'keycloak-js';
 
 export default defineComponent({
   name: "ProgramView",
@@ -280,6 +285,8 @@ export default defineComponent({
 
       reloadSlotsA: false,
       reloadSlotsB: false,
+
+      editable: (inject(keycloakKey) as Keycloak).hasRealmRole("admin")
     }
   },
 
@@ -618,7 +625,9 @@ export default defineComponent({
       }
 
       this.editSlotValue = slot;
+      if ((slot.manualSession != undefined || slot.session != undefined) || this.editable) {
       this.editSlotModal = true;
+      }
     },
 
     exportPdf() {

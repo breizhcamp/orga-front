@@ -7,6 +7,7 @@
         <div class="card-header d-flex flex-row">
           <h5 class="flex-grow-1 align-self-center">Events</h5>
           <button 
+            v-if="editRights" 
             type="button" 
             @click="addEventModal = true" 
             class="btn btn-primary"
@@ -37,15 +38,25 @@
         <div class="col">
           <div class="card">
             <div class="card-header d-flex -flex-row">
-              <h5 class="flex-grow-1 align-self-center">Members</h5>
-              <button type="button" @click="addMemberModal = true" class="btn btn-primary">
+              <h3 class="flex-grow-1 align-self-center m-auto">Members</h3>
+              <button 
+                type="button" 
+                v-if="editRights"
+                @click="addMemberModal = true" 
+                class="btn btn-primary"
+              >
                 Add
               </button>
             </div>
 
             <ul class="list-group list-group-flush">
               <li class="list-group-item d-flex flex-row align-items-center" v-for="member in members" :key="member.id">
-                <EventMemberListItem :member="member" short editable/>
+                <EventMemberListItem 
+                  :member="member" 
+                  short 
+                  :editable="editRights || member.keycloakId == 
+                    (kcInstance.tokenParsed?.sub as string || 'no id')"
+                />
               </li>
             </ul>
           </div>
@@ -56,6 +67,7 @@
             <div class="card-header d-flex flex-row">
               <h5 class="flex-grow-1 align-self-center">Halls</h5>
               <button 
+                v-if="editRights"
                 type="button" 
                 @click="addHallModal = true"
                 class="btn btn-primary"
@@ -67,6 +79,7 @@
             <ul class="list-group list-group-flush">
               <li class="list-group-item d-flex flex-row align-items-center" v-for="hall in halls" :key="hall.id">
                 <EventHallListItem 
+                  :editable="editRights"
                   :hall="hall" 
                   :existing-track-ids="halls
                     .map(h => h.trackId)
@@ -129,7 +142,7 @@
     <i class="text-muted">Fields with an <b style="color: red;">*</b> must not be empty</i>
   </ModalForm>
 
-  <ModalForm v-model:open="addHallModal" :loading="loading" title="Add new hall" @save="createHall()">
+  <ModalForm v-if="editRights" v-model:open="addHallModal" :loading="loading" title="Add new hall" @save="createHall()">
     <div class="alert alert-warning alert-dismissible" role="alert" v-if="addHallAlert">
       <div>A field with <b style="color: red;">*</b> is empty</div>
       <button type="button" class="btn-close" aria-label="Close" @click="addHallAlert = false"></button>
@@ -147,7 +160,7 @@
     </div>
   </ModalForm>
 
-  <ModalForm v-model:open="addMemberModal" :loading="loading" title="Add new member" @save="createMember()">
+  <ModalForm v-if="editRights" v-model:open="addMemberModal" :loading="loading" title="Add new member" @save="createMember()">
     <div class="alert alert-warning alert-dismissible" role="alert" v-if="addMemberAlert">
       <div>A field with <b style="color: red;">*</b> is empty</div>
       <button type="button" class="btn-close" aria-label="Close" @click="addMemberAlert = false"></button>
@@ -175,9 +188,11 @@ import { EventParticipants, type EventDTO, type EventInfos } from "@/dto/EventDT
 import type { Hall } from "@/dto/Hall";
 import type { Member } from "@/dto/Member";
 import axios, { type AxiosResponse } from "axios";
-import { defineComponent } from "vue";
+import { defineComponent, inject } from "vue";
 import EventMemberListItem from "@/components/EventMemberListItem.vue";
 import type { MonoFieldAlertValues } from "@/dto/Alert";
+import { keycloakKey } from '@/provide-keys';
+import type Keycloak from 'keycloak-js';
 
 export interface EventCreationReq {
   name?: string
@@ -218,7 +233,9 @@ export default defineComponent({
       addHallAlert: false,
       exportProgramModal: false,
       exportModalAlert: {} as MonoFieldAlertValues,
-      exportSelectedEvent: undefined as EventDTO | undefined
+      exportSelectedEvent: undefined as EventDTO | undefined,
+      editRights: (inject(keycloakKey) as Keycloak).hasRealmRole("admin"),
+      kcInstance: inject(keycloakKey) as Keycloak
     }
   },
 

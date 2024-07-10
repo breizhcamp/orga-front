@@ -10,6 +10,7 @@
       <div class="float-end fs-6 d-flex align-items-center">
         Year: {{ event.year }} 
         <button 
+          v-if="editRights"
           type="button" 
           class="btn mx-1 btn-sm btn-warning opacity-75 flex-shrink-1 float-end d-flex align-items-center" 
           @click="eventModal = true"
@@ -18,6 +19,7 @@
           Edit
         </button>
         <button 
+          v-if="editRights"
           type="button" 
           class="btn btn-sm btn-danger d-flex align-items-center" 
           @click="deleteEvent()"
@@ -205,7 +207,7 @@
   <ModalInfo v-model:open="teamsModal" :title="'Teams of ' + event.name">
     <ul class="list-group">
       <li class="list-group-item" v-for="team in teams" :key="team.id">
-        <EventTeamListItem :team="team" :event-id="Number(event.id)"/>
+        <EventTeamListItem :team="team" :event-id="Number(event.id)" :editable="editRights"/>
       </li>
       <li class="list-group-item">
         <label for="team-dropdown" class="form-label text-muted" v-if="availableTeams.filter(t => !teams.map(t => t.id).includes(t.id)).length == 0">
@@ -282,7 +284,7 @@
 </template>
 
 <script lang="ts">
-import { type PropType, defineComponent } from 'vue';
+import { type PropType, defineComponent, inject } from 'vue';
 import { type EventDTO, EventParticipants, type EventInfos } from '@/dto/EventDTO';
 import { MemberParticipations, type Member } from "@/dto/Member";
 import EventMemberListItem from '@/components/EventMemberListItem.vue';
@@ -295,6 +297,8 @@ import BiTrash from 'bootstrap-icons/icons/trash.svg?component'
 import dayjs, { Dayjs } from 'dayjs';
 import type { Hall } from '@/dto/Hall';
 import axios, { type AxiosResponse } from 'axios';
+import type Keycloak from 'keycloak-js';
+import { keycloakKey } from '@/provide-keys'
 
 export interface EventOptions {
   members: boolean
@@ -332,6 +336,7 @@ export default defineComponent({
       memberPartial: {} as { lastname: string, firstname: string },
       eventModal: false,
       formValues: {} as EventInfos,
+      editRights: (inject(keycloakKey) as Keycloak).hasRealmRole("admin")
     }
   },
 

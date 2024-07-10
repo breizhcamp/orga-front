@@ -28,4 +28,5 @@ export interface Contact {
 
   platform: string
   link: string
+  public: boolean
 }
