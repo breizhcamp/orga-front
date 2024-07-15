@@ -1,5 +1,5 @@
 <template>
-  <div class="badge ms-2 pe-3 text-bg-secondary d-inline-flex flex-row">
+  <div class="badge pe-3 text-bg-secondary d-inline-flex flex-row">
     <BiPerson class="main-icon"/>
     <component v-bind:is="getSubIcon()" class="sub-icon bg-secondary" overflow="visible"/>
     <div class="d-inline-flex flex-column justify-content-center identity">

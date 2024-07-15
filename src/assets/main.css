@@ -13,10 +13,10 @@
 }
 
 a:focus-visible,
-button:focus-visible {
-  outline: none !important;
-  outline-offset: 0 !important;
-  border: unset !important;
-  box-shadow: none !important;
-  border: 3px dashed orangered !important;
+button:focus-visible,
+.btn:focus-visible {
+  outline-width: 3px;
+  outline-color: orangered;
+  outline-style: dashed;
+  box-shadow: none;
 }

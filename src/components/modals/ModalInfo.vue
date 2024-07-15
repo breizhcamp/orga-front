@@ -1,5 +1,5 @@
 <template>
-  <div id="session" class="modal show d-block" tabindex="-1" v-if="open" @click="close()" @keyup.stop="closeIfEscape">
+  <div id="modal-element" class="modal show d-block" tabindex="-1" v-if="open" @click="close()" @keyup.stop="closeIfEscape">
     <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
       <div class="modal-content">
         <div class="modal-header">
@@ -43,7 +43,7 @@ export default defineComponent({
           (document.activeElement as HTMLElement).blur()
         }
         setTimeout(() =>
-          document.getElementById('session')?.focus()
+          document.getElementById('modal-element')?.focus()
           , 100)
       }
     }

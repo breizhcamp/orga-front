@@ -57,7 +57,12 @@
       </select>
     </div>
     <div class="col-12 no-label">
-      <button type="submit" class="btn btn-primary">Search</button>
+      <button
+        type="submit"
+        id="session-filter-search-button"
+        class="btn btn-primary"
+        @keydown.down.prevent="focusFirstSession()"
+      >Search</button>
     </div>
   </form>
 </template>
@@ -106,6 +111,13 @@ export default defineComponent({
 
     getValue(event: Event) {
       return (event.target as HTMLInputElement)?.value || undefined;
+    },
+
+    focusFirstSession() {
+      if (document.activeElement != null) {
+        (document.activeElement as HTMLElement).blur();
+      }
+      (document.getElementById('infinite-scroll')?.firstElementChild as HTMLElement | null)?.focus();
     },
 
     formatToColor: formatToBadgeInfos,

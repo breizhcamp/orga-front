@@ -30,8 +30,10 @@
     <SessionFilter v-model:filter="filter" @filter="(f) => loadSessions(f)" :loseFocus="forceModalOpen" />
     <div id="infinite-scroll">
       <SessionCard
-        v-for="session in sessions"
+        v-for="[index ,session] in sessions.entries()"
         :key="session.id"
+        :index="index"
+        :last="index === sessions.length - 1"
         :session="session"
         :availableHalls="halls"
         :slots="currentEvent?.slots"
@@ -471,6 +473,15 @@ export default defineComponent({
     },
 
     backToTop () {
+      const focusNavbarOnEndOfScroll = () => {
+        if (window.scrollX === 0) {
+          window.removeEventListener('scroll', focusNavbarOnEndOfScroll);
+          (document.activeElement as HTMLElement | null)?.blur();
+          document.getElementById('sidebar-collapse-button')?.focus();
+        }
+      }
+
+      window.addEventListener('scroll', focusNavbarOnEndOfScroll);
       scrollTo({ left: 0, top: 0, behavior: 'smooth' });
     },
 

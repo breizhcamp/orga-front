@@ -16,6 +16,8 @@
             <li class="nav-item mb-3">
               <button 
                 class="nav-link btn btn-dark rounded-pill expand" 
+                id="sidebar-collapse-button"
+                type="button"
                 @click="expanded = !expanded" 
                 :class="expanded ? '' : 'protruding'" 
                 :aria-label="expanded ? 'Collapse the navbar' : 'Expand the navbar'"
@@ -78,9 +80,9 @@
                 <span :class="expanded ? 'text' : 'no-text'">Events</span>
               </router-link>
             </li>
-            <li class="nav-item fixed-bottom d-flex flex-column" style="width: fit-content;">
+            <li class="nav-item position-fixed bottom-0 d-flex flex-column" style="width: fit-content;">
               <IdentityBadge :expanded="expanded"/>
-              <button role="button" type="button" class="btn nav-link" @click="logout">
+              <button role="button" id="logout-button" type="button" class="btn nav-link" @click="logout">
                 <BiBoxArrowLeft class="nav-icon" />
                 <span :class="expanded ? 'text' : 'no-text'">Logout</span>
               </button>
@@ -145,7 +147,7 @@ export default defineComponent({
 
 <style scoped>
 /* Sidebar */
-.sidebar {
+#sidebar {
   position: sticky;
   top: 0;
   bottom: 0;
@@ -182,7 +184,9 @@ export default defineComponent({
   transition: all 0.3s;
 }
 
+#logout-button,
 .nav-link,
+#logout-button:focus,
 .nav-link:focus {
   width: max-content;
   padding: 15px;
@@ -190,17 +194,19 @@ export default defineComponent({
   display: inline-flex;
   align-items: center;
   color: #fff;
+  border: 0;
+  border-radius: 0;
 }
 
+#logout-button:focus-visible,
 .nav-link:focus-visible {
-  all: unset;
   width: max-content;
-  padding: 15px;
   font-size: 1.1em;
   display: inline-flex;
   align-items: center;
   color: #fff;
-  border: 4px dashed orangered;
+  border: 0;
+  border-radius: 0;
 }
 
 .nav-link:hover {
@@ -243,7 +249,6 @@ export default defineComponent({
 }
 
 .protruding:focus-visible {
-  border: 3px dashed orangered;
   box-shadow: none;
   background-color: var(--bs-btn-bg);
 }

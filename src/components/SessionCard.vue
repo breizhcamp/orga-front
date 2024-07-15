@@ -1,5 +1,13 @@
 <template>
-  <button style="cursor: pointer" class="card w-100 d-flex flex-row m-1 bg-secondary bg-opacity-25" @click="sessionModal = true" @keyup.stop="focusTopButton">
+  <button 
+    style="cursor: pointer"
+    :id="computeId(index)"
+    class="card w-100 d-flex flex-row m-1 bg-secondary bg-opacity-25" 
+    @click="sessionModal = true"
+    @keydown.up.prevent="focusSession(index - 1)"
+    @keydown.down.prevent="focusSession(index + 1)"
+    @keydown.escape.prevent="focusTopButton()"
+  >
     <div class="card-body text-start bg-opacity-100">
       <div class="row">
         <div class="align-self-start" :class="editRights ? 'col-8' : 'col-10'">
@@ -192,6 +200,8 @@ export default defineComponent({
     slots: { type: Object as PropType<Map<number, Map<Hall, Array<Slot>>> | null>, required: false }, 
     eventStart: { type: Date, required: false },
     forceModal: { type: Boolean, required: true },
+    index: { type: Number, required: true },
+    last: { type: Boolean, required: true }
   },
 
   emits: [
@@ -352,13 +362,28 @@ export default defineComponent({
       return dayjs(eventStart).add(day - 1, 'days').format("dddd")
     },
 
-    focusTopButton(e: KeyboardEvent) {
-      if (e.key == "Escape") {
-        if (document.activeElement != null) {
-          (document.activeElement as HTMLElement).blur();
-        }
-        this.$emit('focus-back-to-top');
+    computeId(index: Number): string  {
+      return 'session-' + index;
+    },
+
+    focusSession(index: number) {
+      if (document.activeElement != null) {
+        (document.activeElement as HTMLElement).blur();
       }
+      if (index < 0) {
+        document.getElementById('session-filter-search-button')?.focus();
+      } else if (this.last) {
+        this.focusTopButton();
+      } else {
+        document.getElementById(this.computeId(index))?.focus();
+      }
+    },
+
+    focusTopButton() {
+      if (document.activeElement != null) {
+        (document.activeElement as HTMLElement).blur();
+      }
+      this.$emit('focus-back-to-top');
     },
 
     beautifyTime,
