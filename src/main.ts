@@ -1,3 +1,4 @@
+import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -9,6 +10,7 @@ import axios from 'axios'
 import { keycloakKey } from './provide-keys'
 
 const app = createApp(App)
+app.use(VueQueryPlugin)
 
 const keycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_AUTHORIZATION_ENDPOINT,

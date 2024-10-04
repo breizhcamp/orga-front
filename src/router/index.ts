@@ -1,5 +1,8 @@
 import AttendeeView from '@/views/AttendeeView.vue';
 import EventView from '@/views/EventView.vue';
+import MoneizView from '@/views/moneiz/MoneizView.vue';
+import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
+import SponsorsView from '@/views/moneiz/SponsorsView.vue';
 import ParticipantView from '@/views/ParticipantView.vue'
 import ProgramView from '@/views/ProgramView.vue';
 import RegisteredView from '@/views/RegisteredView.vue'
@@ -37,13 +40,31 @@ const router = createRouter({
       path: '/events/program/:eventId',
       name: 'Program',
       component: ProgramView
+    },
+    {
+      path: '/moneiz',
+      name: 'Moneiz',
+      component: MoneizView,
+      redirect: '/moneiz/sponsorings',
+      children: [
+        {
+          path: 'sponsorings',
+          name: 'MoneizSponsorings',
+          component: SponsoringsView
+        },
+        {
+          path: 'sponsors',
+          name: 'MoneizSponsors',
+          component: SponsorsView
+        }
+      ]
     }
   ],
 
 })
 
 router.beforeEach((to, _, next) => {
-  document.title = `${to.name?.toString()} - Breizhcamp` 
+  document.title = `${to.name?.toString()} - Breizhcamp`
   next()
 })
 

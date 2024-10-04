@@ -11,73 +11,43 @@
               </h1>
             </div>
           </div>
-        
+
           <ul class="nav flex-column">
             <li class="nav-item mb-3">
-              <button 
-                class="nav-link btn btn-dark rounded-pill expand" 
+              <button
+                class="nav-link btn btn-dark rounded-pill expand"
                 id="sidebar-collapse-button"
                 type="button"
-                @click="expanded = !expanded" 
-                :class="expanded ? '' : 'protruding'" 
+                @click="expanded = !expanded"
+                :class="expanded ? '' : 'protruding'"
                 :aria-label="expanded ? 'Collapse the navbar' : 'Expand the navbar'"
               >
-                <component 
-                  :is="expanded ? 'BiArrowLeft' : 'BiArrowRight'" 
-                  class="nav-icon" 
-                  aria-hidden="true" 
-                />
+                <component :is="expanded ? 'BiArrowLeft' : 'BiArrowRight'" class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Collapse</span>
               </button>
             </li>
             <li class="nav-item">
-              <router-link
-                to="/registered" 
-                class="nav-link"
-                aria-label="Go to registered"
-              >
-                <BiPersonDown class="nav-icon" aria-hidden="true"/>
-                <span :class="expanded ? 'text' : 'no-text'">Registered</span>
+              <router-link to="/bilhed" class="nav-link" aria-label="Go to Bilhed" title="Bilhed">
+                <BiTicket class="nav-icon" aria-hidden="true"/>
+                <span :class="expanded ? 'text' : 'no-text'">Bilhed</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link
-                to="/participants"
-                class="nav-link"
-                aria-label="Go to participants"
-              >
-                <BiPersonCheck class="nav-icon" aria-hidden="true"/>
-                <span :class="expanded ? 'text' : 'no-text'">Participants</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link 
-                to="/attendees" 
-                class="nav-link" 
-                aria-label="Go to attendees"
-              >
-                <BiChatLeftText class="nav-icon" aria-hidden="true"/>
-                <span :class="expanded ? 'text' : 'no-text'">Attendees</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link 
-                to="/sessions" 
-                class="nav-link" 
-                aria-label="Go to sessions"
-              >
+              <router-link to="/sessions" class="nav-link" aria-label="Go to sessions">
                 <BiCalendarWeek class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Sessions</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link 
-                to="/events" 
-                class="nav-link"
-                aria-label="Go to events"
-              >
+              <router-link to="/events" class="nav-link" aria-label="Go to events">
                 <BiGear class="nav-icon" aria-hidden="true"/>
                 <span :class="expanded ? 'text' : 'no-text'">Events</span>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/moneiz" class="nav-link" aria-label="Go to Moneiz" title="Moneiz">
+                <BiBuilding class="nav-icon" aria-hidden="true"/>
+                <span :class="expanded ? 'text' : 'no-text'">Moneiz</span>
               </router-link>
             </li>
             <li class="nav-item position-fixed bottom-0 d-flex flex-column" style="width: fit-content;">
@@ -96,7 +66,7 @@
       <RouterView />
     </div>
   </div>
-  
+
 </template>
 
 <script lang="ts">
@@ -104,7 +74,7 @@
 import { defineComponent, inject } from 'vue'
 import IdentityBadge from "@/components/IdentityBadge.vue";
 import Logo from '@/assets/logo-breizhcamp-icone.svg?component'
-import BiPersonDown from 'bootstrap-icons/icons/person-down.svg?component'
+import BiTicket from 'bootstrap-icons/icons/ticket-perforated.svg?component'
 import BiPersonCheck from 'bootstrap-icons/icons/person-check.svg?component'
 import BiChatLeftText from "bootstrap-icons/icons/chat-left-text.svg?component";
 import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
@@ -112,22 +82,24 @@ import BiGear from 'bootstrap-icons/icons/gear.svg?component'
 import BiArrowLeft from "bootstrap-icons/icons/arrow-left-short.svg?component";
 import BiArrowRight from "bootstrap-icons/icons/arrow-right-short.svg?component";
 import BiBoxArrowLeft from "bootstrap-icons/icons/box-arrow-left.svg?component";
+import BiBuilding from "bootstrap-icons/icons/building.svg?component";
 import type Keycloak from "keycloak-js"
 import { keycloakKey } from './provide-keys';
 
 export default defineComponent({
   name: "AppView",
-  components: { 
+  components: {
     IdentityBadge,
-    Logo, 
-    BiPersonDown, 
-    BiPersonCheck, 
-    BiChatLeftText, 
-    BiCalendarWeek, 
-    BiGear, 
-    BiArrowLeft, 
+    Logo,
+    BiTicket,
+    BiPersonCheck,
+    BiChatLeftText,
+    BiCalendarWeek,
+    BiGear,
+    BiArrowLeft,
     BiArrowRight,
-    BiBoxArrowLeft
+    BiBoxArrowLeft,
+    BiBuilding,
   },
 
   data() {
@@ -137,7 +109,7 @@ export default defineComponent({
   },
   methods: {
     logout() {
-      this.$.appContext.app.runWithContext(() => 
+      this.$.appContext.app.runWithContext(() =>
         (inject(keycloakKey) as Keycloak).logout()
       );
     }
@@ -256,7 +228,7 @@ export default defineComponent({
 .btn-dark {
   padding-top: 5px;
   padding-bottom: 5px;
-} 
+}
 
 .nav-link.expand {
   padding-top: 5px;

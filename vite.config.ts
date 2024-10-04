@@ -24,8 +24,13 @@ export default defineConfig({
       '/konter': {
         target: 'http://localhost:4008/api',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/konter/, '') 
-      }
+        rewrite: (path) => path.replace(/^\/konter/, '')
+      },
+      '/moneiz': {
+        target: 'http://localhost:4005/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/moneiz/, '')
+      },
     }
   }
 })
