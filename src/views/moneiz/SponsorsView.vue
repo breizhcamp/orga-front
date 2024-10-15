@@ -15,13 +15,13 @@ const { isPending, isError, data, error } = useQuery({
 <template>
   <div class="container">
     <div v-if="isPending">Loading...</div>
-    <div v-else-if="isError">Error: {{ error.message }}</div>
+    <div v-else-if="isError">Error: {{ error?.message }}</div>
     <div v-else>
       <div class="card" v-for="sponsor in data" :key="sponsor.id">
         <div class="card-body">
           <div class="title">
             <h5 class="card-title">{{ sponsor.name }}</h5>
-            <button class="btn btn-primary" @click="edit(sponsor)">
+            <button class="btn btn-primary">
               <BiPen />
             </button>
 
