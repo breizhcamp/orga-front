@@ -3,22 +3,22 @@
 
   <div class="mb-3 main-content">
     <div class="dropdown">
-      <button 
-        type="button" 
-        class="btn btn-primary dropdown-toggle" 
-        :class="openYearDropdown ? 'show' : null" 
+      <button
+        type="button"
+        class="btn btn-primary dropdown-toggle"
+        :class="openYearDropdown ? 'show' : null"
         @click="openYearDropdown = !openYearDropdown"
       >{{ currentEvent?.name }}</button>
       <ul class="dropdown-menu" :class="openYearDropdown ? 'show' : null">
         <li
-          v-for="event in events" 
+          v-for="event in events"
           :key="event.id"
         >
-          <button 
-            type="button" 
-            class="dropdown-item" 
+          <button
+            type="button"
+            class="dropdown-item"
 
-            :class="event.id === currentEvent?.id ? 'active' : null" 
+            :class="event.id === currentEvent?.id ? 'active' : null"
             @click="currentEvent = event; openYearDropdown = false"
           >
             {{ event.name }}
@@ -26,7 +26,7 @@
         </li>
       </ul>
     </div>
-    
+
     <SessionFilter v-model:filter="filter" @filter="(f) => loadSessions(f)" :loseFocus="forceModalOpen" />
     <div id="infinite-scroll">
       <SessionCard
@@ -49,20 +49,20 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    
+
   </div>
 
   <ModalForm v-model:open="importModal" :loading="loading" title="Import" @save="importCsv()">
     <!-- Description -->
     <div class="mb-3">
       <h5>Import here the files obtained via Sessionize</h5>
-      To get the three CSV files : 
+      To get the three CSV files :
       <ol>
         <li>Go to the event dashboard > Export</li>
         <li>Download the <code>Everything in a single file</code> option</li>
-        <li>Save the 
-          <code>Sessions</code>, 
-          <code>Speakers</code> & 
+        <li>Save the
+          <code>Sessions</code>,
+          <code>Speakers</code> &
           <code>Evaluation results</code>
           worksheets as CSV <b>with <code>UTF-8</code> format</b></li>
       </ol>
@@ -71,15 +71,15 @@
     <!-- CSV File for speakers -->
     <div class="mb-3">
       <b>Speakers CSV file</b><br/>
-      Format (with header) : Speaker Id, FirstName, LastName, Email, 
-      TagLine, Bio, Profile Picture 
+      Format (with header) : Speaker Id, FirstName, LastName, Email,
+      TagLine, Bio, Profile Picture
     </div>
     <div class="mb-3">
-      <input 
-        type="file" 
-        class="form-control" 
-        id="speakers-file" 
-        accept="text/csv" 
+      <input
+        type="file"
+        class="form-control"
+        id="speakers-file"
+        accept="text/csv"
         @change="onSpeakersFileSelected($event)"
       >
     </div>
@@ -87,16 +87,16 @@
     <!-- CSV File for sessions -->
     <div class="mb-3">
       <b>Sessions CSV file</b><br/>
-      Format (with header) : Session Id, Title, Description, Owner, 
-      Owner Email, Speakers, Format, Thème, Niveau, Status, Date Submitted, 
+      Format (with header) : Session Id, Title, Description, Owner,
+      Owner Email, Speakers, Format, Thème, Niveau, Status, Date Submitted,
       Owner Notes, Speaker Ids
     </div>
     <div class="mb-3">
-      <input 
-        type="file" 
-        class="form-control" 
-        id="sessions-file" 
-        accept="text/csv" 
+      <input
+        type="file"
+        class="form-control"
+        id="sessions-file"
+        accept="text/csv"
         @change="onSessionsFileSelected($event)"
       >
     </div>
@@ -104,24 +104,24 @@
     <!-- CSV File for sessions evaluations -->
     <div class="mb-3">
       <b>Evaluations CSV File</b><br/>
-      Format (with header) : Session Id, Title, Description, Owner, 
+      Format (with header) : Session Id, Title, Description, Owner,
       Owner Email, Speakers, Format, Thème, Niveau, Evaluation
     </div>
     <div class="mb-3">
-      <input 
-        type="file" 
-        id="evaluations-file" 
-        class="form-control" 
-        accept="text/csv" 
+      <input
+        type="file"
+        id="evaluations-file"
+        class="form-control"
+        accept="text/csv"
         @change="onEvaluationsFileSelected($event)"
       >
     </div>
   </ModalForm>
 
-  <button 
-    type="button" 
+  <button
+    type="button"
     id="back-to-top"
-    class="btn btn-light border border-dark border-2 m-1 rounded-pill position-fixed bottom-0 end-0" 
+    class="btn btn-light border border-dark border-2 m-1 rounded-pill position-fixed bottom-0 end-0"
     @click="backToTop"
   >
     <p class="d-inline mx-1 fs-6">Back to top</p>
@@ -177,31 +177,31 @@ const equalsFilter = (that?: Filter, other?: Filter): boolean => {
 
 const cleanFilter = (filter: Filter): Filter => {
   let result: Filter = {};
-  if (filter.format != undefined) { 
+  if (filter.format != undefined) {
     result.format = filter.format;
   }
-  if (filter.id != undefined) { 
+  if (filter.id != undefined) {
     result.id = filter.id;
   }
-  if (filter.niveau != undefined) { 
-    result.niveau = filter.niveau; 
+  if (filter.niveau != undefined) {
+    result.niveau = filter.niveau;
   }
-  if (filter.rated != undefined) { 
+  if (filter.rated != undefined) {
     result.rated = filter.rated;
   }
-  if (filter.speakerName != undefined) { 
+  if (filter.speakerName != undefined) {
     result.speakerName = filter.speakerName;
   }
-  if (filter.status != undefined) { 
+  if (filter.status != undefined) {
     result.status = filter.status;
   }
-  if (filter.theme != undefined) { 
+  if (filter.theme != undefined) {
     result.theme = filter.theme;
   }
-  if (filter.title != undefined) { 
+  if (filter.title != undefined) {
     result.title = filter.title;
   }
-  if (filter.format != undefined) { 
+  if (filter.format != undefined) {
     result.format = filter.format;
   }
 
@@ -210,12 +210,12 @@ const cleanFilter = (filter: Filter): Filter => {
 
 export default defineComponent({
   name: "SessionView",
-  components: { 
-    ModalForm, 
-    ToolBar, 
-    SessionFilter, 
-    SessionCard, 
-    BiArrowUpCircleFill 
+  components: {
+    ModalForm,
+    ToolBar,
+    SessionFilter,
+    SessionCard,
+    BiArrowUpCircleFill
   },
 
   data() {
@@ -245,21 +245,21 @@ export default defineComponent({
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
 
-    this.actions = [{ 
-      label: "Export session cards as PDF", 
-      title: "Export", 
-      function: () => { this.exportPDFCards() }, 
+    this.actions = [{
+      label: "Export session cards as PDF",
+      title: "Export",
+      function: () => { this.exportPDFCards() },
       // @ts-ignore : We pass a shallowRef instead of the component
-      icon: shallowRef(BiFilePdf) 
+      icon: shallowRef(BiFilePdf)
     }];
 
     if (this.editRights) {
-      this.actions.push({ 
-        label: "Import data as CSV", 
-        title: "Import", 
-        function: () => { this.importModal = true }, 
+      this.actions.push({
+        label: "Import data as CSV",
+        title: "Import",
+        function: () => { this.importModal = true },
         // @ts-ignore : We pass a shallowRef instead of the component
-        icon: shallowRef(BiDatabaseUp) 
+        icon: shallowRef(BiDatabaseUp)
       })
     }
 
@@ -283,7 +283,7 @@ export default defineComponent({
     loadOnMounted() {
       this.loadEvents();
     },
-    
+
     loadEvents() {
       axios.get('/kalon/events')
       .then((response: AxiosResponse<number[]>) => {
@@ -297,7 +297,7 @@ export default defineComponent({
         }
       })
     },
-    
+
     loadEvent(eventId: number) {
       axios.get(`/kalon/events/${eventId}`)
       .then((response: AxiosResponse<EventDTO>) => {
@@ -307,7 +307,7 @@ export default defineComponent({
         if (this.eventCount.total == this.eventCount.current) {
           this.events.sort((a, b) => b.year - a.year);
           this.currentEvent = this.events[0];
-          
+
           this.resetPage();
           this.loadSessions(this.filter);
           this.loadHalls();
@@ -351,7 +351,7 @@ export default defineComponent({
         }
 
         axios.post(
-          `/konter/sessions/${this.currentEvent.id}/filter/${this.currentPage}`, 
+          `/konter/sessions/${this.currentEvent.id}/filter/${this.currentPage}`,
           filter
         ).then((response: AxiosResponse<Page<SessionDTO>>) => {
           this.sessions = this.sessions.concat(response.data.content.map(sessionDTOToSession));
@@ -370,7 +370,7 @@ export default defineComponent({
     },
 
     loadHalls() {
-      const url = '/konter/halls' 
+      const url = '/konter/halls'
         + (this.currentEvent != null ? '/' + this.currentEvent?.id : '');
       axios.get(url).then((response: AxiosResponse<Array<Hall>>) => {
         this.halls = response.data;
@@ -378,7 +378,7 @@ export default defineComponent({
     },
 
     loadSlots() {
-      if (this.currentEvent == null) return; 
+      if (this.currentEvent == null) return;
 
       axios.get('/konter/slots/event/' + this.currentEvent.id).then(
         (response: AxiosResponse<Map<number, Map<number, Array<Slot>>>>) => {
@@ -411,7 +411,7 @@ export default defineComponent({
         sessionsFormData.append('file', this.sessionsFile);
 
         axios.post(
-          `/konter/sessions/${this.currentEvent?.year}/import`, 
+          `/konter/sessions/${this.currentEvent?.id}/import`,
           sessionsFormData, {
             headers: {
               "Content-Type": 'multipart/form-data'
@@ -424,7 +424,7 @@ export default defineComponent({
           evaluationsFormData.append('file', this.evaluationsFile);
 
           axios.post(
-            '/konter/sessions/evaluations/import', 
+            '/konter/sessions/evaluations/import',
             evaluationsFormData, {
               headers: {
                 "Content-Type": 'multipart/form-data'
@@ -450,21 +450,21 @@ export default defineComponent({
 
     exportPDFCards () {
       axios.get(
-        `/konter/sessions/${this.currentEvent?.id}/export`, 
+        `/konter/sessions/${this.currentEvent?.id}/export`,
         { responseType: "blob" }
-      ).then((response) => 
+      ).then((response) =>
         downloadPdfWithName(response, `session_cards_${this.currentEvent?.name}.pdf`)
       )
     },
 
     onSpeakersFileSelected (event: Event) {
       const target = event.target as HTMLInputElement;
-      this.speakersFile = target.files?.item(0) ?? null; 
+      this.speakersFile = target.files?.item(0) ?? null;
     },
-    
+
     onSessionsFileSelected (event: Event) {
       const target = event.target as HTMLInputElement;
-      this.sessionsFile = target.files?.item(0) ?? null; 
+      this.sessionsFile = target.files?.item(0) ?? null;
     },
 
     onEvaluationsFileSelected (event: Event) {
