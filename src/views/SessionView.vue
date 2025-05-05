@@ -118,6 +118,36 @@
     </div>
   </ModalForm>
 
+  <ModalForm v-model:open="importScheduleModal" :loading="loading" title="Import Schedule" @save="importSchedule()">
+    <!-- Description -->
+    <div class="mb-3">
+      <h5>Import schedule</h5>
+      To get the schedule file:
+      <ol>
+        <li>Go to the event dashboard > Export</li>
+        <li>Download the <code>Everything in a single file</code> option</li>
+        <li>Save the <code>Accepted sessions</code> worksheets as CSV <b>with <code>UTF-8</code> format</b></li>
+      </ol>
+    </div>
+
+    <!-- Schedule File -->
+    <div class="mb-3">
+      <b>Schedule File</b><br/>
+      Format (with header) : Session Id, Title, Description, Owner, Owner Email, Speakers,
+      Format, Thème, Niveau, Additional notes, Owner Informed, Owner Confirmed,
+      Room, Scheduled At, Scheduled Duration, Live Link, Recording Link, Speaker Ids
+    </div>
+    <div class="mb-3">
+      <input
+        type="file"
+        class="form-control"
+        id="schedule-file"
+        accept="text/csv"
+        @change="onScheduleFileSelected($event)"
+      >
+    </div>
+  </ModalForm>
+
   <button
     type="button"
     id="back-to-top"
@@ -228,11 +258,13 @@ export default defineComponent({
       sessions: [] as Session[],
       loading: false,
       importModal: false,
+      importScheduleModal: false,
       exportModal: false,
       openYearDropdown: false,
       speakersFile: null as File | null,
       sessionsFile: null as File | null,
       evaluationsFile: null as File | null,
+      scheduleFile: null as File | null,
       actions: [] as Action[],
       filter: {} as Object,
       filterById: false,
@@ -260,7 +292,14 @@ export default defineComponent({
         function: () => { this.importModal = true },
         // @ts-ignore : We pass a shallowRef instead of the component
         icon: shallowRef(BiDatabaseUp)
-      })
+      });
+      this.actions.push({
+        label: "Import schedule",
+        title: "Import Schedule",
+        function: () => { this.importScheduleModal = true },
+        // @ts-ignore : We pass a shallowRef instead of the component
+        icon: shallowRef(BiDatabaseUp)
+      });
     }
 
     this.loadOnMounted();
@@ -470,6 +509,36 @@ export default defineComponent({
     onEvaluationsFileSelected (event: Event) {
       const target = event.target as HTMLInputElement;
       this.evaluationsFile = target.files?.item(0) ?? null;
+    },
+
+    onScheduleFileSelected(event: Event) {
+      const target = event.target as HTMLInputElement;
+      this.scheduleFile = target.files?.item(0) ?? null;
+    },
+
+    importSchedule() {
+      if (!this.scheduleFile) return;
+
+      this.loading = true;
+      const scheduleFormData = new FormData();
+      scheduleFormData.append('file', this.scheduleFile);
+
+      axios.post(
+        `/konter/sessions/${this.currentEvent?.id}/import/schedule`,
+        scheduleFormData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      ).then(() => {
+        this.importScheduleModal = false;
+        this.loadSessions(this.filter);
+      }).catch(() => {
+        this.importScheduleModal = false;
+      }).finally(() => {
+        this.loading = false;
+      });
     },
 
     backToTop () {
