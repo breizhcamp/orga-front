@@ -1,26 +1,26 @@
 <template>
   <div>
-    <ToolBar 
-      :title="'Program for ' + event.name" 
-      :actions="actions" 
-      sub-view 
-      parent-title="Events" 
+    <ToolBar
+      :title="'Program for ' + event.name"
+      :actions="actions"
+      sub-view
+      parent-title="Events"
       parent-route="/events"
     />
 
     <div class="minh m-3">
       <div v-if="editable" class="d-flex flex-nowrap align-items-center justify-content-center">
-        <div 
+        <div
           class="input-group input-group-sm mx-2"
-          style="width: fit-content;" 
+          style="width: fit-content;"
           role="group"
-          v-for="(hall, index) in availableHalls" 
+          v-for="(hall, index) in availableHalls"
           :key="hall.id"
         >
-          <button 
+          <button
             v-if="index != 0"
             type="button"
-            class="btn btn-sm btn-secondary d-flex align-items-center" 
+            class="btn btn-sm btn-secondary d-flex align-items-center"
             aria-label="Move track to the left"
             @click="swapOrder(index - 1, index)"
           >
@@ -29,18 +29,18 @@
           <div class="input-group-text text-bg-info">
             {{ hall.name }}
           </div>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="btn btn-sm btn-danger d-flex align-items-center"
             aria-label="Remove track"
             @click="removeTrack(hall.id)"
           >
             <BiXLg />
           </button>
-          <button 
+          <button
             v-if="index != availableHalls.length - 1"
-            type="button" 
-            class="btn btn-sm btn-secondary d-flex align-items-center" 
+            type="button"
+            class="btn btn-sm btn-secondary d-flex align-items-center"
             aria-label="Move track to the right"
             @click="swapOrder(index, index + 1)"
           >
@@ -48,17 +48,17 @@
           </button>
         </div>
         <div class="dropdown col-auto" v-if="halls.length !== availableHalls.length">
-          <button 
-            type="button" 
-            class="btn btn-sm text-bg-warning rounded dropdown-toggle" 
-            @click="trackDropdown = !trackDropdown" 
+          <button
+            type="button"
+            class="btn btn-sm text-bg-warning rounded dropdown-toggle"
+            @click="trackDropdown = !trackDropdown"
             :class="trackDropdown ? 'show' : ''"
           >Add Track</button>
           <ul class="dropdown-menu" :class="trackDropdown ? 'show' : ''">
-            <li 
-              class="dropdown-item" 
+            <li
+              class="dropdown-item"
               v-for="hall in halls.filter(
-                h => !availableHalls.map(h => h.id).includes(h.id))" 
+                h => !availableHalls.map(h => h.id).includes(h.id))"
               :key="hall.id">
               <a style="user-select: none;" @click="addTrack(hall.id)">
                 {{ hall.name }} (Track {{ hall.trackId }})
@@ -69,8 +69,8 @@
       </div>
 
       <h2 class="text-center m-3" v-if="availableHalls.length === 0">Add at least one track in order to edit and display the program</h2>
-      <h2 
-        class="text-center m-3" 
+      <h2
+        class="text-center m-3"
         v-else-if="event.debutEvent === null || event.finEvent === null"
       >Event begin and end dates have to be set in order to edit and display the program</h2>
 
@@ -94,7 +94,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="stamp in getTimestamps(slots.get(day.index)!, availableHalls)" :key="stamp.time.unix()">
+                <tr v-for="stamp in getTimestamps(slots.get(day.index)!, availableHalls)" :key="stamp.time.unix()" class="h-100">
                   <td
                     v-if="Array.from(stamp.tracks.values()).filter(s => s.slot != undefined || !s.display).length == 0"
                     class="border"
@@ -250,15 +250,15 @@ import type Keycloak from 'keycloak-js';
 
 export default defineComponent({
   name: "ProgramView",
-  components: { 
-    ToolBar, 
-    SlotModal, 
-    SlotEditModal, 
-    SlotTemplateModal, 
-    SlotSessionTableData, 
-    BiXLg, 
-    BiCaretLeft, 
-    BiCaretRight 
+  components: {
+    ToolBar,
+    SlotModal,
+    SlotEditModal,
+    SlotTemplateModal,
+    SlotSessionTableData,
+    BiXLg,
+    BiCaretLeft,
+    BiCaretRight
   },
 
   data() {
@@ -269,15 +269,15 @@ export default defineComponent({
       trackDropdown: false,
       slots: new Map() as Map<number, Map<Hall, Slot[]>>,
 
-      slotModal: false, 
+      slotModal: false,
       slotModalHalls: [] as Array<Hall>,
       slotModalDay: undefined as {index: number, date: Dayjs} | undefined,
       slotModalTime: undefined as Dayjs | undefined,
 
-      editSlotModal: false, 
+      editSlotModal: false,
       editSlotValue: undefined as Slot | undefined,
 
-      templateModal: false, 
+      templateModal: false,
       templateModalHall: undefined as Hall | undefined,
       templateModalDay: undefined as { index: number, date: Dayjs } | undefined,
 
@@ -293,17 +293,24 @@ export default defineComponent({
   mounted() {
     this.load()
     this.actions = [
-      { 
+      {
         label: "Export program as PDF",
         title: "Export program",
-        function:  this.exportPdf, 
+        function:  this.exportPdf,
         // @ts-ignore : We pass a shallowRef instead of the component
         icon: shallowRef(BiFilePdf)
       },
-      { 
+      {
         label: "Export talks.json",
         title: "Export talks",
-        function:  this.exportTalks, 
+        function:  this.exportTalks,
+        // @ts-ignore : We pass a shallowRef instead of the component
+        icon: shallowRef(BiBraces)
+      },
+      {
+        label: "Export speakers.json",
+        title: "Export speakers",
+        function:  this.exportSpeakers,
         // @ts-ignore : We pass a shallowRef instead of the component
         icon: shallowRef(BiBraces)
       },
@@ -429,7 +436,7 @@ export default defineComponent({
     async setOrder(id: number, order: number) {
       return axios.patch(`/konter/halls/${id}/event/${this.$route.params.eventId}/${order}`)
     },
-    
+
     removeTrack(id: number) {
       axios.delete(`konter/halls/${id}/event/${this.$route.params.eventId}`).then(
         this.load
@@ -438,20 +445,20 @@ export default defineComponent({
 
     getEventDays(event: EventDTO): { index: number, date: Dayjs }[] {
       if (
-        event.debutEvent == undefined || 
-        event.finEvent == undefined || 
+        event.debutEvent == undefined ||
+        event.finEvent == undefined ||
         dayjs(event.debutEvent).isAfter(dayjs(event.finEvent))
       ) {
         return []
       }
-    
+
       return Array.from(
           Array(dayjs(event.finEvent).diff(dayjs(event.debutEvent), 'days') + 1)
           .keys()
         ).map(n => {return {
           index: n + 1,
           date: dayjs(event.debutEvent).add(n, "days")
-        }}) 
+        }})
     },
 
     getTimestamps(tracks: Map<Hall, Slot[]>, halls: Hall[])
@@ -524,7 +531,7 @@ export default defineComponent({
         values.push({ time: current.time, tracks: new Map(current.tracks) });
         current.tracks = new Map()
         current.time = current.time.add(15, "minute");
-        
+
         tracksById.forEach((value, key) => {
           if (!current.tracks.has(key)) {
             const slot = this.getSlotAtTime(value, current.time)
@@ -588,18 +595,18 @@ export default defineComponent({
 
     emptyTrack(day: number, hallId: number) {
       const tracks = this.slots.get(day);
-    
+
       if (tracks == undefined) {
         // Should not be able to remove slots from an empty one
         return;
       }
-    
+
       const slots = Array.from(tracks.entries()).find(entry => entry[0].id === hallId)?.[1];
-    
+
       if (slots == undefined) {
         return;
       }
-    
+
       const slotsCount = { total: slots.length, resolved: 0 }
       slots.forEach(s => {
         axios.delete('/konter/slots/' + s.id).then(() => {
@@ -636,15 +643,21 @@ export default defineComponent({
 
     exportPdf() {
       axios.get("/konter/slots/program/" + this.$route.params.eventId, { responseType: "blob" })
-      .then((response) => 
+      .then((response) =>
         downloadPdfWithName(response, `program_${this.event.name}.pdf`)
       )
     },
 
     exportTalks() {
       axios.get("konter/slots/talks/" + this.$route.params.eventId, { responseType: "blob" })
-      .then((response) => 
+      .then((response) =>
         downloadFileWithNameAndType(response, 'talks.json', 'application/json'))
+    },
+
+    exportSpeakers() {
+      axios.get("konter/speakers/export", { responseType: "blob" })
+      .then((response) =>
+        downloadFileWithNameAndType(response, 'speakers.json', 'application/json'))
     }
   }
 })
