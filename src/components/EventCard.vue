@@ -10,19 +10,19 @@
         </span>
       </h4>
       <div class="float-end d-flex align-items-center">
-        <button 
+        <button
           v-if="editRights"
-          type="button" 
-          class="btn mx-1 btn-sm btn-warning opacity-75 flex-shrink-1 float-end d-flex align-items-center" 
+          type="button"
+          class="btn mx-1 btn-sm btn-warning opacity-75 flex-shrink-1 float-end d-flex align-items-center"
           @click="eventModal = true"
         >
           <BiPencilSquare class="me-1" aria-hidden="true"/>
           Edit
         </button>
-        <button 
+        <button
           v-if="editRights"
-          type="button" 
-          class="btn btn-sm btn-danger d-flex align-items-center" 
+          type="button"
+          class="btn btn-sm btn-danger d-flex align-items-center"
           @click="deleteEvent()"
         >
           <BiTrash class="me-1" aria-hidden="true"/>Delete
@@ -31,7 +31,7 @@
     </div>
     <div class="card-body row row-cols-2">
       <div class="col">
-        <div class="d-flex align-items-center justify-content-between mb-1"> 
+        <div class="d-flex align-items-center justify-content-between mb-1">
           <h5 class="flex-grow-1 mb-0">Key dates</h5>
         </div>
         <ul class="p-0">
@@ -66,50 +66,50 @@
         <div class="row row-cols-2 align-items-center gy-1">
           <span class="col">Days: {{ getEventDays(event).length }}</span>
           <RouterLink :to="'/events/program/'+event.id" custom v-slot="{ navigate }">
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="btn mx-auto btn-sm btn-primary col-5"
-              @click="navigate" 
+              @click="navigate"
             >See program</button>
           </RouterLink>
         </div>
 
         <h5>Other information</h5>
         <div class="row row-cols-2 align-items-center gy-1">
-          <span class="col">Members: {{ 
-            (event.participants as EventParticipants).getMemberIds().length 
+          <span class="col">Members: {{
+            (event.participants as EventParticipants).getMemberIds().length
           }}</span>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="btn mx-auto btn-sm btn-primary col-5"
-            @click="membersModal = true" 
+            @click="membersModal = true"
           >See members</button>
 
-          <span class="col">Teams: {{ 
-            (event.participants as EventParticipants).getTeamIds().length 
+          <span class="col">Teams: {{
+            (event.participants as EventParticipants).getTeamIds().length
           }}</span>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="btn mx-auto btn-sm btn-primary col-5"
-            @click="teamsModal = true" 
+            @click="teamsModal = true"
           >See teams</button>
         </div>
       </div>
     </div>
   </div>
 
-  <ModalForm 
-    v-model:open="eventModal" 
-    :title="'Edit ' + event.name" 
+  <ModalForm
+    v-model:open="eventModal"
+    :title="'Edit ' + event.name"
     @save="updateEvent()"
   >
     <div class="row row-cols-2 gy-3">
       <div class="col-12">
         <label for="eventName" class="form-label">Name</label>
-        <input 
-          type="text" 
-          id="eventName" 
-          class="form-control" 
+        <input
+          type="text"
+          id="eventName"
+          class="form-control"
           :value="formValues.name"
           @input="e => formValues.name = (e.target as HTMLInputElement).value"
         >
@@ -126,10 +126,10 @@
       </div>
       <div>
         <label for="eventWebsite" class="form-label">Website</label>
-        <input 
-          type="url" 
-          id="eventWebsite" 
-          class="form-control" 
+        <input
+          type="url"
+          id="eventWebsite"
+          class="form-control"
           :value="formValues.website"
           @input="e => formValues.website = (e.target as HTMLInputElement).value"
         >
@@ -212,9 +212,9 @@
       </li>
       <li v-if="availableTeams.length !== teams.length" class="list-group-item">
         <div class="dropdown" id="team-dropdown">
-          <button 
-            type="button" 
-            class="btn btn-success dropdown-toggle" 
+          <button
+            type="button"
+            class="btn btn-success dropdown-toggle"
             data-bs-toggle="dropdown"
             :class="computeAddTeamDropdownClass()"
             @click="addTeamDropdown = !addTeamDropdown"
@@ -222,14 +222,14 @@
             Add&nbsp;
           </button>
           <ul class="dropdown-menu" :class="addTeamDropdown ? 'show' : ''">
-            <li 
+            <li
               v-for="team in availableTeams
-                .filter(t => !teams.map(t => t.id).includes(t.id))" 
+                .filter(t => !teams.map(t => t.id).includes(t.id))"
               :key="team.id"
               class="d-grid gap-2"
             >
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="btn btn-sm btn-light"
                 @click="addTeamModal(team)"
               >
@@ -248,14 +248,14 @@
       <label for="memberList" class="form-label">Search</label>
       <div class="input-group">
         <select class="form-select" list="options" id="memberList" v-model="selectedMember">
-          <option :value="undefined"><i>New member</i></option>
+          <option :value="undefined">New member</option>
           <option v-for="member in availableMembers" :key="member.id" :value="member">
             {{ member.lastname + ' ' + member.firstname }}
           </option>
         </select>
-        <button 
-          type="submit" 
-          class="btn btn-success" 
+        <button
+          type="submit"
+          class="btn btn-success"
         >
           Add&nbsp;
         </button>
@@ -318,7 +318,7 @@ export default defineComponent({
 
   data() {
     return {
-      membersModal: this.options.members, 
+      membersModal: this.options.members,
       members: [] as Member[],
       teamsModal: this.options.teams,
       teams: [] as Team[],
@@ -384,7 +384,7 @@ export default defineComponent({
     loadTeams(ids: Array<string>) {
       this.teams = [];
 
-      ids.forEach(id => 
+      ids.forEach(id =>
         axios.get('/kalon/teams/' + id).then((response: AxiosResponse<Team>) => {
           const team = { ...response.data }
           team.participations = new TeamParticipations(team.participations as Array<any>)
@@ -402,8 +402,8 @@ export default defineComponent({
     loadAllTeams() {
       this.availableTeams = [];
       axios.get('/kalon/teams').then((response: AxiosResponse<Array<string>>) => {
-        response.data.forEach(id => 
-          axios.get('/kalon/teams/' + id).then((response: AxiosResponse<Team>) =>  
+        response.data.forEach(id =>
+          axios.get('/kalon/teams/' + id).then((response: AxiosResponse<Team>) =>
             this.availableTeams.push(response.data)
           )
         )
@@ -413,11 +413,11 @@ export default defineComponent({
     loadAllMembers() {
       this.availableMembers = [];
       axios.get('/kalon/members').then((response: AxiosResponse<Array<string>>) =>
-        response.data.forEach(id => 
+        response.data.forEach(id =>
           axios.get('/kalon/members/' + id).then((response: AxiosResponse<Member>) =>
             this.availableMembers.push(response.data)
           )
-        ) 
+        )
       )
     },
 
@@ -456,7 +456,7 @@ export default defineComponent({
       const total = memberIds.length;
       let current = 0;
 
-      memberIds.forEach(memberId => 
+      memberIds.forEach(memberId =>
         axios.post(`/kalon/events/${eventId}/participants/${memberId}/${teamId}`).then(() => {
           current++;
           if (current === total) {
@@ -527,8 +527,8 @@ export default defineComponent({
 
     getEventDays(event: EventDTO): { index: number, date: Dayjs }[] {
       if (
-        event.debutEvent == undefined || 
-        event.finEvent == undefined || 
+        event.debutEvent == undefined ||
+        event.finEvent == undefined ||
         dayjs(event.debutEvent).isAfter(dayjs(event.finEvent))
       ) {
         return []
@@ -540,7 +540,7 @@ export default defineComponent({
         ).map(n => {return {
           index: n + 1,
           date: dayjs(event.debutEvent).add(n, "days")
-        }}) 
+        }})
     },
 
     deleteEvent() {

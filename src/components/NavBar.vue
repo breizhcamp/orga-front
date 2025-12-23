@@ -40,7 +40,8 @@ import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
 
 <style scoped>
 nav {
-  width: 200px
+  width: 200px;
+  background-color: #FFFFFF !important;
 }
 
 .nav-link {
