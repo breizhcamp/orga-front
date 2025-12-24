@@ -1,22 +1,21 @@
 import { initRouter } from '@/router';
-import { getToken, vueKeycloak } from '@josempgon/vue-keycloak';
+import { vueKeycloak } from '@josempgon/vue-keycloak';
 import { VueQueryPlugin } from '@tanstack/vue-query';
-import axios from 'axios'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
+import { createAxiosClient } from './utils/createAxios'
+import { kalonAxiosKey, moneizAxiosKey } from './provide-keys'
 
 window.envLoaded.then(async () => {
   const app = createApp(App)
   app.use(VueQueryPlugin)
 
-  axios.interceptors.request.use(async config => {
-    const token = await getToken()
-    config.headers.Authorization = `Bearer ${token}`
-    return config
-  })
+  // Provide axios instances
+  app.provide(kalonAxiosKey, createAxiosClient('Kalon', kalonAxiosKey, window.env.KALON_URL))
+  app.provide(moneizAxiosKey, createAxiosClient('Moneiz', moneizAxiosKey, window.env.MONEIZ_URL))
 
   await vueKeycloak.install(app, {
     config: {

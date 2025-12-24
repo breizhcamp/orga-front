@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import Logo from '@/assets/breizhcamp-logo-2026.svg?component'
+import { useKalon } from '@/utils/useAxios.ts';
 import BiHouseDoor from "bootstrap-icons/icons/house-door.svg?component";
 //import BiTicket from 'bootstrap-icons/icons/ticket-perforated.svg?component'
 import BiBuilding from "bootstrap-icons/icons/building.svg?component";
 import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
+import { ref } from 'vue';
+
+const kalon = useKalon()
+
+const events = ref()
+kalon.get('/events').then((res) => { events.value = res.data })
+
 </script>
 
 <template>
@@ -12,6 +20,12 @@ import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
     <Logo width="158" height="51"/>
   </a>
   <hr>
+  <select class="form-select mb-3">
+    <option v-for="e in events" v-bind:key="e.id">
+      {{ e.name }}
+    </option>
+  </select>
+
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
       <router-link to="/" class="nav-link" active-class="active" title="Home">
@@ -40,7 +54,7 @@ import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
 
 <style scoped>
 nav {
-  width: 200px;
+  width: 220px;
   background-color: #FFFFFF !important;
 }
 
