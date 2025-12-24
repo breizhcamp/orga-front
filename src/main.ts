@@ -8,24 +8,27 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 
-const app = createApp(App)
-app.use(VueQueryPlugin)
+window.envLoaded.then(async () => {
+  const app = createApp(App)
+  app.use(VueQueryPlugin)
 
-axios.defaults.baseURL = ''
+  axios.interceptors.request.use(async config => {
+    const token = await getToken()
+    config.headers.Authorization = `Bearer ${token}`
+    return config
+  })
 
-axios.interceptors.request.use(async config => {
-  const token = await getToken()
-  config.headers.Authorization = `Bearer ${token}`
-  return config
+  await vueKeycloak.install(app, {
+    config: {
+      url: window.env.KEYCLOAK_URL,
+      realm: window.env.KEYCLOAK_REALM,
+      clientId: window.env.KEYCLOAK_CLIENT_ID
+    }
+  })
+
+  app.use(initRouter())
+  app.mount('#app')
+}).catch(error => {
+  console.log(error)
+  document.body.innerHTML = 'Impossible de charger la configuration'
 })
-
-await vueKeycloak.install(app, {
-  config: {
-    url: import.meta.env.VITE_KEYCLOAK_AUTHORIZATION_ENDPOINT,
-    realm: import.meta.env.VITE_KEYCLOAK_REALM,
-    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID
-  }
-})
-
-app.use(initRouter())
-app.mount('#app')
