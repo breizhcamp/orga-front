@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import Logo from '@/assets/breizhcamp-logo-2026.svg?component'
-import { useKalon } from '@/utils/useAxios.ts';
+import { useEventStore } from '@/stores/event.ts';
 import BiHouseDoor from "bootstrap-icons/icons/house-door.svg?component";
-//import BiTicket from 'bootstrap-icons/icons/ticket-perforated.svg?component'
 import BiBuilding from "bootstrap-icons/icons/building.svg?component";
 import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
-import { ref } from 'vue';
 
-const kalon = useKalon()
-
-const events = ref()
-kalon.get('/events').then((res) => { events.value = res.data })
+const eventStore = useEventStore();
 
 </script>
 
@@ -20,8 +15,8 @@ kalon.get('/events').then((res) => { events.value = res.data })
     <Logo width="158" height="51"/>
   </a>
   <hr>
-  <select class="form-select mb-3">
-    <option v-for="e in events" v-bind:key="e.id">
+  <select class="form-select mb-3" v-model="eventStore.currentEventId" :disabled="eventStore.loading">
+    <option v-for="e in eventStore.events" v-bind:key="e.id" :value="e.id">
       {{ e.name }}
     </option>
   </select>
@@ -33,6 +28,7 @@ kalon.get('/events').then((res) => { events.value = res.data })
       </router-link>
     </li>
     <!--li class="nav-item">
+      //import BiTicket from 'bootstrap-icons/icons/ticket-perforated.svg?component'
       <router-link to="/bilhed" class="nav-link" active-class="active" title="Billetterie">
         <BiTicket class="bi pe-none me-2"/> Billetterie
       </router-link>
