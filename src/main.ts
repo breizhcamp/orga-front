@@ -10,10 +10,15 @@ import App from './App.vue'
 import { createAxiosClient } from './utils/createAxios'
 import { kalonAxiosKey, moneizAxiosKey } from './provide-keys'
 import { useEventStore } from '@/stores/event'
+import dayjs from 'dayjs'
+import 'dayjs/locale/fr'
 
 window.envLoaded.then(async () => {
   const app = createApp(App)
   app.use(VueQueryPlugin)
+
+  // Activer la locale française pour Dayjs
+  dayjs.locale('fr')
 
   // Provide axios instances
   const kalonClient = createAxiosClient('Kalon', kalonAxiosKey, window.env.KALON_URL);

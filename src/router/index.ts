@@ -1,6 +1,6 @@
 import AttendeeView from '@/views/AttendeeView.vue';
 import EventView from '@/views/EventView.vue';
-import DashboardView from '@/views/home/DashboardView.vue';
+import DashboardView from '@/views/events/DashboardView.vue';
 import MoneizView from '@/views/moneiz/MoneizView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
