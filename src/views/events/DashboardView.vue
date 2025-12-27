@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BiPencil from "bootstrap-icons/icons/pencil.svg?component";
 import { useEventStore } from '@/stores/event.ts';
 import { onMounted, ref, watch } from 'vue'
 import { useKalon } from '@/utils/useAxios'
@@ -49,6 +50,9 @@ watch(() => eventStore.currentEventId, () => {
           <h1 class="hero-title mb-1 text-white">{{ event.name }}</h1>
           <p class="text-white-50 mb-0">Vue d'ensemble de l'évènement</p>
         </div>
+        <RouterLink :to="`/events/${event.id}`" class="icon-link me-2" aria-label="Modifier l'évènement" title="Modifier l'évènement">
+          <BiPencil />
+        </RouterLink>
         <a
           v-if="event.website"
           :href="event.website"
@@ -82,7 +86,7 @@ watch(() => eventStore.currentEventId, () => {
           <p class="text-muted mb-3 mb-md-0">Créez-en un nouveau.</p>
         </div>
         <div class="d-flex gap-2">
-          <RouterLink class="btn btn-primary" to="/events">Créer un nouvel évènement</RouterLink>
+          <RouterLink class="btn btn-primary" to="/events/new">Créer un nouvel évènement</RouterLink>
         </div>
       </div>
     </div>
@@ -118,8 +122,22 @@ watch(() => eventStore.currentEventId, () => {
 .hero-title { font-weight: 700; }
 
 /* Icon-only link for website */
-.icon-link { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ffffff40; background-color: transparent; transition: box-shadow .2s ease, transform .1s ease; }
-.icon-link:hover { box-shadow: 0 2px 8px rgba(255,255,255,0.35); transform: translateY(-1px); }
+.icon-link {
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ffffff40;
+  background-color: transparent;
+  transition: box-shadow .2s ease, transform .1s ease;
+}
+.icon-link:hover {
+  box-shadow: 0 2px 8px rgba(255,255,255,0.35);
+  transform: translateY(-1px);
+}
 
 /* Placeholder tile for future content */
 .dashed { border: 2px dashed #e9ecef; }

@@ -19,7 +19,7 @@ export const useEventStore = defineStore('event', () => {
     }
   })
 
-  async function initializeStore(kalonClient: AxiosInstance) {
+  async function loadEvents(kalonClient: AxiosInstance) {
     try {
       loading.value = true
 
@@ -50,6 +50,6 @@ export const useEventStore = defineStore('event', () => {
     currentEventId,
     events,
     loading,
-    initializeStore
+    loadEvents
   }
 })

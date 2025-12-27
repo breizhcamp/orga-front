@@ -37,7 +37,7 @@ window.envLoaded.then(async () => {
 
   // Initialiser le store d'événements
   const eventStore = useEventStore()
-  await eventStore.initializeStore(kalonClient)
+  await eventStore.loadEvents(kalonClient)
 
   app.use(initRouter())
   app.mount('#app')

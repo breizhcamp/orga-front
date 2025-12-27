@@ -1,11 +1,10 @@
 import AttendeeView from '@/views/AttendeeView.vue';
-import EventView from '@/views/EventView.vue';
 import DashboardView from '@/views/events/DashboardView.vue';
+import EditEventView from '@/views/events/EditEventView.vue';
 import MoneizView from '@/views/moneiz/MoneizView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
 import ParticipantView from '@/views/ParticipantView.vue'
-import ProgramView from '@/views/ProgramView.vue';
 import RegisteredView from '@/views/RegisteredView.vue'
 import SessionView from '@/views/SessionView.vue';
 import { createRouter, createWebHashHistory } from 'vue-router'
@@ -15,6 +14,10 @@ const routes = [
     path: '/',
     name: 'Home',
     component: DashboardView
+  },{
+    path: '/events/:eventId',
+    name: 'Edit event',
+    component: EditEventView
   },{
     path: '/registered',
     name: 'Registered',
@@ -31,14 +34,6 @@ const routes = [
     path: '/sessions',
     name: 'Sessions',
     component: SessionView
-  },{
-    path: '/events',
-    name: 'Events',
-    component: EventView
-  },{
-    path: '/events/program/:eventId',
-    name: 'Program',
-    component: ProgramView
   },{
     path: '/moneiz',
     name: 'Moneiz',
