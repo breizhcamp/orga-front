@@ -52,6 +52,14 @@ export default defineConfig({
     }
   },
 
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true
+      }
+    }
+  },
+
   server: {
     port: 4000
   }

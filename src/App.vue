@@ -6,7 +6,7 @@ import NavBar from '@/components/NavBar.vue';
   <main class="d-flex flex-nowrap">
     <NavBar/>
 
-    <div class="content">
+    <div class="content bg-light-subtle">
       <RouterView />
     </div>
   </main>
@@ -22,7 +22,6 @@ main {
 
 .content {
     position: relative;
-    background-color: rgb(248, 249, 250);
     width: 100%;
 }
 

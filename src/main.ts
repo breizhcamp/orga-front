@@ -3,7 +3,7 @@ import { vueKeycloak } from '@josempgon/vue-keycloak';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './assets/main.css'
+import './assets/styles/main.scss'
 import { createPinia } from 'pinia';
 import { createApp } from 'vue'
 import App from './App.vue'

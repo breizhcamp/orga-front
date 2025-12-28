@@ -10,8 +10,8 @@ const eventStore = useEventStore();
 </script>
 
 <template>
-<nav class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary">
-  <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none" href="/">
+<nav class="d-flex flex-column flex-shrink-0 p-3 bg-body">
+  <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none link-body-emphasis" href="/">
     <Logo width="158" height="51"/>
   </a>
   <hr>
@@ -51,13 +51,9 @@ const eventStore = useEventStore();
 <style scoped>
 nav {
   width: 220px;
-  background-color: #FFFFFF !important;
 }
 
 .nav-link {
-  color: rgba(0, 0, 0, 1);
-}
-.nav-link:hover {
-  color: rgba(0, 0, 0, 0.75);
+  color: RGBA(var(--bs-emphasis-color-rgb))
 }
 </style>
