@@ -16,39 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import weekday from 'dayjs/plugin/weekday'
-import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { computed } from 'vue'
-
-dayjs.extend(weekday)
-dayjs.extend(localizedFormat)
+import { formatDateRange } from '@/utils/dateFormat'
 
 const props = defineProps<{ startDate?: string; endDate?: string; variant?: 'primary' | 'success' | 'info' | 'warning' | 'danger' }>()
 
-function formatDay(dateStr: string): string {
-  const d = dayjs(dateStr)
-  return `${d.format('dddd')} ${d.format('D')}`
-}
-function formatMonthYear(dateStr: string): string {
-  const d = dayjs(dateStr)
-  return `${d.format('MMMM')} ${d.format('YYYY')}`
-}
-
-const formattedRange = computed(() => {
-  if (!props.startDate || !props.endDate) return ''
-  const s = dayjs(props.startDate)
-  const e = dayjs(props.endDate)
-  const sameMonth = s.month() === e.month() && s.year() === e.year()
-  const sameYear = s.year() === e.year()
-  if (sameMonth) {
-    return `du ${formatDay(props.startDate)} au ${formatDay(props.endDate)} ${formatMonthYear(props.endDate)}`
-  }
-  if (sameYear) {
-    return `du ${formatDay(props.startDate)} ${dayjs(props.startDate).format('MMMM')} au ${formatDay(props.endDate)} ${formatMonthYear(props.endDate)}`
-  }
-  return `du ${formatDay(props.startDate)} ${formatMonthYear(props.startDate)} au ${formatDay(props.endDate)} ${formatMonthYear(props.endDate)}`
-})
+const formattedRange = computed(() => formatDateRange(props.startDate, props.endDate))
 
 const variantClass = computed(() => props.variant ? `tile-${props.variant}` : 'tile-default')
 </script>

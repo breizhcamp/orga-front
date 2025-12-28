@@ -3,7 +3,7 @@ import Logo from '@/assets/breizhcamp-logo-2026.svg?component'
 import { useEventStore } from '@/stores/event.ts';
 import BiHouseDoor from "bootstrap-icons/icons/house-door.svg?component";
 import BiBuilding from "bootstrap-icons/icons/building.svg?component";
-import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
+import BiMic from 'bootstrap-icons/icons/mic.svg?component'
 
 const eventStore = useEventStore();
 
@@ -38,9 +38,18 @@ const eventStore = useEventStore();
         <BiBuilding class="bi pe-none me-2"/> Sponsoring
       </router-link>
     </li>
-    <li class="nav-item">
+    <!--<li class="nav-item">
+      //import BiCalendarWeek from 'bootstrap-icons/icons/calendar-week.svg?component'
       <router-link to="/sessions" class="nav-link" active-class="active" title="Sessions">
         <BiCalendarWeek class="bi pe-none me-2"/> Sessions
+      </router-link>
+    </li>-->
+  </ul>
+
+  <ul class="nav nav-pills flex-column">
+    <li class="nav-item">
+      <router-link to="/events" class="nav-link" active-class="active" title="Évènements">
+        <BiMic class="bi pe-none me-2"/> Évènements
       </router-link>
     </li>
   </ul>

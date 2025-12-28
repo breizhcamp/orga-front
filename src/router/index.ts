@@ -1,5 +1,6 @@
-import DashboardView from '@/views/events/DashboardView.vue';
+import DashboardView from '@/views/DashboardView.vue';
 import EditEventView from '@/views/events/EditEventView.vue';
+import ListEventView from '@/views/events/ListEventView.vue';
 import MoneizView from '@/views/moneiz/MoneizView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
@@ -11,9 +12,16 @@ const routes = [
     name: 'Home',
     component: DashboardView
   },{
-    path: '/events/:eventId',
-    name: 'Edit event',
-    component: EditEventView
+    path: '/events',
+    children: [{
+      path: '',
+      name: 'Liste des évènements',
+      component: ListEventView,
+    },{
+      path: '/events/:eventId',
+      name: 'Ajout/modif d\'un évènement',
+      component: EditEventView
+    }]
   },{
     path: '/moneiz',
     name: 'Moneiz',

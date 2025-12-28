@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useKalon } from '@/utils/useAxios'
+import EventIdInput from '@/components/events/EventIdInput.vue';
 import type { Event } from '@/dto/kalon/Event'
-import { onMounted, ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import EventIdInput from '@/components/EventIdInput.vue'
 import { useEventStore } from '@/stores/event'
+import { useKalon } from '@/utils/useAxios'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const kalon = useKalon()
 const route = useRoute()
@@ -164,7 +164,7 @@ async function handleSubmit() {
 
 // Cancel and go back
 function handleCancel() {
-  router.push('/')
+  router.go(-1)
 }
 
 onMounted(() => {
