@@ -13,10 +13,10 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Close</button>
-            <button type="submit" class="btn btn-primary" :disabled="loading">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Fermer</button>
+            <button type="submit" :class="`btn btn-${saveButtonVariant}`" :disabled="loading">
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="loading"></span>
-              Save
+              {{ saveButtonText }}
             </button>
           </div>
         </form>
@@ -37,7 +37,9 @@ export default defineComponent({
     open: {type: Boolean, required: true, default: false},
     loading: {type: Boolean, default: false},
     title: {type: String, required: true},
-    size: { type: String as PropType<Size>, required: false }
+    size: { type: String as PropType<Size>, required: false },
+    saveButtonText: {type: String, default: 'Sauvegarder'},
+    saveButtonVariant: {type: String, default: 'primary'}
   },
 
   emits: ['update:open', 'save'],

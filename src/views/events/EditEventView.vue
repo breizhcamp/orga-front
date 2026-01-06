@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import EventIdInput from '@/components/events/EventIdInput.vue';
+import EventDeleteModal from '@/components/events/EventDeleteModal.vue';
 import type { Event } from '@/dto/kalon/Event'
 import { useEventStore } from '@/stores/event'
 import { useKalon } from '@/utils/useAxios'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component'
+import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component'
 
 const kalon = useKalon()
 const route = useRoute()
@@ -30,7 +33,7 @@ const formData = ref<Partial<Event>>({
 // UI state
 const loading = ref(false)
 const submitting = ref(false)
-const error = ref<string | null>(null)
+const error = ref<string | null>()
 const success = ref(false)
 
 // Event ID state (only for create mode)
@@ -151,7 +154,7 @@ async function handleSubmit() {
 
     success.value = true
     await eventStore.loadEvents(kalon)
-    setTimeout(() => { router.push('/') }, 2000)
+    setTimeout(() => { router.push('/events') }, 2000)
 
   } catch (e) {
     console.error('Erreur lors de la soumission', e)
@@ -165,6 +168,18 @@ async function handleSubmit() {
 // Cancel and go back
 function handleCancel() {
   router.go(-1)
+}
+
+function updateEndDate() {
+  if (formData.value.startDate && (!formData.value.endDate || formData.value.endDate < formData.value.startDate)) {
+    formData.value.endDate = formData.value.startDate
+  }
+}
+
+// Handle successful deletion
+async function handleDeleted() {
+  await eventStore.loadEvents(kalon)
+  router.push('/events')
 }
 
 onMounted(() => {
@@ -195,9 +210,7 @@ onMounted(() => {
       <div class="card-body">
         <!-- Success message -->
         <div v-if="success" class="alert alert-success d-flex align-items-center mb-4" role="alert">
-          <svg class="me-2" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
+          <BiCheckCircleFill class="flex-shrink-0 me-2" />
           <div>
             {{ isUpdateMode ? 'Événement mis à jour avec succès !' : 'Événement créé avec succès !' }}
           </div>
@@ -205,9 +218,7 @@ onMounted(() => {
 
         <!-- Error message -->
         <div v-if="error" class="alert alert-danger d-flex align-items-center mb-4" role="alert">
-          <svg class="me-2" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-          </svg>
+          <BiXCircleFill class="flex-shrink-0 me-2" />
           <div>{{ error }}</div>
         </div>
 
@@ -223,7 +234,7 @@ onMounted(() => {
               type="text"
               class="form-control"
               :class="{ 'is-invalid': formErrors.name }"
-              placeholder="BreizhCamp 2026"
+              placeholder="Ma Conférence 2022"
               :disabled="submitting"
               required
             />
@@ -250,6 +261,7 @@ onMounted(() => {
               <input
                 id="event-start-date"
                 v-model="formData.startDate"
+                @change="updateEndDate"
                 type="date"
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.startDate }"
@@ -289,7 +301,7 @@ onMounted(() => {
               type="url"
               class="form-control"
               :class="{ 'is-invalid': formErrors.website }"
-              placeholder="https://www.breizhcamp.org"
+              placeholder="https://ma-conference.org"
               :disabled="submitting"
             />
             <div v-if="formErrors.website" class="invalid-feedback">
@@ -306,7 +318,7 @@ onMounted(() => {
               type="text"
               class="form-control"
               :class="{ 'is-invalid': formErrors.venue }"
-              placeholder="Rennes, France"
+              placeholder="Université d'ici, Là-bas"
               :disabled="submitting"
             />
             <div v-if="formErrors.venue" class="invalid-feedback">
@@ -315,23 +327,36 @@ onMounted(() => {
           </div>
 
           <!-- Form actions -->
-          <div class="d-flex gap-2 justify-content-end">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              :disabled="submitting"
-              @click="handleCancel"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="submitting"
-            >
-              <span v-if="submitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              {{ isUpdateMode ? 'Mettre à jour' : 'Créer l\'événement' }}
-            </button>
+          <div class="d-flex gap-2 justify-content-between">
+            <!-- Delete button (left side, only in update mode) -->
+            <div>
+              <EventDeleteModal
+                v-if="isUpdateMode && eventId"
+                :event-id="eventId"
+                :event-name="formData.name"
+                @deleted="handleDeleted"
+              />
+            </div>
+
+            <!-- Cancel and Save buttons (right side) -->
+            <div class="d-flex gap-2">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                :disabled="submitting"
+                @click="handleCancel"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="submitting"
+              >
+                <span v-if="submitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ isUpdateMode ? 'Mettre à jour' : 'Créer l\'événement' }}
+              </button>
+            </div>
           </div>
         </form>
       </div>
