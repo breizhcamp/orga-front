@@ -1,14 +1,10 @@
 <script setup lang="ts">
 /// <reference types="vite-svg-loader" />
 
+import { listSponsors } from '@/queries/moneiz/sponsors.queries.ts';
 import BiPen from 'bootstrap-icons/icons/pen.svg?component'
-import { useQuery } from '@tanstack/vue-query';
-import axios from 'axios';
 
-const { isPending, isError, data, error } = useQuery({
-  queryKey: ['docs'],
-  queryFn: async (): Promise<SponsorList[]> => (await axios.get('/moneiz/admin/sponsors')).data,
-})
+const { isPending, isError, data, error } = listSponsors()
 
 </script>
 
@@ -24,11 +20,10 @@ const { isPending, isError, data, error } = useQuery({
             <button class="btn btn-primary">
               <BiPen />
             </button>
-
           </div>
 
           <div class="logo" v-if="sponsor.logo">
-            <img :src="'/moneiz/admin/sponsors/' + sponsor.id + '/logo'" :alt="sponsor.name">
+            <!--img :src="'/moneiz/admin/sponsors/' + sponsor.id + '/logo'" :alt="sponsor.name"-->
           </div>
         </div>
       </div>
