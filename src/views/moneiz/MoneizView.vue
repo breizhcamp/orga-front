@@ -1,6 +1,6 @@
 <template>
   <header>
-    <nav class="navbar navbar-expand-lg bg-secondary navbar-dark">
+    <nav class="navbar navbar-expand-lg">
       <div class="ms-2" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -22,5 +22,9 @@
 </script>
 
 <style scoped>
+.navbar {
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
 
 </style>
