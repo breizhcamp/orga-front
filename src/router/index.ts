@@ -11,17 +11,20 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: DashboardView
+    component: DashboardView,
+    meta: { title: 'Home' }
   },{
     path: '/events',
     children: [{
       path: '',
       name: 'Liste des évènements',
       component: ListEventView,
+      meta: { title: 'Liste des évènements' }
     },{
       path: '/events/:eventId',
       name: 'Ajout/modif d\'un évènement',
-      component: EditEventView
+      component: EditEventView,
+      meta: { title: 'Ajout/modif d\'un évènement' }
     }]
   },{
     path: '/moneiz',
@@ -32,15 +35,18 @@ const routes = [
       {
         path: 'sponsorings',
         name: 'Sponsorings',
-        component: SponsoringsView
+        component: SponsoringsView,
+        meta: { title: 'Sponsorings' }
       },{
         path: 'sponsors',
         name: 'Sponsors',
-        component: SponsorsView
+        component: SponsorsView,
+        meta: { title: 'Sponsors' }
       },{
         path: 'sponsors/:sponsorId',
-        name: 'Ajout/modif d\'un sponsor',
-        component: SponsorEditView
+        name: 'SponsorEdit',
+        component: SponsorEditView,
+        meta: { title: 'Ajout/modif d\'un sponsor' }
       }
     ]
   }
@@ -51,7 +57,10 @@ const initRouter = () => {
   const router = createRouter({ history, routes });
 
   router.beforeEach((to, _, next) => {
-    document.title = `${to.name?.toString()} - BreizhCamp`
+    // Cherche un titre dans la route active, ou à défaut sur la route appariée la plus profonde
+    const metaTitle = to.meta.title ?? [...to.matched].reverse().find(r => r.meta?.title)?.meta?.title;
+    const resolvedTitle = typeof metaTitle === 'function' ? metaTitle(to) : metaTitle;
+    document.title = resolvedTitle ? `${resolvedTitle} - BreizhCamp` : 'BreizhCamp'
     next()
   })
 
