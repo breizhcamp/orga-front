@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { ReadFile } from '@/dto/moneiz/ReadFile.ts';
 import type { Sponsor } from '@/dto/moneiz/Sponsor'
-import type { SponsorId } from '@/dto/moneiz/SponsorList.ts';
-import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts';
-import { computed, ref } from 'vue'
+import type { SponsorId } from '@/dto/moneiz/SponsorList.ts'
+import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
   modelValue: Sponsor | undefined,
@@ -25,6 +24,10 @@ const localSponsor = computed({
   set: (value) => emit('update:modelValue', value)
 })
 
+watch(localSponsor, (newValue) => {
+  console.log('modelValue changed:', newValue.logo)
+}, { immediate: true })
+
 // Validation errors
 const nameError = ref<string>('')
 const tokenError = ref<string>('')
@@ -34,11 +37,13 @@ const urlError = ref<string>('')
 const logoPreview = ref<string>('')
 const logoFile = ref<File | null>(null)
 
-const logoRead = computed((): ReadFile | undefined => {
-  console.log('logoRead computed', localSponsor.value.logo, props.sponsorId)
-  if (!localSponsor.value.logo || !props.sponsorId) return undefined
-  return { sponsorId: props.sponsorId, fileId: localSponsor.value.logo }
+const logoRead = computed(() => {
+  if (props.sponsorId && localSponsor.value.logo) {
+    return { sponsorId: props.sponsorId, fileId: localSponsor.value.logo }
+  }
+  return undefined
 })
+
 const { fileUrl: logoUrl } = useSponsorFile(logoRead)
 
 // Validation functions

@@ -83,8 +83,8 @@ export function useSponsorFile(file: Ref<ReadFile | undefined>) {
   }
 
   // Load file when input changes
-  watch(() => file, async (newFile) => {
-    console.log('useSponsorFile: file changed', newFile.value?.fileId);
+  watch(file, async (newFile) => {
+    console.log('useSponsorFile: file changed', newFile?.fileId);
     // Clean up old blob URL
     if (fileUrl.value) {
       URL.revokeObjectURL(fileUrl.value);
@@ -92,10 +92,10 @@ export function useSponsorFile(file: Ref<ReadFile | undefined>) {
     }
     error.value = undefined;
 
-    if (!newFile.value) return;
+    if (!newFile) return;
 
     isLoading.value = true;
-    await fetchFile(newFile.value);
+    await fetchFile(newFile);
     isLoading.value = false;
   }, { immediate: true });
 

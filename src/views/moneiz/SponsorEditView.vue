@@ -27,7 +27,7 @@ const sponsorQuery = isUpdateMode.value && sponsorId.value
   : null
 
 // Watch for data changes when loading existing sponsor
-if (sponsorQuery?.data) {
+if (sponsorQuery) {
   watch(sponsorQuery.data, (newData) => {
     if (newData) {
       sponsor.value = newData
