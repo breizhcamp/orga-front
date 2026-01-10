@@ -60,6 +60,11 @@ const eventStore = useEventStore();
 <style scoped>
 nav {
   width: 220px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .nav-link {
