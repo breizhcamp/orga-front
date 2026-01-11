@@ -4,3 +4,12 @@ export type Sponsor = {
   url?: string;
   logo?: string;
 };
+
+export function newSponsor() {
+  return {
+    name: '',
+    token: '',
+    url: undefined,
+    logo: undefined,
+  }
+}

@@ -3,15 +3,22 @@ import type { SponsorList } from '@/dto/moneiz/SponsorList.ts'
 import BiPen from 'bootstrap-icons/icons/pen.svg?component'
 import BiBoxArrowUpRight from 'bootstrap-icons/icons/box-arrow-up-right.svg?component'
 import { useRouter } from 'vue-router'
-import SponsorEditView from '@/views/moneiz/SponsorEditView.vue'
+import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts'
+import { computed } from 'vue'
 
 const props = defineProps<{
   sponsor: SponsorList,
-  logoUrl: string | undefined,
-  isLoadingLogo: boolean,
 }>()
 
 const router = useRouter()
+
+const logoRead = computed(() => {
+  if (props.sponsor.logo) {
+    return { sponsorId: props.sponsor.id, fileId: props.sponsor.logo }
+  }
+  return undefined
+})
+const { fileUrl: logoUrl, isLoading: isLoadingLogo } = useSponsorFile(logoRead)
 
 function editSponsor() {
   router.push({ name: 'SponsorEdit', params: { sponsorId: props.sponsor.id } })
@@ -42,10 +49,10 @@ function editSponsor() {
 
 
       <div class="col-lg-1 col-sm-2 flex-fill text-end buttons">
+        <a v-if="sponsor.url" :href="sponsor.url" target="_blank" class="btn btn-sm btn-light"><BiBoxArrowUpRight /></a>
         <router-link :to="{ name: 'SponsorEdit', params: { sponsorId: sponsor.id } }" class="btn btn-sm btn-outline-primary">
           <BiPen />
         </router-link>
-        <a v-if="sponsor.url" :href="sponsor.url" target="_blank" class="btn btn-sm btn-light"><BiBoxArrowUpRight /></a>
       </div>
 
     </div>

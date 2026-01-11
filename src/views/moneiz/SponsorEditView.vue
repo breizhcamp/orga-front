@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue'
 import type { Sponsor } from '@/dto/moneiz/Sponsor'
-import { getSponsor } from '@/queries/moneiz/sponsors.queries'
-import { useMoneiz } from '@/utils/useAxios'
+import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries'
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
-const moneiz = useMoneiz()
+const router = useRouter()
+
+// Initialize mutations
+const createSponsorMutation = useCreateSponsorMutation()
+const updateSponsorMutation = useUpdateSponsorMutation()
+const uploadLogoMutation = useUploadSponsorLogoMutation()
 
 const sponsorId = computed(() => {
   const id = route.params.sponsorId as string | undefined
@@ -17,26 +21,37 @@ const isUpdateMode = computed(() => !!sponsorId.value)
 
 // Initialize sponsor data
 const sponsor = ref<Sponsor | undefined>()
+const dataInitialized = ref(false)
 
 const logoFile = ref<File | null>(null)
 const basicInfoFormRef = ref<InstanceType<typeof SponsorBasicInfoForm> | null>(null)
 
 // Load sponsor data if in update mode
 const sponsorQuery = isUpdateMode.value && sponsorId.value
-  ? getSponsor(sponsorId.value)
-  : null
+  ? getSponsor(sponsorId.value, true)
+  : undefined
 
 // Watch for data changes when loading existing sponsor
+// Only initialize data once to preserve user edits during the editing session
 if (sponsorQuery) {
   watch(sponsorQuery.data, (newData) => {
-    if (newData) {
-      sponsor.value = newData
+    if (newData && !dataInitialized.value) {
+      sponsor.value = { ...newData }
+      dataInitialized.value = true
     }
   }, { immediate: true })
 }
 
+const disabled = computed(() =>
+  createSponsorMutation.isPending.value ||
+  updateSponsorMutation.isPending.value ||
+  uploadLogoMutation.isPending.value ||
+  (sponsorQuery?.isPending?.value ?? false)
+)
+
 // Save function
 const saveSponsor = async () => {
+  if (!sponsor.value) return
   // Validate form
   if (basicInfoFormRef.value && !basicInfoFormRef.value.validate()) {
     return
@@ -48,26 +63,27 @@ const saveSponsor = async () => {
     // Save sponsor basic info
     if (isUpdateMode.value && savedSponsorId) {
       // Update existing sponsor
-      await moneiz.put(`/api/admin/sponsors/${savedSponsorId}`, sponsor.value)
+      await updateSponsorMutation.mutateAsync({ id: savedSponsorId, sponsor: sponsor.value })
     } else {
       // Create new sponsor
-      const response = await moneiz.post('/api/admin/sponsors', sponsor.value)
-      savedSponsorId = response.data.id
+      const result = await createSponsorMutation.mutateAsync(sponsor.value)
+      savedSponsorId = result.id
+      await router.replace({ name: 'SponsorEdit', params: { sponsorId: savedSponsorId } })
     }
 
-    // Upload logo if a file was selected
+    // Upload logo if a file was selected and we have a sponsor ID
     if (logoFile.value && savedSponsorId) {
-      const formData = new FormData()
-      formData.append('logo', logoFile.value)
-      await moneiz.post(`/api/admin/sponsors/${savedSponsorId}/logo`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const logoResult = await uploadLogoMutation.mutateAsync({
+        sponsorId: savedSponsorId,
+        file: logoFile.value
       })
+      if (sponsor.value) {
+        sponsor.value.logo = logoResult.id
+      }
     }
 
     // Success - could add toast notification here
-    console.log('Sponsor saved successfully')
+    console.log('Sponsor saved successfully', savedSponsorId)
   } catch (error) {
     console.error('Error saving sponsor:', error)
     // Could add error notification here
@@ -85,6 +101,7 @@ const saveSponsor = async () => {
           ref="basicInfoFormRef"
           v-model="sponsor"
           :sponsor-id="sponsorId"
+          :disabled="disabled"
           @update:logo-file="logoFile = $event"
         />
       </div>
@@ -112,10 +129,10 @@ const saveSponsor = async () => {
 
     <!-- Action buttons -->
     <div class="mt-4 d-flex justify-content-end gap-2">
-      <button type="button" class="btn btn-secondary" @click="$router.back()">
+      <button type="button" class="btn btn-secondary" @click="$router.back()" :disabled="disabled">
         Annuler
       </button>
-      <button type="button" class="btn btn-primary" @click="saveSponsor">
+      <button type="button" class="btn btn-primary" @click="saveSponsor" :disabled="disabled">
         {{ isUpdateMode ? 'Mettre à jour' : 'Créer' }}
       </button>
     </div>

@@ -1,22 +1,21 @@
 <script setup lang="ts">
 /// <reference types="vite-svg-loader" />
 
-import { useSponsorFiles } from '@/queries/moneiz/sponsor-files';
-import { listSponsors } from '@/queries/moneiz/sponsors.queries';
-import { computed } from 'vue';
+import { listSponsors } from '@/queries/moneiz/sponsors.queries'
 import SponsorLine from '@/components/moneiz/SponsorLine.vue'
 
 const { isPending, isError, data, error } = listSponsors()
-
-const files = computed(() =>
-  data.value?.filter(s => s.logo).map(s => ({ sponsorId: s.id, fileId: s.logo! })) || []
-)
-const { filesUrls: logoUrls, isLoading: isLoadingLogos } = useSponsorFiles(files)
 
 </script>
 
 <template>
   <div class="container py-4">
+    <div class="text-end">
+      <router-link class="btn btn-primary mb-3" :to="{ name: 'SponsorEdit', params: { sponsorId: 'new' } }">
+        Ajouter un sponsor
+      </router-link>
+    </div>
+
     <div v-if="isPending" class="text-center py-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Chargement...</span>
@@ -26,7 +25,7 @@ const { filesUrls: logoUrls, isLoading: isLoadingLogos } = useSponsorFiles(files
       Erreur: {{ error?.message }}
     </div>
     <div v-else>
-      <SponsorLine v-for="sponsor in data" :key="sponsor.id" :sponsor="sponsor" :logo-url="logoUrls.get(sponsor.id)" :is-loading-logo="isLoadingLogos"/>
+      <SponsorLine v-for="sponsor in data" :key="sponsor.id" :sponsor="sponsor"/>
     </div>
   </div>
 </template>

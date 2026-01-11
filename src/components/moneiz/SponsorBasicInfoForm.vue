@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { Sponsor } from '@/dto/moneiz/Sponsor'
+import { newSponsor, type Sponsor } from '@/dto/moneiz/Sponsor'
 import type { SponsorId } from '@/dto/moneiz/SponsorList.ts'
 import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 
 const props = defineProps<{
   modelValue: Sponsor | undefined,
   sponsorId: SponsorId | undefined,
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -15,18 +16,9 @@ const emit = defineEmits<{
 }>()
 
 const localSponsor = computed({
-  get: () => props.modelValue ?? {
-    name: '',
-    token: '',
-    url: '',
-    logo: undefined
-  },
+  get: () => props.modelValue ?? newSponsor(),
   set: (value) => emit('update:modelValue', value)
 })
-
-watch(localSponsor, (newValue) => {
-  console.log('modelValue changed:', newValue.logo)
-}, { immediate: true })
 
 // Validation errors
 const nameError = ref<string>('')
@@ -37,6 +29,7 @@ const urlError = ref<string>('')
 const logoPreview = ref<string>('')
 const logoFile = ref<File | null>(null)
 
+// Existing logo loading
 const logoRead = computed(() => {
   if (props.sponsorId && localSponsor.value.logo) {
     return { sponsorId: props.sponsorId, fileId: localSponsor.value.logo }
@@ -81,8 +74,9 @@ const validateUrl = () => {
 }
 
 // UUID generation
-const generateUUID = () => {
-  localSponsor.value.token = crypto.randomUUID().replace(/-/g, '')
+const generateUUID = async () => {
+  localSponsor.value = { ...localSponsor.value, token: crypto.randomUUID().replace(/-/g, '') }
+  await nextTick()
   validateToken()
 }
 
@@ -131,19 +125,11 @@ defineExpose({
             Nom <span class="text-danger">*</span>
           </label>
           <div class="col-sm-9">
-            <input
-              id="sponsor-name"
-              v-model="localSponsor.name"
-              type="text"
-              class="form-control"
-              :class="{ 'is-invalid': nameError }"
-              placeholder="Nom du sponsor"
-              @blur="validateName"
-              @input="validateName"
+            <input id="sponsor-name" type="text" class="form-control" v-model="localSponsor.name"
+              placeholder="Nom du sponsor" :class="{ 'is-invalid': nameError }" :disabled="disabled"
+              @blur="validateName" @input="validateName"
             />
-            <div v-if="nameError" class="invalid-feedback">
-              {{ nameError }}
-            </div>
+            <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
           </div>
         </div>
 
@@ -154,27 +140,14 @@ defineExpose({
           </label>
           <div class="col-sm-9">
             <div class="input-group">
-              <input
-                id="sponsor-token"
-                v-model="localSponsor.token"
-                type="text"
-                class="form-control"
-                :class="{ 'is-invalid': tokenError }"
-                placeholder="Token unique"
-                @blur="validateToken"
-                @input="validateToken"
+              <input id="sponsor-token" type="text" class="form-control" v-model="localSponsor.token"
+                placeholder="Token unique" :class="{ 'is-invalid': tokenError }" :disabled="disabled"
+                @blur="validateToken" @input="validateToken"
               />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                @click="generateUUID"
-                title="Générer un UUID"
-              >
+              <button type="button" class="btn btn-outline-secondary" title="Générer un UUID" @click="generateUUID">
                 🔑
               </button>
-              <div v-if="tokenError" class="invalid-feedback">
-                {{ tokenError }}
-              </div>
+              <div v-if="tokenError" class="invalid-feedback">{{ tokenError }}</div>
             </div>
           </div>
         </div>
@@ -183,19 +156,11 @@ defineExpose({
         <div class="row mb-3">
           <label for="sponsor-url" class="col-sm-3 col-form-label">URL</label>
           <div class="col-sm-9">
-            <input
-              id="sponsor-url"
-              v-model="localSponsor.url"
-              type="url"
-              class="form-control"
-              :class="{ 'is-invalid': urlError }"
-              placeholder="https://example.com"
-              @blur="validateUrl"
-              @input="validateUrl"
+            <input id="sponsor-url" type="url" class="form-control" v-model="localSponsor.url"
+              placeholder="https://example.com" :class="{ 'is-invalid': urlError }" :disabled="disabled"
+              @blur="validateUrl" @input="validateUrl"
             />
-            <div v-if="urlError" class="invalid-feedback">
-              {{ urlError }}
-            </div>
+            <div v-if="urlError" class="invalid-feedback">{{ urlError }}</div>
           </div>
         </div>
 
@@ -205,24 +170,14 @@ defineExpose({
           <div class="col-sm-9">
             <!-- Logo preview -->
             <div v-if="logoPreview || logoUrl" class="mb-2">
-              <img
-                :src="logoPreview || logoUrl"
-                alt="Logo preview"
-                class="img-thumbnail logo-preview"
-              />
+              <img :src="logoPreview || logoUrl" alt="Logo preview" class="img-thumbnail logo-preview"/>
             </div>
 
             <!-- File input -->
-            <input
-              id="sponsor-logo"
-              type="file"
-              class="form-control"
-              accept="image/*"
-              @change="handleLogoChange"
+            <input id="sponsor-logo" type="file" class="form-control"
+              accept="image/*" @change="handleLogoChange" :disabled="disabled"
             />
-            <div class="form-text">
-              JPG, PNG, SVG, etc.
-            </div>
+            <div class="form-text">JPG, PNG, SVG</div>
           </div>
         </div>
       </form>
@@ -243,9 +198,5 @@ defineExpose({
 
 .text-danger {
   color: #dc3545;
-}
-
-.form-label {
-  font-weight: 500;
 }
 </style>
