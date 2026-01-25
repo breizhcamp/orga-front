@@ -3,6 +3,8 @@ export type EventSummary = {
   name: string;
 }
 
+export type EventId = string
+
 export type Event = {
   id: string;
   name: string;
