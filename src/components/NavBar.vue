@@ -15,7 +15,7 @@ const eventStore = useEventStore();
     <Logo width="158" height="51"/>
   </a>
   <hr>
-  <select class="form-select mb-3" v-model="eventStore.currentEventId" :disabled="eventStore.loading">
+  <select class="form-select mb-3" id="curEventListSelector" v-model="eventStore.currentEventId" :disabled="eventStore.loading">
     <option v-for="e in eventStore.events" v-bind:key="e.id" :value="e.id">
       {{ e.name }}
     </option>
