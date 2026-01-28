@@ -209,7 +209,7 @@ onMounted(() => {
     <div v-else class="card border-0 shadow-sm">
       <div class="card-body">
         <!-- Success message -->
-        <div v-if="success" class="alert alert-success d-flex align-items-center mb-4" role="alert">
+        <div v-if="success" class="alert alert-success d-flex align-items-center mb-4" role="alert" data-testid="success-message">
           <BiCheckCircleFill class="flex-shrink-0 me-2" />
           <div>
             {{ isUpdateMode ? 'Événement mis à jour avec succès !' : 'Événement créé avec succès !' }}
@@ -343,6 +343,7 @@ onMounted(() => {
               <button
                 type="button"
                 class="btn btn-secondary"
+                data-testid="cancel-btn"
                 :disabled="submitting"
                 @click="handleCancel"
               >
@@ -351,6 +352,7 @@ onMounted(() => {
               <button
                 type="submit"
                 class="btn btn-primary"
+                data-testid="submit-btn"
                 :disabled="submitting"
               >
                 <span v-if="submitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

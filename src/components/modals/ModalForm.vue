@@ -14,7 +14,7 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Fermer</button>
-            <button type="submit" :class="`btn btn-${saveButtonVariant}`" :disabled="loading">
+            <button type="submit" :class="`btn btn-${saveButtonVariant}`" :disabled="loading" data-testid="modal-save-btn">
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="loading"></span>
               {{ saveButtonText }}
             </button>

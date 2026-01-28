@@ -74,6 +74,7 @@ async function handleDelete() {
     <button
       type="button"
       class="btn btn-outline-danger"
+      data-testid="delete-event-btn"
       @click="openDeleteModal"
       title="Supprimer l'événement"
     >
@@ -116,6 +117,7 @@ async function handleDelete() {
           v-model="deleteConfirmationId"
           type="text"
           class="form-control"
+          data-testid="delete-confirmation-input"
           :class="{ 'is-invalid': deleteError || (deleteConfirmationId && !isConfirmationValid) }"
           placeholder="Saisissez l'identifiant"
           :disabled="isDeleting"

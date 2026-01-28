@@ -83,7 +83,7 @@ onMounted(() => {
     <div v-else class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
       <div v-for="event in events" :key="event.id" class="col">
         <RouterLink :to="`/events/${event.id}`" class="text-decoration-none">
-          <div class="card h-100 border-0 shadow-sm event-card">
+          <div class="card h-100 border-0 shadow-sm event-card" :data-testid="`event-card-${event.id}`">
             <div class="card-body">
               <h5 class="card-title mb-2">{{ event.name }}</h5>
               <p class="card-text text-muted mb-0" v-if="event.startDate && event.endDate">
