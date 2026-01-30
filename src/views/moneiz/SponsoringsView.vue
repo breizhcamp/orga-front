@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import type { LevelList } from '@/dto/moneiz/LevelList';
-import { listLevels } from '@/queries/moneiz/levels.queries';
+import type { LevelList } from '@/dto/moneiz/LevelList'
+import { listLevels } from '@/queries/moneiz/levels.queries'
 import { listSponsorings } from '@/queries/moneiz/sponsorings.queries'
-import { useEventStore } from '@/stores/event';
-import { computed } from 'vue';
+import { useEventStore } from '@/stores/event'
+import { computed } from 'vue'
+import SponsoringLine from '@/components/moneiz/SponsoringLine.vue'
 
 const eventStore = useEventStore()
 const { isPending, isError, data, error } = listSponsorings(eventStore.currentEventId)
 const { isPending: isLevelPending, isError: isLevelError, data: levelData, error: levelError } = listLevels(eventStore.currentEventId)
 
 const levels = computed(() => {
-  const levelMap = new Map<string, LevelList>();
-  levelData.value?.forEach(level => { levelMap.set(level.name, level); });
-  return levelMap;
-});
-
+  const levelMap = new Map<string, LevelList>()
+  levelData.value?.forEach((level) => {
+    levelMap.set(level.name, level)
+  })
+  return levelMap
+})
 </script>
 
 <template>
@@ -27,10 +29,13 @@ const levels = computed(() => {
     <div v-else-if="isError || isLevelError" class="alert alert-danger">
       Erreur: {{ error?.message || levelError?.message }}
     </div>
-    <div v-else>
-      <div v-for="sponsoring in data" :key="sponsoring.id">
-        {{ sponsoring.levelName }} - {{ sponsoring.sponsor.name }} - {{ levels.get(sponsoring.levelName)?.color }}
-      </div>
+    <div v-else class="sponsorings-list">
+      <SponsoringLine
+        v-for="sponsoring in data"
+        :key="sponsoring.id"
+        :sponsoring="sponsoring"
+        :level="levels.get(sponsoring.levelName)"
+      />
     </div>
   </div>
 </template>

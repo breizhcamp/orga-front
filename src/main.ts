@@ -11,6 +11,7 @@ import { createAxiosClient } from './utils/createAxios'
 import { kalonAxiosKey, moneizAxiosKey } from './provide-keys'
 import { useEventStore } from '@/stores/event'
 import dayjs from 'dayjs'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import 'dayjs/locale/fr'
 
 window.envLoaded.then(async () => {
@@ -18,6 +19,7 @@ window.envLoaded.then(async () => {
   app.use(VueQueryPlugin)
 
   // Activer la locale française pour Dayjs
+  dayjs.extend(localizedFormat)
   dayjs.locale('fr')
 
   // Provide axios instances
