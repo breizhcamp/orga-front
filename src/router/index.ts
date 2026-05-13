@@ -1,5 +1,3 @@
-import { createRouter, createWebHistory } from 'vue-router';
-
 import DashboardView from '@/views/DashboardView.vue';
 import EditEventView from '@/views/events/EditEventView.vue';
 import ListEventView from '@/views/events/ListEventView.vue';
@@ -7,6 +5,7 @@ import MoneizView from '@/views/moneiz/MoneizView.vue';
 import SponsorEditView from '@/views/moneiz/SponsorEditView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   {
@@ -54,7 +53,7 @@ const routes = [
 ];
 
 const initRouter = () => {
-  const history = createWebHistory(import.meta.env.BASE_URL);
+  const history = createWebHashHistory(import.meta.env.BASE_URL)
   const router = createRouter({ history, routes });
 
   router.beforeEach((to, _, next) => {
