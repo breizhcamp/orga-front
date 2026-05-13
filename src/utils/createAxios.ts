@@ -1,11 +1,12 @@
-import { getToken } from '@josempgon/vue-keycloak'
+import type Keycloak from 'keycloak-js';
 import type { AxiosHeaders, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import type { InjectionKey } from 'vue'
 
-const attachGlobalInterceptor = (instance: AxiosInstance) => {
+const attachGlobalInterceptor = (instance: AxiosInstance, keycloak: Keycloak) => {
   instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-    const token = await getToken()
+    await keycloak.updateToken();
+    const { token } = keycloak;
     const headers = config.headers as AxiosHeaders
     if (headers && typeof headers.set === 'function') {
       headers.set('Authorization', `Bearer ${token}`)
@@ -23,10 +24,14 @@ const attachBlockingIfMissingBaseUrl = (instance: AxiosInstance, name: string, b
   })
 }
 
-export const createAxiosClient = (name: string, _key: InjectionKey<AxiosInstance> | symbol, baseURL?: string): AxiosInstance => {
+export const createAxiosClient = (
+  name: string,
+  _key: InjectionKey<AxiosInstance> | symbol,
+  keycloak: Keycloak,
+  baseURL?: string,
+): AxiosInstance => {
   const client = axios.create({baseURL})
   attachBlockingIfMissingBaseUrl(client, name, baseURL)
-  attachGlobalInterceptor(client)
+  attachGlobalInterceptor(client, keycloak)
   return client
 }
-
