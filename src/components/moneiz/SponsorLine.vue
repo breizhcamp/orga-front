@@ -27,12 +27,12 @@ function editSponsor() {
 </script>
 
 <template>
-  <div class="container">
-    <div class="row d-sm-flex" @click="editSponsor">
+  <div class="container card mb-1">
+    <div class="row px-1 d-sm-flex" @click="editSponsor">
 
       <!-- Logo / Name Column -->
-      <div class="col-sm-10">
-        <div class="sponsor-logo">
+      <div class="col-sm-10 my-auto">
+        <div class="sponsor-logo me-3 d-inline-block">
           <div v-if="isLoadingLogo && logoUrl" class="text-muted">
             <div class="spinner-border spinner-border-sm" role="status">
               <span class="visually-hidden">Loading logo...</span>
@@ -41,20 +41,18 @@ function editSponsor() {
           <div v-else-if="logoUrl">
             <img :src="logoUrl" :alt="sponsor.name" />
           </div>
-          <div v-else class="no-logo">{{sponsor.name.substring(0, 2).toUpperCase()}}</div>
+          <div v-else class="no-logo bg-body-secondary text-secondary d-inline-block">{{sponsor.name.substring(0, 2).toUpperCase()}}</div>
         </div>
 
         <span class="p-2">{{sponsor.name}}</span>
       </div>
 
-
-      <div class="col-lg-1 col-sm-2 flex-fill text-end buttons">
-        <a v-if="sponsor.url" :href="sponsor.url" target="_blank" class="btn btn-sm btn-light"><BiBoxArrowUpRight /></a>
-        <router-link :to="{ name: 'SponsorEdit', params: { sponsorId: sponsor.id } }" class="btn btn-sm btn-outline-primary">
+      <div class="col-lg-1 col-sm-2 flex-fill text-end buttons my-auto">
+        <a v-if="sponsor.url" :href="sponsor.url" target="_blank" class="btn btn-sm btn-outline-secondary"><BiBoxArrowUpRight /></a>
+        <router-link :to="{ name: 'SponsorEdit', params: { sponsorId: sponsor.id } }" class="btn btn-sm btn-outline-primary ms-2">
           <BiPen />
         </router-link>
       </div>
-
     </div>
   </div>
 </template>
@@ -63,21 +61,14 @@ function editSponsor() {
 div.row {
   position: relative;
   min-height: 56px;
-  margin-bottom: 2px !important;
   cursor: pointer;
-  border: 1px #c0c0c0 solid;
-  padding: 0 2px;
-  background-color: #f5f7fa;
 }
 
 div.row > div {
   padding: 1px 8px !important;
-  margin: auto 0;
 }
 
 .sponsor-logo {
-  margin-right: 15px;
-  display: inline-block;
   vertical-align: middle;
   width: 16px;
 }
@@ -85,16 +76,12 @@ div.row > div {
 .sponsor-logo img {
   max-width: 16px;
   max-height: 16px;
-  opacity: 0.7;
 }
 
 .no-logo {
   width: 16px;
   height: 16px;
-  display: inline-block;
   vertical-align: middle;
-  background-color: #ededed;
-  color: #c6c6c6;
   text-align: center;
   line-height: 16px;
   font-weight: bold;
@@ -132,10 +119,5 @@ div.row > div {
     position: absolute;
     top: 5px;
   }
-}
-
-.btn {
-  margin-left: 10px;
-  border-color: lightgrey;
 }
 </style>
