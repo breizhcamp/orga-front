@@ -1,5 +1,5 @@
 import { initRouter } from '@/router';
-import { vueKeycloak } from '@josempgon/vue-keycloak';
+import Keycloak from 'keycloak-js';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -22,18 +22,25 @@ window.envLoaded.then(async () => {
   dayjs.extend(localizedFormat)
   dayjs.locale('fr')
 
-  // Provide axios instances
-  const kalonClient = createAxiosClient('Kalon', kalonAxiosKey, window.env.KALON_URL);
-  app.provide(kalonAxiosKey, kalonClient)
-  app.provide(moneizAxiosKey, createAxiosClient('Moneiz', moneizAxiosKey, window.env.MONEIZ_URL))
+  const keycloak = new Keycloak({
+    url: window.env.KEYCLOAK_URL,
+    realm: window.env.KEYCLOAK_REALM,
+    clientId: window.env.KEYCLOAK_CLIENT_ID,
+  });
+  try {
+      await keycloak.init({
+        onLoad: 'login-required',
+      });
+      console.assert(keycloak.authenticated, 'The user is not authenticated');
+  } catch (error) {
+      console.error('Failed to initialize Keycloak adapter:', error);
+  }
 
-  await vueKeycloak.install(app, {
-    config: {
-      url: window.env.KEYCLOAK_URL,
-      realm: window.env.KEYCLOAK_REALM,
-      clientId: window.env.KEYCLOAK_CLIENT_ID
-    }
-  })
+  // Provide axios instances
+  const kalonClient = createAxiosClient('Kalon', kalonAxiosKey, keycloak, window.env.KALON_URL);
+  app.provide(kalonAxiosKey, kalonClient);
+  const moneizClient = createAxiosClient('Moneiz', moneizAxiosKey, keycloak, window.env.MONEIZ_URL);
+  app.provide(moneizAxiosKey, moneizClient);
 
   app.use(createPinia())
 
