@@ -20,8 +20,8 @@ const logoRead = computed(() => {
 })
 const { fileUrl: logoUrl, isLoading: isLoadingLogo } = useSponsorFile(logoRead)
 
-function editSponsor() {
-  router.push({ name: 'SponsorEdit', params: { sponsorId: props.sponsor.id } })
+async function editSponsor() {
+  await router.push({ name: 'SponsorEdit', params: { sponsorId: props.sponsor.id } })
 }
 
 </script>

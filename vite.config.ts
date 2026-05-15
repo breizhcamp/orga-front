@@ -21,7 +21,10 @@ const RuntimeEnvPlugin: PluginOption = {
   configureServer(server) {
     return () => {
       server.middlewares.use((req, res, next) => {
-        if (req.originalUrl != '/env.js') return next();
+        if (req.originalUrl != '/env.js') {
+          next();
+          return;
+        }
 
         const configContent = fs.readFileSync(
           path.resolve(root, './public/env.template.js'),
@@ -29,7 +32,7 @@ const RuntimeEnvPlugin: PluginOption = {
         );
         let content = configContent;
         extractEnvVar(configContent).forEach((v) => {
-          if (process.env?.[v] && process.env?.[v]?.length) {
+          if (process.env[v] && process.env[v].length) {
             content = content.replace('${' + v + '}', process.env[v]);
           } else {
             content = content.replace('${' + v + '}', '');

@@ -24,6 +24,7 @@ const sponsor = ref<Sponsor | undefined>()
 const dataInitialized = ref(false)
 
 const logoFile = ref<File | null>(null)
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 const basicInfoFormRef = ref<InstanceType<typeof SponsorBasicInfoForm> | null>(null)
 
 // Load sponsor data if in update mode
@@ -46,7 +47,7 @@ const disabled = computed(() =>
   createSponsorMutation.isPending.value ||
   updateSponsorMutation.isPending.value ||
   uploadLogoMutation.isPending.value ||
-  (sponsorQuery?.isPending?.value ?? false)
+  (sponsorQuery?.isPending.value ?? false)
 )
 
 // Save function
@@ -77,9 +78,7 @@ const saveSponsor = async () => {
         sponsorId: savedSponsorId,
         file: logoFile.value
       })
-      if (sponsor.value) {
-        sponsor.value.logo = logoResult.id
-      }
+      sponsor.value.logo = logoResult.id
     }
 
     // Success - could add toast notification here

@@ -50,7 +50,7 @@ window.envLoaded.then(async () => {
 
   app.use(initRouter())
   app.mount('#app')
-}).catch(error => {
+}).catch((error: unknown) => {
   console.log(error)
   document.body.innerHTML = 'Impossible de charger la configuration'
 })

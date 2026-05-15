@@ -4,7 +4,7 @@ import type { FileCreateApi } from '@/dto/moneiz/FileCreateApi.ts';
 import { useMoneiz } from '@/utils/useAxios.ts';
 import { useQuery, useMutation, useQueryClient, type UseQueryReturnType } from '@tanstack/vue-query';
 
-function listSponsors(staleTime: number = 60_000): UseQueryReturnType<SponsorList[], Error> {
+function listSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Error> {
   const moneiz = useMoneiz()
   return useQuery({
     queryKey: ['moneiz', 'sponsors'],
@@ -15,7 +15,7 @@ function listSponsors(staleTime: number = 60_000): UseQueryReturnType<SponsorLis
   })
 }
 
-function getSponsor(id: string, forEditing: boolean = false, staleTime: number = 60_000): UseQueryReturnType<Sponsor, Error> {
+function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQueryReturnType<Sponsor, Error> {
   const moneiz = useMoneiz()
   return useQuery({
     queryKey: ['moneiz', 'sponsors', id],
@@ -36,9 +36,9 @@ function useCreateSponsorMutation() {
       const response = await moneiz.post<{ id: string }>('/api/admin/sponsors', sponsor)
       return response.data
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       // Invalidate the sponsors list to refetch it
-      queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] })
+      await queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] })
     },
   })
 }
@@ -52,10 +52,12 @@ function useUpdateSponsorMutation() {
       const response = await moneiz.put(`/api/admin/sponsors/${id}`, sponsor)
       return response.data
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: async (_data, variables) => {
       // Invalidate both the list and the specific sponsor query
-      queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] })
-      queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors', variables.id] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] }),
+        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors', variables.id] }),
+      ])
     },
   })
 }
@@ -75,10 +77,12 @@ function useUploadSponsorLogoMutation() {
       )
       return response.data
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: async (_data, variables) => {
       // Invalidate the specific sponsor query to refetch with new logo
-      queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors', variables.sponsorId] })
-      queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors', variables.sponsorId] }),
+        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] }),
+      ])
     },
   })
 }

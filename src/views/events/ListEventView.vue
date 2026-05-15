@@ -26,8 +26,8 @@ async function loadEvents() {
   }
 }
 
-onMounted(() => {
-  loadEvents()
+onMounted(async () => {
+  await loadEvents()
 })
 </script>
 

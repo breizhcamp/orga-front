@@ -58,7 +58,7 @@ const initRouter = () => {
 
   router.beforeEach((to, _, next) => {
     // Cherche un titre dans la route active, ou à défaut sur la route appariée la plus profonde
-    const metaTitle = to.meta.title ?? [...to.matched].reverse().find(r => r.meta?.title)?.meta?.title;
+    const metaTitle = to.meta.title ?? [...to.matched].reverse().find(r => r.meta.title)?.meta.title;
     const resolvedTitle = typeof metaTitle === 'function' ? metaTitle(to) : metaTitle;
     document.title = resolvedTitle ? `${resolvedTitle} - BreizhCamp` : 'BreizhCamp'
     next()

@@ -3,7 +3,7 @@ import type { LevelList } from "@/dto/moneiz/LevelList"
 import { useMoneiz } from "@/utils/useAxios"
 import { useQuery, type UseQueryReturnType } from "@tanstack/vue-query"
 
-export function listLevels(eventId?: EventId, staleTime: number = 60_000): UseQueryReturnType<LevelList[], Error> {
+export function listLevels(eventId?: EventId, staleTime = 60_000): UseQueryReturnType<LevelList[], Error> {
   const moneiz = useMoneiz()
   return useQuery({
     queryKey: ['moneiz', eventId, 'levels'],

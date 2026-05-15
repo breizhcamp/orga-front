@@ -32,12 +32,12 @@ async function loadEvent() {
   }
 }
 
-onMounted(() => {
-  loadEvent()
+onMounted(async () => {
+  await loadEvent()
 })
 
-watch(() => eventStore.currentEventId, () => {
-  loadEvent()
+watch(() => eventStore.currentEventId, async () => {
+  await loadEvent()
 })
 </script>
 

@@ -1,13 +1,15 @@
 import type { AxiosResponse } from "axios"
 
 export const downloadPdfWithName = (
-  response: AxiosResponse<any, any>,
+  response: AxiosResponse,
   name: string
-) => downloadFileWithNameAndType(response, name, 'application/pdf')
+) => {
+  downloadFileWithNameAndType(response, name, 'application/pdf');
+}
 
 export const downloadFileWithNameAndType = (
-  response: AxiosResponse<any, any>,
-  name: string, 
+  response: AxiosResponse,
+  name: string,
   type: string
 ) => {
   const blob = new Blob([response.data], { type });

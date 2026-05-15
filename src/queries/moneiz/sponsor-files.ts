@@ -18,7 +18,7 @@ export function useSponsorFiles(files: Ref<ReadFile[] | undefined>) {
 
   // Clean up blob URLs when component unmounts
   onUnmounted(() => {
-    filesUrls.value.forEach(url => URL.revokeObjectURL(url));
+    filesUrls.value.forEach(url => { URL.revokeObjectURL(url); });
     filesUrls.value.clear();
   });
 
@@ -38,7 +38,7 @@ export function useSponsorFiles(files: Ref<ReadFile[] | undefined>) {
     if (!newFiles || newFiles.length === 0) return;
 
     // Clean up old blob URLs
-    filesUrls.value.forEach(url => URL.revokeObjectURL(url));
+    filesUrls.value.forEach(url => { URL.revokeObjectURL(url); });
     filesUrls.value.clear();
     errors.value.clear();
 

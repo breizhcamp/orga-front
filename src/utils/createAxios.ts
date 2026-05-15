@@ -6,9 +6,9 @@ import type { InjectionKey } from 'vue'
 const attachGlobalInterceptor = (instance: AxiosInstance, keycloak: Keycloak) => {
   instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     await keycloak.updateToken();
-    const { token } = keycloak;
+    const token = keycloak.token || '';
     const headers = config.headers as AxiosHeaders
-    if (headers && typeof headers.set === 'function') {
+    if (typeof headers.set === 'function') {
       headers.set('Authorization', `Bearer ${token}`)
     }
     return config

@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
 const localSponsor = computed({
   get: () => props.modelValue ?? newSponsor(),
-  set: (value) => emit('update:modelValue', value)
+  set: (value) => { emit('update:modelValue', value); }
 })
 
 // Validation errors

@@ -142,6 +142,8 @@ async function handleSubmit() {
         ...payload,
         id: eventId.value
       }
+      // eventId.value is not undefined because isUpdateMode.value is true.
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       await kalon.put(`/events/${eventId.value}`, updatePayload)
     } else {
       // Create new event - include the ID
@@ -154,7 +156,7 @@ async function handleSubmit() {
 
     success.value = true
     await eventStore.loadEvents(kalon)
-    setTimeout(() => { router.push('/events') }, 2000)
+    setTimeout(async () => { await router.push('/events') }, 2000)
 
   } catch (e) {
     console.error('Erreur lors de la soumission', e)
@@ -179,12 +181,12 @@ function updateEndDate() {
 // Handle successful deletion
 async function handleDeleted() {
   await eventStore.loadEvents(kalon)
-  router.push('/events')
+  await router.push('/events')
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (isUpdateMode.value) {
-    loadEvent()
+    await loadEvent()
   }
 })
 </script>
