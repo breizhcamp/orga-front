@@ -3,9 +3,13 @@ export type Sponsor = {
   token: string;
   url?: string;
   logo?: string;
+  invoiceName?: string;
+  address?: string;
+  vatId?: string;
+  siret?: string;
 };
 
-export function newSponsor() {
+export function newSponsor(): Sponsor {
   return {
     name: '',
     token: '',
