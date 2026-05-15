@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
 import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue';
 import type { Sponsor } from '@/dto/moneiz/Sponsor';
 import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries';
-import { computed, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();

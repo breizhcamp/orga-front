@@ -1,8 +1,10 @@
-import { globalIgnores } from 'eslint/config';
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
-import pluginVue from 'eslint-plugin-vue';
 import stylistic from '@stylistic/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import { globalIgnores } from 'eslint/config';
+import importPlugin from 'eslint-plugin-import';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import pluginVue from 'eslint-plugin-vue';
 
 export default defineConfigWithVueTs(
   {
@@ -20,8 +22,17 @@ export default defineConfigWithVueTs(
   }),
   pluginQuery.configs['flat/recommended-strict'],
   {
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+      'import': importPlugin,
+    },
     rules: {
       '@typescript-eslint/consistent-type-definitions': 'off',
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
+      'import/no-duplicates': 'error',
     },
   },
 );

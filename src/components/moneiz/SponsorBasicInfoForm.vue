@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { computed, nextTick, ref } from 'vue';
+
 import { newSponsor, type Sponsor } from '@/dto/moneiz/Sponsor';
 import type { SponsorId } from '@/dto/moneiz/SponsorList.ts';
 import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts';
-import { computed, nextTick, ref } from 'vue';
 
 const props = defineProps<{
   modelValue: Sponsor | undefined;

@@ -1,3 +1,5 @@
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 import DashboardView from '@/views/DashboardView.vue';
 import EditEventView from '@/views/events/EditEventView.vue';
 import ListEventView from '@/views/events/ListEventView.vue';
@@ -5,7 +7,6 @@ import MoneizView from '@/views/moneiz/MoneizView.vue';
 import SponsorEditView from '@/views/moneiz/SponsorEditView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
-import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
   {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts';
-import type { LevelList } from '@/dto/moneiz/LevelList.ts';
 import BiBoxArrowUpRight from 'bootstrap-icons/icons/box-arrow-up-right.svg?component';
 import dayjs from 'dayjs';
+
+import type { LevelList } from '@/dto/moneiz/LevelList.ts';
+import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts';
 
 defineProps<{
   sponsoring: SponsoringList;

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import BiExclamationTriangleFill from 'bootstrap-icons/icons/exclamation-triangle-fill.svg?component';
+import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
+import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
+import { computed, ref } from 'vue';
+
 import ModalForm from '@/components/modals/ModalForm.vue';
 import { useKalon } from '@/utils/useAxios';
-import { ref, computed } from 'vue';
-import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
-import BiExclamationTriangleFill from 'bootstrap-icons/icons/exclamation-triangle-fill.svg?component';
-import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
 
 const props = defineProps<{
   eventId: string;

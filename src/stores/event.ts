@@ -1,7 +1,8 @@
-import type { EventSummary } from '@/dto/kalon/Event.ts';
 import type { AxiosInstance } from 'axios';
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
+
+import type { EventSummary } from '@/dto/kalon/Event.ts';
 
 const LOCAL_STORAGE_KEY = 'orga-current-event';
 

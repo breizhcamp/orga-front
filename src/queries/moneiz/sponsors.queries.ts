@@ -1,8 +1,9 @@
+import { queryOptions, useMutation, useQuery, useQueryClient, type UseQueryReturnType } from '@tanstack/vue-query';
+
+import type { FileCreateApi } from '@/dto/moneiz/FileCreateApi.ts';
 import type { Sponsor } from '@/dto/moneiz/Sponsor.ts';
 import type { SponsorList } from '@/dto/moneiz/SponsorList.ts';
-import type { FileCreateApi } from '@/dto/moneiz/FileCreateApi.ts';
 import { useMoneiz } from '@/utils/useAxios.ts';
-import { useQuery, useMutation, useQueryClient, type UseQueryReturnType, queryOptions } from '@tanstack/vue-query';
 
 type Moneiz = ReturnType<typeof useMoneiz>;
 
@@ -99,4 +100,4 @@ function useUploadSponsorLogoMutation() {
   });
 }
 
-export { listSponsors, getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation };
+export { getSponsor, listSponsors, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation };

@@ -1,7 +1,8 @@
+import type { AxiosInstance } from 'axios';
+import { onUnmounted, type Ref, ref, watch } from 'vue';
+
 import type { ReadFile } from '@/dto/moneiz/ReadFile.ts';
 import { useMoneiz } from '@/utils/useAxios.ts';
-import type { AxiosInstance } from 'axios';
-import { onUnmounted, ref, type Ref, watch } from 'vue';
 
 async function retrieveFileBlob(client: AxiosInstance, file: ReadFile) {
   const res = await client.get<Blob>(`/api/admin/sponsors/${file.sponsorId}/file/${file.fileId}`, {

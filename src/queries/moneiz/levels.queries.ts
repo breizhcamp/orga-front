@@ -1,7 +1,8 @@
+import { queryOptions, useQuery, type UseQueryReturnType } from '@tanstack/vue-query';
+
 import type { EventId } from '@/dto/kalon/Event';
 import type { LevelList } from '@/dto/moneiz/LevelList';
 import { useMoneiz } from '@/utils/useAxios';
-import { queryOptions, useQuery, type UseQueryReturnType } from '@tanstack/vue-query';
 
 export function getListLevelsOptions(moneiz: ReturnType<typeof useMoneiz>, eventId?: EventId, staleTime = 60_000) {
   // eslint-disable-next-line @tanstack/query/exhaustive-deps

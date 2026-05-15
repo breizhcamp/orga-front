@@ -1,7 +1,8 @@
+import { queryOptions, useQuery, type UseQueryReturnType } from '@tanstack/vue-query';
+
 import type { EventId } from '@/dto/kalon/Event';
 import type { SponsoringList } from '@/dto/moneiz/SponsoringList';
 import { useMoneiz } from '@/utils/useAxios';
-import { queryOptions, useQuery, type UseQueryReturnType } from '@tanstack/vue-query';
 
 export function getListSponsoringsOptions(eventId?: EventId, staleTime = 60_000) {
   return queryOptions({

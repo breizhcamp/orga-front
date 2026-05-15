@@ -1,6 +1,6 @@
-import type Keycloak from 'keycloak-js';
 import type { AxiosHeaders, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
+import type Keycloak from 'keycloak-js';
 import type { InjectionKey } from 'vue';
 
 const attachGlobalInterceptor = (instance: AxiosInstance, keycloak: Keycloak) => {

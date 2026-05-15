@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+
 import { formatDateRange } from '@/utils/dateFormat';
 
 const props = defineProps<{ startDate?: string; endDate?: string; variant?: 'primary' | 'success' | 'info' | 'warning' | 'danger' }>();

@@ -2,8 +2,8 @@ import * as fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 
-import { defineConfig, PluginOption } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { defineConfig, PluginOption } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import svgLoader from 'vite-svg-loader';
 

@@ -1,5 +1,6 @@
-import { inject } from 'vue';
 import type { AxiosInstance } from 'axios';
+import { inject } from 'vue';
+
 import { kalonAxiosKey, moneizAxiosKey } from '@/provide-keys';
 
 function useAxios(key: symbol, clientName: string): AxiosInstance {

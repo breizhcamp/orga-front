@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
-import { useKalon } from '@/utils/useAxios';
 import BiCheckLg from 'bootstrap-icons/icons/check-lg.svg?component';
 import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
+import { computed, ref, watch } from 'vue';
+
+import { useKalon } from '@/utils/useAxios';
 
 const props = defineProps<{
   eventName: string;

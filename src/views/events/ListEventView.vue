@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { Event } from '@/dto/kalon/Event';
-import { useKalon } from '@/utils/useAxios';
-import { formatDateRange } from '@/utils/dateFormat';
+import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
+
+import type { Event } from '@/dto/kalon/Event';
+import { formatDateRange } from '@/utils/dateFormat';
+import { useKalon } from '@/utils/useAxios';
 
 const kalon = useKalon();
 

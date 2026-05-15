@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { SponsorList } from '@/dto/moneiz/SponsorList.ts';
-import BiPen from 'bootstrap-icons/icons/pen.svg?component';
 import BiBoxArrowUpRight from 'bootstrap-icons/icons/box-arrow-up-right.svg?component';
-import { useRouter } from 'vue-router';
-import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts';
+import BiPen from 'bootstrap-icons/icons/pen.svg?component';
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+import type { SponsorList } from '@/dto/moneiz/SponsorList.ts';
+import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts';
 
 const props = defineProps<{
   sponsor: SponsorList;

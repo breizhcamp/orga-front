@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import weekday from 'dayjs/plugin/weekday';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import weekday from 'dayjs/plugin/weekday';
 
 dayjs.extend(weekday);
 dayjs.extend(localizedFormat);

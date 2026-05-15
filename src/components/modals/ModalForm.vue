@@ -28,6 +28,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
+
 import type { Size } from './ModalInfo.vue';
 
 export default defineComponent({

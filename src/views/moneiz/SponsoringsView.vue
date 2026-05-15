@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
+import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 import type { LevelList } from '@/dto/moneiz/LevelList';
 import { listLevels } from '@/queries/moneiz/levels.queries';
 import { listSponsorings } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
-import { computed } from 'vue';
-import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 
 const eventStore = useEventStore();
 const { isPending, isError, data, error } = listSponsorings(eventStore.currentEventId);

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import EventIdInput from '@/components/events/EventIdInput.vue';
+import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component';
+import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
 import EventDeleteModal from '@/components/events/EventDeleteModal.vue';
+import EventIdInput from '@/components/events/EventIdInput.vue';
 import type { Event } from '@/dto/kalon/Event';
 import { useEventStore } from '@/stores/event';
 import { useKalon } from '@/utils/useAxios';
-import { computed, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component';
-import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
 
 const kalon = useKalon();
 const route = useRoute();

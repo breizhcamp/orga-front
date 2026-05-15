@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import BiPencil from 'bootstrap-icons/icons/pencil.svg?component';
-import { useEventStore } from '@/stores/event.ts';
 import { onMounted, ref, watch } from 'vue';
-import { useKalon } from '@/utils/useAxios';
+import { RouterLink } from 'vue-router';
+
 import EventDateTile from '@/components/dashboard/EventDateTile.vue';
 import EventVenueTile from '@/components/dashboard/EventVenueTile.vue';
-import { RouterLink } from 'vue-router';
 import type { Event } from '@/dto/kalon/Event.ts';
+import { useEventStore } from '@/stores/event.ts';
+import { useKalon } from '@/utils/useAxios';
 
 const eventStore = useEventStore();
 const kalon = useKalon();

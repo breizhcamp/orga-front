@@ -1,18 +1,20 @@
-import { initRouter } from '@/router';
-import Keycloak from 'keycloak-js';
-import { VueQueryPlugin } from '@tanstack/vue-query';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/main.scss';
-import { createPinia } from 'pinia';
-import { createApp } from 'vue';
-import App from './App.vue';
-import { createAxiosClient } from './utils/createAxios';
-import { kalonAxiosKey, moneizAxiosKey } from './provide-keys';
-import { useEventStore } from '@/stores/event';
+import 'dayjs/locale/fr';
+
+import { VueQueryPlugin } from '@tanstack/vue-query';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import 'dayjs/locale/fr';
+import Keycloak from 'keycloak-js';
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+
+import { initRouter } from '@/router';
+import { useEventStore } from '@/stores/event';
+
+import App from './App.vue';
+import { kalonAxiosKey, moneizAxiosKey } from './provide-keys';
+import { createAxiosClient } from './utils/createAxios';
 
 window.envLoaded.then(async () => {
   const app = createApp(App);
