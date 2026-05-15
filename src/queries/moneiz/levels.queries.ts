@@ -1,11 +1,11 @@
 import type { EventId } from '@/dto/kalon/Event';
 import type { LevelList } from '@/dto/moneiz/LevelList';
 import { useMoneiz } from '@/utils/useAxios';
-import { useQuery, type UseQueryReturnType } from '@tanstack/vue-query';
+import { queryOptions, useQuery, type UseQueryReturnType } from '@tanstack/vue-query';
 
-export function listLevels(eventId?: EventId, staleTime = 60_000): UseQueryReturnType<LevelList[], Error> {
-  const moneiz = useMoneiz();
-  return useQuery({
+export function getListLevelsOptions(moneiz: ReturnType<typeof useMoneiz>, eventId?: EventId, staleTime = 60_000) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
     queryKey: ['moneiz', eventId, 'levels'],
     queryFn: async (): Promise<LevelList[]> => {
       if (!eventId) return [];
@@ -15,4 +15,9 @@ export function listLevels(eventId?: EventId, staleTime = 60_000): UseQueryRetur
     staleTime,
     placeholderData: [],
   });
+}
+
+export function listLevels(eventId?: EventId, staleTime = 60_000): UseQueryReturnType<LevelList[], Error> {
+  const moneiz = useMoneiz();
+  return useQuery(getListLevelsOptions(moneiz, eventId, staleTime));
 }

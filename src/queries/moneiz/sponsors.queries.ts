@@ -2,11 +2,13 @@ import type { Sponsor } from '@/dto/moneiz/Sponsor.ts';
 import type { SponsorList } from '@/dto/moneiz/SponsorList.ts';
 import type { FileCreateApi } from '@/dto/moneiz/FileCreateApi.ts';
 import { useMoneiz } from '@/utils/useAxios.ts';
-import { useQuery, useMutation, useQueryClient, type UseQueryReturnType } from '@tanstack/vue-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryReturnType, queryOptions } from '@tanstack/vue-query';
 
-function listSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Error> {
-  const moneiz = useMoneiz();
-  return useQuery({
+type Moneiz = ReturnType<typeof useMoneiz>;
+
+function getListSponsorsOptions(moneiz: Moneiz, staleTime = 60_000) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
     queryKey: ['moneiz', 'sponsors'],
     queryFn: async (): Promise<SponsorList[]> => {
       return (await moneiz.get<SponsorList[]>('/api/admin/sponsors')).data;
@@ -15,9 +17,14 @@ function listSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Err
   });
 }
 
-function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQueryReturnType<Sponsor, Error> {
+function listSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Error> {
   const moneiz = useMoneiz();
-  return useQuery({
+  return useQuery(getListSponsorsOptions(moneiz, staleTime));
+}
+
+function getSponsorOptions(moneiz: Moneiz, id: string, forEditing = false, staleTime = 60_000) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
     queryKey: ['moneiz', 'sponsors', id],
     queryFn: async (): Promise<Sponsor> => {
       return (await moneiz.get<Sponsor>(`/api/admin/sponsors/${id}`)).data;
@@ -25,6 +32,11 @@ function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQuer
     staleTime,
     refetchOnWindowFocus: !forEditing,
   });
+}
+
+function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQueryReturnType<Sponsor, Error> {
+  const moneiz = useMoneiz();
+  return useQuery(getSponsorOptions(moneiz, id, forEditing, staleTime));
 }
 
 function useCreateSponsorMutation() {
@@ -38,7 +50,7 @@ function useCreateSponsorMutation() {
     },
     onSuccess: async () => {
       // Invalidate the sponsors list to refetch it
-      await queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] });
+      await queryClient.invalidateQueries({ queryKey: getListSponsorsOptions(moneiz).queryKey });
     },
   });
 }
@@ -55,8 +67,8 @@ function useUpdateSponsorMutation() {
     onSuccess: async (_data, variables) => {
       // Invalidate both the list and the specific sponsor query
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] }),
-        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors', variables.id] }),
+        queryClient.invalidateQueries({ queryKey: getListSponsorsOptions(moneiz).queryKey }),
+        queryClient.invalidateQueries({ queryKey: getSponsorOptions(moneiz, variables.id).queryKey }),
       ]);
     },
   });
@@ -80,8 +92,8 @@ function useUploadSponsorLogoMutation() {
     onSuccess: async (_data, variables) => {
       // Invalidate the specific sponsor query to refetch with new logo
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors', variables.sponsorId] }),
-        queryClient.invalidateQueries({ queryKey: ['moneiz', 'sponsors'] }),
+        queryClient.invalidateQueries({ queryKey: getListSponsorsOptions(moneiz).queryKey }),
+        queryClient.invalidateQueries({ queryKey: getSponsorOptions(moneiz, variables.sponsorId).queryKey }),
       ]);
     },
   });
