@@ -30,3 +30,5 @@ coverage
 
 # Unused scripts
 *.ps1
+
+.eslintcache
