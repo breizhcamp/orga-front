@@ -6,20 +6,20 @@
 
       const res = await fetch(configUrl + 'modules/config', {
         headers: {
-          'X-Tenant-Host': location.host
-        }
+          'X-Tenant-Host': location.host,
+        },
       });
 
-      const config = await res.json()
+      const config = await res.json();
 
-      config.forEach(item => {
-        window['env'][item.key] = item.value
-      })
+      config.forEach((item) => {
+        window['env'][item.key] = item.value;
+      });
 
-      resolve()
-    } catch (e) {
-      reject(e)
+      resolve();
     }
-  })
-
+    catch (e) {
+      reject(e);
+    }
+  });
 })(this);

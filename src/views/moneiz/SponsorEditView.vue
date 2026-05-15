@@ -1,93 +1,95 @@
 <script setup lang="ts">
-import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue'
-import type { Sponsor } from '@/dto/moneiz/Sponsor'
-import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries'
-import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue';
+import type { Sponsor } from '@/dto/moneiz/Sponsor';
+import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // Initialize mutations
-const createSponsorMutation = useCreateSponsorMutation()
-const updateSponsorMutation = useUpdateSponsorMutation()
-const uploadLogoMutation = useUploadSponsorLogoMutation()
+const createSponsorMutation = useCreateSponsorMutation();
+const updateSponsorMutation = useUpdateSponsorMutation();
+const uploadLogoMutation = useUploadSponsorLogoMutation();
 
 const sponsorId = computed(() => {
-  const id = route.params.sponsorId as string | undefined
-  return id === 'new' ? undefined : id
-})
-const isUpdateMode = computed(() => !!sponsorId.value)
+  const id = route.params.sponsorId as string | undefined;
+  return id === 'new' ? undefined : id;
+});
+const isUpdateMode = computed(() => !!sponsorId.value);
 
 // Initialize sponsor data
-const sponsor = ref<Sponsor | undefined>()
-const dataInitialized = ref(false)
+const sponsor = ref<Sponsor | undefined>();
+const dataInitialized = ref(false);
 
-const logoFile = ref<File | null>(null)
+const logoFile = ref<File | null>(null);
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-const basicInfoFormRef = ref<InstanceType<typeof SponsorBasicInfoForm> | null>(null)
+const basicInfoFormRef = ref<InstanceType<typeof SponsorBasicInfoForm> | null>(null);
 
 // Load sponsor data if in update mode
 const sponsorQuery = isUpdateMode.value && sponsorId.value
   ? getSponsor(sponsorId.value, true)
-  : undefined
+  : undefined;
 
 // Watch for data changes when loading existing sponsor
 // Only initialize data once to preserve user edits during the editing session
 if (sponsorQuery) {
   watch(sponsorQuery.data, (newData) => {
     if (newData && !dataInitialized.value) {
-      sponsor.value = { ...newData }
-      dataInitialized.value = true
+      sponsor.value = { ...newData };
+      dataInitialized.value = true;
     }
-  }, { immediate: true })
+  }, { immediate: true });
 }
 
 const disabled = computed(() =>
-  createSponsorMutation.isPending.value ||
-  updateSponsorMutation.isPending.value ||
-  uploadLogoMutation.isPending.value ||
-  (sponsorQuery?.isPending.value ?? false)
-)
+  createSponsorMutation.isPending.value
+  || updateSponsorMutation.isPending.value
+  || uploadLogoMutation.isPending.value
+  || (sponsorQuery?.isPending.value ?? false),
+);
 
 // Save function
 const saveSponsor = async () => {
-  if (!sponsor.value) return
+  if (!sponsor.value) return;
   // Validate form
   if (basicInfoFormRef.value && !basicInfoFormRef.value.validate()) {
-    return
+    return;
   }
 
   try {
-    let savedSponsorId = sponsorId.value
+    let savedSponsorId = sponsorId.value;
 
     // Save sponsor basic info
     if (isUpdateMode.value && savedSponsorId) {
       // Update existing sponsor
-      await updateSponsorMutation.mutateAsync({ id: savedSponsorId, sponsor: sponsor.value })
-    } else {
+      await updateSponsorMutation.mutateAsync({ id: savedSponsorId, sponsor: sponsor.value });
+    }
+    else {
       // Create new sponsor
-      const result = await createSponsorMutation.mutateAsync(sponsor.value)
-      savedSponsorId = result.id
-      await router.replace({ name: 'SponsorEdit', params: { sponsorId: savedSponsorId } })
+      const result = await createSponsorMutation.mutateAsync(sponsor.value);
+      savedSponsorId = result.id;
+      await router.replace({ name: 'SponsorEdit', params: { sponsorId: savedSponsorId } });
     }
 
     // Upload logo if a file was selected and we have a sponsor ID
     if (logoFile.value && savedSponsorId) {
       const logoResult = await uploadLogoMutation.mutateAsync({
         sponsorId: savedSponsorId,
-        file: logoFile.value
-      })
-      sponsor.value.logo = logoResult.id
+        file: logoFile.value,
+      });
+      sponsor.value.logo = logoResult.id;
     }
 
     // Success - could add toast notification here
-    console.log('Sponsor saved successfully', savedSponsorId)
-  } catch (error) {
-    console.error('Error saving sponsor:', error)
+    console.log('Sponsor saved successfully', savedSponsorId);
+  }
+  catch (error) {
+    console.error('Error saving sponsor:', error);
     // Could add error notification here
   }
-}
+};
 </script>
 
 <template>

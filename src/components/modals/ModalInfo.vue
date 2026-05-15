@@ -10,7 +10,7 @@
         <div class="modal-body">
           <slot></slot>
         </div>
-        
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Close</button>
         </div>
@@ -23,15 +23,15 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 
-export type Size = "sm" | "lg" | "xl";
+export type Size = 'sm' | 'lg' | 'xl';
 
 export default defineComponent({
-  name: "ModalInfo",
+  name: 'ModalInfo',
 
   props: {
     open: { type: Boolean, required: true, default: false },
     title: { type: String, required: true },
-    size: { type: String as PropType<Size>, required: false }
+    size: { type: String as PropType<Size>, required: false },
   },
 
   emits: ['update:open'],
@@ -40,25 +40,25 @@ export default defineComponent({
     open() {
       if (this.open) {
         if (document.activeElement != null) {
-          (document.activeElement as HTMLElement).blur()
+          (document.activeElement as HTMLElement).blur();
         }
         setTimeout(() =>
-          document.getElementById('modal-element')?.focus()
-          , 100)
+          document.getElementById('modal-element')?.focus(),
+        100);
       }
-    }
+    },
   },
 
   methods: {
     close() {
-      this.$emit('update:open', false)
+      this.$emit('update:open', false);
     },
 
     closeIfEscape(e: KeyboardEvent) {
-      if (e.key == "Escape") {
-        this.close()
+      if (e.key == 'Escape') {
+        this.close();
       }
-    }
-  }
-})
+    },
+  },
+});
 </script>

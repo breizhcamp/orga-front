@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import EventIdInput from '@/components/events/EventIdInput.vue';
 import EventDeleteModal from '@/components/events/EventDeleteModal.vue';
-import type { Event } from '@/dto/kalon/Event'
-import { useEventStore } from '@/stores/event'
-import { useKalon } from '@/utils/useAxios'
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component'
-import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component'
+import type { Event } from '@/dto/kalon/Event';
+import { useEventStore } from '@/stores/event';
+import { useKalon } from '@/utils/useAxios';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component';
+import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
 
-const kalon = useKalon()
-const route = useRoute()
-const router = useRouter()
-const eventStore = useEventStore()
+const kalon = useKalon();
+const route = useRoute();
+const router = useRouter();
+const eventStore = useEventStore();
 
 // Determine if we're creating or updating
 const eventId = computed(() => {
-  const id = route.params.eventId as string | undefined
-  return id === 'new' ? undefined : id
-})
-const isUpdateMode = computed(() => !!eventId.value)
+  const id = route.params.eventId as string | undefined;
+  return id === 'new' ? undefined : id;
+});
+const isUpdateMode = computed(() => !!eventId.value);
 
 // Form data
 const formData = ref<Partial<Event>>({
@@ -27,168 +27,176 @@ const formData = ref<Partial<Event>>({
   startDate: '',
   endDate: '',
   website: '',
-  venue: ''
-})
+  venue: '',
+});
 
 // UI state
-const loading = ref(false)
-const submitting = ref(false)
-const error = ref<string | null>()
-const success = ref(false)
+const loading = ref(false);
+const submitting = ref(false);
+const error = ref<string | null>();
+const success = ref(false);
 
 // Event ID state (only for create mode)
-const eventIdValue = ref('')
-const isEventIdAvailable = ref(false)
+const eventIdValue = ref('');
+const isEventIdAvailable = ref(false);
 
 // Form validation
-const formErrors = ref<Record<string, string>>({})
+const formErrors = ref<Record<string, string>>({});
 
 // Handle event ID validity changes
 function handleIdValidityChange(isValid: boolean) {
-  isEventIdAvailable.value = isValid
+  isEventIdAvailable.value = isValid;
 }
 
 // Load existing event data in update mode
 async function loadEvent() {
-  if (!eventId.value) return
+  if (!eventId.value) return;
 
   try {
-    loading.value = true
-    error.value = null
-    const resp = await kalon.get<Event>(`/events/${eventId.value}`)
-    formData.value = { ...resp.data }
-  } catch (e) {
-    console.error('Erreur de chargement de l\'événement', e)
-    error.value = 'Impossible de charger l\'événement'
-  } finally {
-    loading.value = false
+    loading.value = true;
+    error.value = null;
+    const resp = await kalon.get<Event>(`/events/${eventId.value}`);
+    formData.value = { ...resp.data };
+  }
+  catch (e) {
+    console.error('Erreur de chargement de l\'événement', e);
+    error.value = 'Impossible de charger l\'événement';
+  }
+  finally {
+    loading.value = false;
   }
 }
 
 // Validate form
 function validateForm(): boolean {
-  formErrors.value = {}
-  let isValid = true
+  formErrors.value = {};
+  let isValid = true;
 
   if (!formData.value.name?.trim()) {
-    formErrors.value.name = 'Le nom est requis'
-    isValid = false
+    formErrors.value.name = 'Le nom est requis';
+    isValid = false;
   }
 
   // Validate event ID in create mode
   if (!isUpdateMode.value) {
     if (!eventIdValue.value) {
-      formErrors.value.id = 'L\'identifiant est requis'
-      isValid = false
-    } else if (!isEventIdAvailable.value) {
-      formErrors.value.id = 'L\'identifiant n\'est pas disponible'
-      isValid = false
+      formErrors.value.id = 'L\'identifiant est requis';
+      isValid = false;
+    }
+    else if (!isEventIdAvailable.value) {
+      formErrors.value.id = 'L\'identifiant n\'est pas disponible';
+      isValid = false;
     }
   }
 
   if (!formData.value.startDate) {
-    formErrors.value.startDate = 'La date de début est requise'
-    isValid = false
+    formErrors.value.startDate = 'La date de début est requise';
+    isValid = false;
   }
 
   if (!formData.value.endDate) {
-    formErrors.value.endDate = 'La date de fin est requise'
-    isValid = false
+    formErrors.value.endDate = 'La date de fin est requise';
+    isValid = false;
   }
 
   // Validate that end date is after start date
   if (formData.value.startDate && formData.value.endDate) {
     if (formData.value.endDate < formData.value.startDate) {
-      formErrors.value.endDate = 'La date de fin doit être après la date de début'
-      isValid = false
+      formErrors.value.endDate = 'La date de fin doit être après la date de début';
+      isValid = false;
     }
   }
 
   // Validate website URL if provided
   if (formData.value.website && formData.value.website.trim()) {
     try {
-      new URL(formData.value.website)
-    } catch {
-      formErrors.value.website = 'URL invalide'
-      isValid = false
+      new URL(formData.value.website);
+    }
+    catch {
+      formErrors.value.website = 'URL invalide';
+      isValid = false;
     }
   }
 
-  return isValid
+  return isValid;
 }
 
 // Submit form
 async function handleSubmit() {
   if (!validateForm()) {
-    return
+    return;
   }
 
   try {
-    submitting.value = true
-    error.value = null
-    success.value = false
+    submitting.value = true;
+    error.value = null;
+    success.value = false;
 
     const payload: Partial<Event> = {
       name: formData.value.name?.trim(),
       startDate: formData.value.startDate,
       endDate: formData.value.endDate,
       website: formData.value.website?.trim() || undefined,
-      venue: formData.value.venue?.trim() || undefined
-    }
+      venue: formData.value.venue?.trim() || undefined,
+    };
 
     if (isUpdateMode.value) {
       // Update existing event
       const updatePayload = {
         ...payload,
-        id: eventId.value
-      }
+        id: eventId.value,
+      };
       // eventId.value is not undefined because isUpdateMode.value is true.
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      await kalon.put(`/events/${eventId.value}`, updatePayload)
-    } else {
+      await kalon.put(`/events/${eventId.value}`, updatePayload);
+    }
+    else {
       // Create new event - include the ID
       const createPayload = {
         ...payload,
-        id: eventIdValue.value
-      }
-      await kalon.post<Event>('/events', createPayload)
+        id: eventIdValue.value,
+      };
+      await kalon.post<Event>('/events', createPayload);
     }
 
-    success.value = true
-    await eventStore.loadEvents(kalon)
-    setTimeout(async () => { await router.push('/events') }, 2000)
-
-  } catch (e) {
-    console.error('Erreur lors de la soumission', e)
-    const axiosError = e as { response?: { data?: { message?: string } } }
-    error.value = axiosError.response?.data?.message || 'Une erreur est survenue lors de la sauvegarde'
-  } finally {
-    submitting.value = false
+    success.value = true;
+    await eventStore.loadEvents(kalon);
+    setTimeout(async () => {
+      await router.push('/events');
+    }, 2000);
+  }
+  catch (e) {
+    console.error('Erreur lors de la soumission', e);
+    const axiosError = e as { response?: { data?: { message?: string } } };
+    error.value = axiosError.response?.data?.message || 'Une erreur est survenue lors de la sauvegarde';
+  }
+  finally {
+    submitting.value = false;
   }
 }
 
 // Cancel and go back
 function handleCancel() {
-  router.go(-1)
+  router.go(-1);
 }
 
 function updateEndDate() {
   if (formData.value.startDate && (!formData.value.endDate || formData.value.endDate < formData.value.startDate)) {
-    formData.value.endDate = formData.value.startDate
+    formData.value.endDate = formData.value.startDate;
   }
 }
 
 // Handle successful deletion
 async function handleDeleted() {
-  await eventStore.loadEvents(kalon)
-  await router.push('/events')
+  await eventStore.loadEvents(kalon);
+  await router.push('/events');
 }
 
 onMounted(async () => {
   if (isUpdateMode.value) {
-    await loadEvent()
+    await loadEvent();
   }
-})
+});
 </script>
 
 <template>

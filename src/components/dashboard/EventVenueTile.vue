@@ -16,9 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-const props = defineProps<{ venue?: string; variant?: 'primary' | 'success' | 'info' | 'warning' | 'danger' }>()
-const variantClass = computed(() => props.variant ? `tile-${props.variant}` : 'tile-default')
+import { computed } from 'vue';
+const props = defineProps<{ venue?: string; variant?: 'primary' | 'success' | 'info' | 'warning' | 'danger' }>();
+const variantClass = computed(() => props.variant ? `tile-${props.variant}` : 'tile-default');
 </script>
 
 <style scoped>

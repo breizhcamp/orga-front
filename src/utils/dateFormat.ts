@@ -1,18 +1,18 @@
-import dayjs from 'dayjs'
-import weekday from 'dayjs/plugin/weekday'
-import localizedFormat from 'dayjs/plugin/localizedFormat'
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
-dayjs.extend(weekday)
-dayjs.extend(localizedFormat)
+dayjs.extend(weekday);
+dayjs.extend(localizedFormat);
 
 function formatDay(dateStr: string): string {
-  const d = dayjs(dateStr)
-  return `${d.format('ddd')} ${d.format('D')}`
+  const d = dayjs(dateStr);
+  return `${d.format('ddd')} ${d.format('D')}`;
 }
 
 function formatMonthYear(dateStr: string): string {
-  const d = dayjs(dateStr)
-  return `${d.format('MMMM')} ${d.format('YYYY')}`
+  const d = dayjs(dateStr);
+  return `${d.format('MMMM')} ${d.format('YYYY')}`;
 }
 
 /**
@@ -25,20 +25,20 @@ function formatMonthYear(dateStr: string): string {
  *          or empty string if dates are not provided
  */
 export function formatDateRange(startDate?: string, endDate?: string): string {
-  if (!startDate || !endDate) return ''
+  if (!startDate || !endDate) return '';
 
-  const s = dayjs(startDate)
-  const e = dayjs(endDate)
-  const sameMonth = s.month() === e.month() && s.year() === e.year()
-  const sameYear = s.year() === e.year()
+  const s = dayjs(startDate);
+  const e = dayjs(endDate);
+  const sameMonth = s.month() === e.month() && s.year() === e.year();
+  const sameYear = s.year() === e.year();
 
   if (sameMonth) {
-    return `du ${formatDay(startDate)} au ${formatDay(endDate)} ${formatMonthYear(endDate)}`
+    return `du ${formatDay(startDate)} au ${formatDay(endDate)} ${formatMonthYear(endDate)}`;
   }
 
   if (sameYear) {
-    return `du ${formatDay(startDate)} ${dayjs(startDate).format('MMMM')} au ${formatDay(endDate)} ${formatMonthYear(endDate)}`
+    return `du ${formatDay(startDate)} ${dayjs(startDate).format('MMMM')} au ${formatDay(endDate)} ${formatMonthYear(endDate)}`;
   }
 
-  return `du ${formatDay(startDate)} ${formatMonthYear(startDate)} au ${formatDay(endDate)} ${formatMonthYear(endDate)}`
+  return `du ${formatDay(startDate)} ${formatMonthYear(startDate)} au ${formatDay(endDate)} ${formatMonthYear(endDate)}`;
 }

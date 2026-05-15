@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { LevelList } from '@/dto/moneiz/LevelList'
-import { listLevels } from '@/queries/moneiz/levels.queries'
-import { listSponsorings } from '@/queries/moneiz/sponsorings.queries'
-import { useEventStore } from '@/stores/event'
-import { computed } from 'vue'
-import SponsoringLine from '@/components/moneiz/SponsoringLine.vue'
+import type { LevelList } from '@/dto/moneiz/LevelList';
+import { listLevels } from '@/queries/moneiz/levels.queries';
+import { listSponsorings } from '@/queries/moneiz/sponsorings.queries';
+import { useEventStore } from '@/stores/event';
+import { computed } from 'vue';
+import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 
-const eventStore = useEventStore()
-const { isPending, isError, data, error } = listSponsorings(eventStore.currentEventId)
-const { isPending: isLevelPending, isError: isLevelError, data: levelData, error: levelError } = listLevels(eventStore.currentEventId)
+const eventStore = useEventStore();
+const { isPending, isError, data, error } = listSponsorings(eventStore.currentEventId);
+const { isPending: isLevelPending, isError: isLevelError, data: levelData, error: levelError } = listLevels(eventStore.currentEventId);
 
 const levels = computed(() => {
-  const levelMap = new Map<string, LevelList>()
+  const levelMap = new Map<string, LevelList>();
   levelData.value?.forEach((level) => {
-    levelMap.set(level.name, level)
-  })
-  return levelMap
-})
+    levelMap.set(level.name, level);
+  });
+  return levelMap;
+});
 </script>
 
 <template>
