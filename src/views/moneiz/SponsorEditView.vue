@@ -3,8 +3,8 @@ import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue';
-import SponsorInvoiceInfoForm from '@/components/moneiz/SponsorInvoiceInfoForm.vue';
 import SponsorContactForm from '@/components/moneiz/SponsorContactForm.vue';
+import SponsorInvoiceInfoForm from '@/components/moneiz/SponsorInvoiceInfoForm.vue';
 import type { Sponsor } from '@/dto/moneiz/Sponsor';
 import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries';
 
