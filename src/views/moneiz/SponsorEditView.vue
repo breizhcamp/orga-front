@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue';
+import SponsorInvoiceInfoForm from '@/components/moneiz/SponsorInvoiceInfoForm.vue';
 import type { Sponsor } from '@/dto/moneiz/Sponsor';
 import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries';
 
@@ -108,12 +109,10 @@ const saveSponsor = async () => {
 
       <!-- Invoice Info Section (placeholder) -->
       <div class="grid-invoice-info">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Informations de facturation</h5>
-            <p class="text-muted"><i>À venir...</i></p>
-          </div>
-        </div>
+        <SponsorInvoiceInfoForm
+          v-model="sponsor"
+          :disabled="disabled"
+        />
       </div>
 
       <!-- Contacts Section (placeholder) -->
