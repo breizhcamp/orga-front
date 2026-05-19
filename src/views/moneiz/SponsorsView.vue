@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /// <reference types="vite-svg-loader" />
 
-import { listSponsors } from '@/queries/moneiz/sponsors.queries'
-import SponsorLine from '@/components/moneiz/SponsorLine.vue'
+import SponsorLine from '@/components/moneiz/SponsorLine.vue';
+import { listSponsors } from '@/queries/moneiz/sponsors.queries';
 
-const { isPending, isError, data, error } = listSponsors()
+const { isPending, isError, data, error } = listSponsors();
 
 </script>
 

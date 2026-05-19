@@ -1,17 +1,17 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
 
-import { defineConfig, PluginOption } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import svgLoader from 'vite-svg-loader'
+import vue from '@vitejs/plugin-vue';
+import { defineConfig, PluginOption } from 'vite';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import svgLoader from 'vite-svg-loader';
 
 const current = fileURLToPath(import.meta.url);
 const root = path.dirname(current);
 
 function extractEnvVar(str: string): string[] {
-  return str.split('${').map(v => v.split('}')[0]).slice(1)
+  return str.split('${').map(v => v.split('}')[0]).slice(1);
 }
 
 const RuntimeEnvPlugin: PluginOption = {
@@ -21,7 +21,10 @@ const RuntimeEnvPlugin: PluginOption = {
   configureServer(server) {
     return () => {
       server.middlewares.use((req, res, next) => {
-        if (req.originalUrl != '/env.js') return next();
+        if (req.originalUrl != '/env.js') {
+          next();
+          return;
+        }
 
         const configContent = fs.readFileSync(
           path.resolve(root, './public/env.template.js'),
@@ -29,7 +32,7 @@ const RuntimeEnvPlugin: PluginOption = {
         );
         let content = configContent;
         extractEnvVar(configContent).forEach((v) => {
-          if (process.env?.[v] && process.env?.[v]?.length) {
+          if (process.env[v] && process.env[v].length) {
             content = content.replace('${' + v + '}', process.env[v]);
           } else {
             content = content.replace('${' + v + '}', '');
@@ -42,25 +45,24 @@ const RuntimeEnvPlugin: PluginOption = {
   },
 };
 
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [RuntimeEnvPlugin, vue(), vueDevTools(), svgLoader()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
   },
 
   css: {
     preprocessorOptions: {
       scss: {
-        quietDeps: true
-      }
-    }
+        quietDeps: true,
+      },
+    },
   },
 
   server: {
-    port: 4000
-  }
-})
+    port: 4000,
+  },
+});

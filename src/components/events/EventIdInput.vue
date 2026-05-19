@@ -1,115 +1,116 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { useKalon } from '@/utils/useAxios'
-import BiCheckLg from 'bootstrap-icons/icons/check-lg.svg?component'
-import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component'
+import BiCheckLg from 'bootstrap-icons/icons/check-lg.svg?component';
+import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
+import { computed, ref, watch } from 'vue';
+
+import { useKalon } from '@/utils/useAxios';
 
 const props = defineProps<{
-  eventName: string
-  disabled?: boolean
-  modelValue: string
-}>()
+  eventName: string;
+  disabled?: boolean;
+  modelValue: string;
+}>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
-  'validity-change': [isValid: boolean]
-}>()
+  'update:modelValue': [value: string];
+  'validity-change': [isValid: boolean];
+}>();
 
-const kalon = useKalon()
+const kalon = useKalon();
 
 // Local state
-const localValue = ref(props.modelValue)
-const isChecking = ref(false)
-const isAvailable = ref<boolean | null>(null)
-const formatError = ref(false)
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
+const localValue = ref(props.modelValue);
+const isChecking = ref(false);
+const isAvailable = ref<boolean | null>(null);
+const formatError = ref(false);
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Format validation regex: lowercase alphanumeric and dash only
-const ID_FORMAT_REGEX = /^[a-z0-9-]+$/
+const ID_FORMAT_REGEX = /^[a-z0-9-]+$/;
 
 // Computed validity
 const isValid = computed(() => {
-  if (!localValue.value) return false
-  if (formatError.value) return false
-  if (isAvailable.value === false) return false
-  if (isAvailable.value === null && localValue.value) return false
-  return isAvailable.value === true
-})
+  if (!localValue.value) return false;
+  if (formatError.value) return false;
+  if (isAvailable.value === false) return false;
+  if (isAvailable.value === null && localValue.value) return false;
+  return isAvailable.value === true;
+});
 
 // Watch local value changes
 watch(localValue, (newValue) => {
-  emit('update:modelValue', newValue)
+  emit('update:modelValue', newValue);
 
   // Reset states
-  isAvailable.value = null
-  formatError.value = false
+  isAvailable.value = null;
+  formatError.value = false;
 
   // Clear existing timer
   if (debounceTimer) {
-    clearTimeout(debounceTimer)
-    debounceTimer = null
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
   }
 
   // Validate format
   if (newValue && !ID_FORMAT_REGEX.test(newValue)) {
-    formatError.value = true
-    emit('validity-change', false)
-    return
+    formatError.value = true;
+    emit('validity-change', false);
+    return;
   }
 
   // Check availability with debounce
   if (newValue) {
-    isChecking.value = true
+    isChecking.value = true;
     debounceTimer = setTimeout(async () => {
-      await checkAvailability(newValue)
-    }, 500)
+      await checkAvailability(newValue);
+    }, 500);
   } else {
-    isChecking.value = false
-    emit('validity-change', false)
+    isChecking.value = false;
+    emit('validity-change', false);
   }
-})
+});
 
 // Watch validity changes
 watch(isValid, (valid) => {
-  emit('validity-change', valid)
-})
+  emit('validity-change', valid);
+});
 
 // Watch props.modelValue for external changes
 watch(() => props.modelValue, (newValue) => {
   if (newValue !== localValue.value) {
-    localValue.value = newValue
+    localValue.value = newValue;
   }
-})
+});
 
 // Auto-generate ID from event name
 function handleFocus() {
   if (!localValue.value && props.eventName) {
     const generated = props.eventName
       .toLowerCase()
-      .replace(/\s+/g, '-')
-    localValue.value = generated
+      .replace(/\s+/g, '-');
+    localValue.value = generated;
   }
 }
 
 // Check ID availability on backend
 async function checkAvailability(id: string) {
   try {
-    isChecking.value = true
-    await kalon.head(`/events/${id}`)
+    isChecking.value = true;
+    await kalon.head(`/events/${id}`);
     // If we get here (200 response), the event exists
-    isAvailable.value = false
+    isAvailable.value = false;
   } catch (error: unknown) {
-    const axiosError = error as { response?: { status?: number } }
+    const axiosError = error as { response?: { status?: number } };
     if (axiosError.response?.status === 404) {
       // 404 means the ID is available
-      isAvailable.value = true
+      isAvailable.value = true;
     } else {
       // Other errors - treat as unavailable to be safe
-      console.error('Error checking event ID availability:', error)
-      isAvailable.value = false
+      console.error('Error checking event ID availability:', error);
+      isAvailable.value = false;
     }
   } finally {
-    isChecking.value = false
+    isChecking.value = false;
   }
 }
 </script>

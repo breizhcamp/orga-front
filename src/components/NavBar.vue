@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import Logo from '@/assets/breizhcamp-logo-2026.svg?component'
+import BiBuilding from 'bootstrap-icons/icons/building.svg?component';
+import BiHouseDoor from 'bootstrap-icons/icons/house-door.svg?component';
+import BiMic from 'bootstrap-icons/icons/mic.svg?component';
+
+import Logo from '@/assets/breizhcamp-logo-2026.svg?component';
 import { useEventStore } from '@/stores/event.ts';
-import BiHouseDoor from "bootstrap-icons/icons/house-door.svg?component";
-import BiBuilding from "bootstrap-icons/icons/building.svg?component";
-import BiMic from 'bootstrap-icons/icons/mic.svg?component'
 
 const eventStore = useEventStore();
 

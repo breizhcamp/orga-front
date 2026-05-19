@@ -11,5 +11,5 @@ export function newSponsor() {
     token: '',
     url: undefined,
     logo: undefined,
-  }
+  };
 }

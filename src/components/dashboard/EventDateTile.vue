@@ -16,14 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { formatDateRange } from '@/utils/dateFormat'
+import { computed } from 'vue';
 
-const props = defineProps<{ startDate?: string; endDate?: string; variant?: 'primary' | 'success' | 'info' | 'warning' | 'danger' }>()
+import { formatDateRange } from '@/utils/dateFormat';
 
-const formattedRange = computed(() => formatDateRange(props.startDate, props.endDate))
+const props = defineProps<{ startDate?: string; endDate?: string; variant?: 'primary' | 'success' | 'info' | 'warning' | 'danger' }>();
 
-const variantClass = computed(() => props.variant ? `tile-${props.variant}` : 'tile-default')
+const formattedRange = computed(() => formatDateRange(props.startDate, props.endDate));
+
+const variantClass = computed(() => props.variant ? `tile-${props.variant}` : 'tile-default');
 </script>
 
 <style scoped>

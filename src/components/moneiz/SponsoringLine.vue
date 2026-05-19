@@ -1,44 +1,45 @@
 <script setup lang="ts">
-import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts'
-import type { LevelList } from '@/dto/moneiz/LevelList.ts'
-import BiBoxArrowUpRight from 'bootstrap-icons/icons/box-arrow-up-right.svg?component'
-import dayjs from 'dayjs'
+import BiBoxArrowUpRight from 'bootstrap-icons/icons/box-arrow-up-right.svg?component';
+import dayjs from 'dayjs';
+
+import type { LevelList } from '@/dto/moneiz/LevelList.ts';
+import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts';
 
 defineProps<{
-  sponsoring: SponsoringList
-  level: LevelList | undefined
-}>()
+  sponsoring: SponsoringList;
+  level: LevelList | undefined;
+}>();
 
 function formatDate(date: string | undefined): string {
-  if (!date) return ''
-  return dayjs(date).format('L')
+  if (!date) return '';
+  return dayjs(date).format('L');
 }
 
 function getStateClass(state: string | undefined): string {
-  if (!state) return 'badge-secondary'
+  if (!state) return 'badge-secondary';
 
   switch (state) {
     case 'TODO':
-      return 'badge-secondary'
+      return 'badge-secondary';
     case 'TO_SEND':
     case 'GENERATED':
-      return 'badge-warning'
+      return 'badge-warning';
     case 'MAIL_SENT':
     case 'SENT':
-      return 'badge-info'
+      return 'badge-info';
     case 'RECEIVED':
     case 'PAYED':
-      return 'badge-success'
+      return 'badge-success';
     case 'SIGNED':
-      return 'badge-dark-success'
+      return 'badge-dark-success';
     case 'REMINDED':
-      return 'badge-orange'
+      return 'badge-orange';
     case 'ORDER_FORM':
-      return 'badge-light'
+      return 'badge-light';
     case 'REFUNDED':
-      return 'badge-danger'
+      return 'badge-danger';
     default:
-      return 'badge-secondary'
+      return 'badge-secondary';
   }
 }
 </script>

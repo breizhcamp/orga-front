@@ -1,116 +1,117 @@
 <script setup lang="ts">
-import { newSponsor, type Sponsor } from '@/dto/moneiz/Sponsor'
-import type { SponsorId } from '@/dto/moneiz/SponsorList.ts'
-import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue';
+
+import { newSponsor, type Sponsor } from '@/dto/moneiz/Sponsor';
+import type { SponsorId } from '@/dto/moneiz/SponsorList.ts';
+import { useSponsorFile } from '@/queries/moneiz/sponsor-files.ts';
 
 const props = defineProps<{
-  modelValue: Sponsor | undefined,
-  sponsorId: SponsorId | undefined,
-  disabled?: boolean
-}>()
+  modelValue: Sponsor | undefined;
+  sponsorId: SponsorId | undefined;
+  disabled?: boolean;
+}>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: Sponsor]
-  'update:logoFile': [file: File | null]
-}>()
+  'update:modelValue': [value: Sponsor];
+  'update:logoFile': [file: File | null];
+}>();
 
 const localSponsor = computed({
   get: () => props.modelValue ?? newSponsor(),
-  set: (value) => emit('update:modelValue', value)
-})
+  set: (value) => { emit('update:modelValue', value); },
+});
 
 // Validation errors
-const nameError = ref<string>('')
-const tokenError = ref<string>('')
-const urlError = ref<string>('')
+const nameError = ref<string>('');
+const tokenError = ref<string>('');
+const urlError = ref<string>('');
 
 // Logo preview
-const logoPreview = ref<string>('')
-const logoFile = ref<File | null>(null)
+const logoPreview = ref<string>('');
+const logoFile = ref<File | null>(null);
 
 // Existing logo loading
 const logoRead = computed(() => {
   if (props.sponsorId && localSponsor.value.logo) {
-    return { sponsorId: props.sponsorId, fileId: localSponsor.value.logo }
+    return { sponsorId: props.sponsorId, fileId: localSponsor.value.logo };
   }
-  return undefined
-})
+  return undefined;
+});
 
-const { fileUrl: logoUrl } = useSponsorFile(logoRead)
+const { fileUrl: logoUrl } = useSponsorFile(logoRead);
 
 // Validation functions
 const validateName = () => {
   if (!localSponsor.value.name || localSponsor.value.name.trim() === '') {
-    nameError.value = 'Le nom est requis'
-    return false
+    nameError.value = 'Le nom est requis';
+    return false;
   }
-  nameError.value = ''
-  return true
-}
+  nameError.value = '';
+  return true;
+};
 
 const validateToken = () => {
   if (!localSponsor.value.token || localSponsor.value.token.trim() === '') {
-    tokenError.value = 'Le token est requis'
-    return false
+    tokenError.value = 'Le token est requis';
+    return false;
   }
-  tokenError.value = ''
-  return true
-}
+  tokenError.value = '';
+  return true;
+};
 
 const validateUrl = () => {
   if (localSponsor.value.url && localSponsor.value.url.trim() !== '') {
     try {
-      new URL(localSponsor.value.url)
-      urlError.value = ''
-      return true
+      new URL(localSponsor.value.url);
+      urlError.value = '';
+      return true;
     } catch {
-      urlError.value = 'URL invalide'
-      return false
+      urlError.value = 'URL invalide';
+      return false;
     }
   }
-  urlError.value = ''
-  return true
-}
+  urlError.value = '';
+  return true;
+};
 
 // UUID generation
 const generateUUID = async () => {
-  localSponsor.value = { ...localSponsor.value, token: crypto.randomUUID().replace(/-/g, '') }
-  await nextTick()
-  validateToken()
-}
+  localSponsor.value = { ...localSponsor.value, token: crypto.randomUUID().replace(/-/g, '') };
+  await nextTick();
+  validateToken();
+};
 
 // Logo handling
 const handleLogoChange = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
 
   if (file) {
-    logoFile.value = file
-    emit('update:logoFile', file)
+    logoFile.value = file;
+    emit('update:logoFile', file);
 
     // Create preview
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
-      logoPreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
+      logoPreview.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   } else {
-    logoFile.value = null
-    logoPreview.value = ''
-    emit('update:logoFile', null)
+    logoFile.value = null;
+    logoPreview.value = '';
+    emit('update:logoFile', null);
   }
-}
+};
 
 // Expose validation function
 defineExpose({
   validate: () => {
-    const nameValid = validateName()
-    const tokenValid = validateToken()
-    const urlValid = validateUrl()
-    return nameValid && tokenValid && urlValid
-  }
-})
+    const nameValid = validateName();
+    const tokenValid = validateToken();
+    const urlValid = validateUrl();
+    return nameValid && tokenValid && urlValid;
+  },
+});
 </script>
 
 <template>

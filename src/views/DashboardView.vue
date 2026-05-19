@@ -1,44 +1,45 @@
 <script setup lang="ts">
-import BiPencil from "bootstrap-icons/icons/pencil.svg?component";
+import BiPencil from 'bootstrap-icons/icons/pencil.svg?component';
+import { onMounted, ref, watch } from 'vue';
+import { RouterLink } from 'vue-router';
+
+import EventDateTile from '@/components/dashboard/EventDateTile.vue';
+import EventVenueTile from '@/components/dashboard/EventVenueTile.vue';
+import type { Event } from '@/dto/kalon/Event.ts';
 import { useEventStore } from '@/stores/event.ts';
-import { onMounted, ref, watch } from 'vue'
-import { useKalon } from '@/utils/useAxios'
-import EventDateTile from '@/components/dashboard/EventDateTile.vue'
-import EventVenueTile from '@/components/dashboard/EventVenueTile.vue'
-import { RouterLink } from 'vue-router'
-import type { Event } from '@/dto/kalon/Event.ts'
+import { useKalon } from '@/utils/useAxios';
 
 const eventStore = useEventStore();
-const kalon = useKalon()
+const kalon = useKalon();
 
-const event = ref<Event | undefined>()
-const loading = ref(false)
+const event = ref<Event | undefined>();
+const loading = ref(false);
 
 async function loadEvent() {
-  const id = eventStore.currentEventId
+  const id = eventStore.currentEventId;
   if (!id) {
-    event.value = undefined
-    return
+    event.value = undefined;
+    return;
   }
   try {
-    loading.value = true
-    const resp = await kalon.get<Event>(`/events/${id}`)
-    event.value = resp.data
+    loading.value = true;
+    const resp = await kalon.get<Event>(`/events/${id}`);
+    event.value = resp.data;
   } catch (e) {
-    console.error('Erreur de chargement de l\'évènement', e)
-    event.value = undefined
+    console.error('Erreur de chargement de l\'évènement', e);
+    event.value = undefined;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-onMounted(() => {
-  loadEvent()
-})
+onMounted(async () => {
+  await loadEvent();
+});
 
-watch(() => eventStore.currentEventId, () => {
-  loadEvent()
-})
+watch(() => eventStore.currentEventId, async () => {
+  await loadEvent();
+});
 </script>
 
 <template>

@@ -1,34 +1,35 @@
 <script setup lang="ts">
-import type { Event } from '@/dto/kalon/Event'
-import { useKalon } from '@/utils/useAxios'
-import { formatDateRange } from '@/utils/dateFormat'
-import { onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
-import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component'
+import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
+import { onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 
-const kalon = useKalon()
+import type { Event } from '@/dto/kalon/Event';
+import { formatDateRange } from '@/utils/dateFormat';
+import { useKalon } from '@/utils/useAxios';
 
-const events = ref<Event[]>([])
-const loading = ref(false)
-const error = ref<string | null>(null)
+const kalon = useKalon();
+
+const events = ref<Event[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 async function loadEvents() {
   try {
-    loading.value = true
-    error.value = null
-    const resp = await kalon.get<Event[]>('/events')
-    events.value = resp.data
+    loading.value = true;
+    error.value = null;
+    const resp = await kalon.get<Event[]>('/events');
+    events.value = resp.data;
   } catch (e) {
-    console.error('Erreur de chargement des événements', e)
-    error.value = 'Impossible de charger les événements'
+    console.error('Erreur de chargement des événements', e);
+    error.value = 'Impossible de charger les événements';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-onMounted(() => {
-  loadEvents()
-})
+onMounted(async () => {
+  await loadEvents();
+});
 </script>
 
 <template>

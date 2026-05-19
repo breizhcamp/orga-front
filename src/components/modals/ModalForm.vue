@@ -27,37 +27,38 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, type PropType} from 'vue'
+import { defineComponent, type PropType } from 'vue';
+
 import type { Size } from './ModalInfo.vue';
 
 export default defineComponent({
   name: 'ModalForm',
 
   props: {
-    open: {type: Boolean, required: true, default: false},
-    loading: {type: Boolean, default: false},
-    title: {type: String, required: true},
+    open: { type: Boolean, required: true, default: false },
+    loading: { type: Boolean, default: false },
+    title: { type: String, required: true },
     size: { type: String as PropType<Size>, required: false },
-    saveButtonText: {type: String, default: 'Sauvegarder'},
-    saveButtonVariant: {type: String, default: 'primary'}
+    saveButtonText: { type: String, default: 'Sauvegarder' },
+    saveButtonVariant: { type: String, default: 'primary' },
   },
 
   emits: ['update:open', 'save'],
 
   methods: {
     close() {
-      this.$emit('update:open', false)
+      this.$emit('update:open', false);
     },
 
     save() {
-      this.$emit('save')
+      this.$emit('save');
     },
 
     closeIfEscape(e: KeyboardEvent) {
-      if (e.key == "Escape") {
-        this.close()
+      if (e.key == 'Escape') {
+        this.close();
       }
-    }
-  }
-})
+    },
+  },
+});
 </script>

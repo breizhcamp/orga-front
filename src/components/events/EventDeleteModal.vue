@@ -1,69 +1,70 @@
 <script setup lang="ts">
-import ModalForm from '@/components/modals/ModalForm.vue'
-import { useKalon } from '@/utils/useAxios'
-import { ref, computed } from 'vue'
-import BiTrash from 'bootstrap-icons/icons/trash.svg?component'
-import BiExclamationTriangleFill from 'bootstrap-icons/icons/exclamation-triangle-fill.svg?component'
-import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component'
+import BiExclamationTriangleFill from 'bootstrap-icons/icons/exclamation-triangle-fill.svg?component';
+import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
+import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
+import { computed, ref } from 'vue';
+
+import ModalForm from '@/components/modals/ModalForm.vue';
+import { useKalon } from '@/utils/useAxios';
 
 const props = defineProps<{
-  eventId: string
-  eventName?: string
-}>()
+  eventId: string;
+  eventName?: string;
+}>();
 
 const emit = defineEmits<{
-  deleted: []
-}>()
+  deleted: [];
+}>();
 
-const kalon = useKalon()
+const kalon = useKalon();
 
 // Modal state
-const showDeleteModal = ref(false)
-const deleteConfirmationId = ref('')
-const isDeleting = ref(false)
-const deleteError = ref<string | null>(null)
+const showDeleteModal = ref(false);
+const deleteConfirmationId = ref('');
+const isDeleting = ref(false);
+const deleteError = ref<string | null>(null);
 
 // Validation
 const isConfirmationValid = computed(() => {
-  return deleteConfirmationId.value.trim() === props.eventId
-})
+  return deleteConfirmationId.value.trim() === props.eventId;
+});
 
 // Open modal
 function openDeleteModal() {
-  showDeleteModal.value = true
-  deleteConfirmationId.value = ''
-  deleteError.value = null
+  showDeleteModal.value = true;
+  deleteConfirmationId.value = '';
+  deleteError.value = null;
 }
 
 // Close modal
 function closeDeleteModal() {
-  showDeleteModal.value = false
-  deleteConfirmationId.value = ''
-  deleteError.value = null
+  showDeleteModal.value = false;
+  deleteConfirmationId.value = '';
+  deleteError.value = null;
 }
 
 // Handle delete
 async function handleDelete() {
   if (!isConfirmationValid.value) {
-    deleteError.value = "L'identifiant saisi ne correspond pas"
-    return
+    deleteError.value = 'L\'identifiant saisi ne correspond pas';
+    return;
   }
 
   try {
-    isDeleting.value = true
-    deleteError.value = null
+    isDeleting.value = true;
+    deleteError.value = null;
 
-    await kalon.delete(`/events/${props.eventId}`)
+    await kalon.delete(`/events/${props.eventId}`);
 
     // Close modal and emit success
-    closeDeleteModal()
-    emit('deleted')
+    closeDeleteModal();
+    emit('deleted');
   } catch (e) {
-    console.error('Erreur lors de la suppression de l\'événement', e)
-    const axiosError = e as { response?: { data?: { message?: string } } }
-    deleteError.value = axiosError.response?.data?.message || 'Une erreur est survenue lors de la suppression'
+    console.error('Erreur lors de la suppression de l\'événement', e);
+    const axiosError = e as { response?: { data?: { message?: string } } };
+    deleteError.value = axiosError.response?.data?.message || 'Une erreur est survenue lors de la suppression';
   } finally {
-    isDeleting.value = false
+    isDeleting.value = false;
   }
 }
 </script>

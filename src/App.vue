@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
+
 import NavBar from '@/components/NavBar.vue';
-import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 </script>
 
 <template>

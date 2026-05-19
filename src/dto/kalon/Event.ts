@@ -1,9 +1,9 @@
 export type EventSummary = {
   id: string;
   name: string;
-}
+};
 
-export type EventId = string
+export type EventId = string;
 
 export type Event = {
   id: string;
@@ -12,4 +12,4 @@ export type Event = {
   endDate: string; // LocalDate, ISO format
   website?: string;
   venue?: string;
-}
+};
