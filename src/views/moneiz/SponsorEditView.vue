@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import SponsorBasicInfoForm from '@/components/moneiz/SponsorBasicInfoForm.vue';
 import SponsorInvoiceInfoForm from '@/components/moneiz/SponsorInvoiceInfoForm.vue';
+import SponsorContactForm from '@/components/moneiz/SponsorContactForm.vue';
 import type { Sponsor } from '@/dto/moneiz/Sponsor';
 import { getSponsor, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation } from '@/queries/moneiz/sponsors.queries';
 
@@ -115,14 +116,13 @@ const saveSponsor = async () => {
         />
       </div>
 
-      <!-- Contacts Section (placeholder) -->
+      <!-- Contacts Section -->
       <div class="grid-contacts">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Contacts</h5>
-            <p class="text-muted"><i>À venir...</i></p>
-          </div>
-        </div>
+        <SponsorContactForm
+          v-if="sponsorId !== undefined"
+          :sponsor-id="sponsorId"
+          :disabled="disabled"
+        />
       </div>
     </div>
 
