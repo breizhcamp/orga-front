@@ -17,8 +17,7 @@
       });
 
       resolve();
-    }
-    catch (e) {
+    } catch (e) {
       reject(e);
     }
   });

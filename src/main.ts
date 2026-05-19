@@ -34,8 +34,7 @@ window.envLoaded.then(async () => {
       onLoad: 'login-required',
     });
     console.assert(keycloak.authenticated, 'The user is not authenticated');
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Failed to initialize Keycloak adapter:', error);
   }
 

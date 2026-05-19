@@ -34,8 +34,7 @@ const RuntimeEnvPlugin: PluginOption = {
         extractEnvVar(configContent).forEach((v) => {
           if (process.env[v] && process.env[v].length) {
             content = content.replace('${' + v + '}', process.env[v]);
-          }
-          else {
+          } else {
             content = content.replace('${' + v + '}', '');
           }
         });

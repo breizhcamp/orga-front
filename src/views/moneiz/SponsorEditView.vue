@@ -66,8 +66,7 @@ const saveSponsor = async () => {
     if (isUpdateMode.value && savedSponsorId) {
       // Update existing sponsor
       await updateSponsorMutation.mutateAsync({ id: savedSponsorId, sponsor: sponsor.value });
-    }
-    else {
+    } else {
       // Create new sponsor
       const result = await createSponsorMutation.mutateAsync(sponsor.value);
       savedSponsorId = result.id;
@@ -85,8 +84,7 @@ const saveSponsor = async () => {
 
     // Success - could add toast notification here
     console.log('Sponsor saved successfully', savedSponsorId);
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error saving sponsor:', error);
     // Could add error notification here
   }

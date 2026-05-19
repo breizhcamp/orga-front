@@ -19,6 +19,7 @@ export default defineConfigWithVueTs(
   vueTsConfigs.stylistic,
   stylistic.configs.customize({
     semi: true,
+    braceStyle: '1tbs',
   }),
   pluginQuery.configs['flat/recommended-strict'],
   {

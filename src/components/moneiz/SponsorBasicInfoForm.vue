@@ -65,8 +65,7 @@ const validateUrl = () => {
       new URL(localSponsor.value.url);
       urlError.value = '';
       return true;
-    }
-    catch {
+    } catch {
       urlError.value = 'URL invalide';
       return false;
     }
@@ -97,8 +96,7 @@ const handleLogoChange = (event: Event) => {
       logoPreview.value = e.target?.result as string;
     };
     reader.readAsDataURL(file);
-  }
-  else {
+  } else {
     logoFile.value = null;
     logoPreview.value = '';
     emit('update:logoFile', null);

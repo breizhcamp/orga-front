@@ -30,8 +30,7 @@ export function useSponsorFiles(files: Ref<ReadFile[] | undefined>) {
     try {
       const blobUrl = await retrieveFileBlob(moneiz, file);
       filesUrls.value.set(file.sponsorId, blobUrl);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(`Failed to load file for sponsor ${file.sponsorId}:`, error);
       errors.value.set(file.sponsorId, error instanceof Error ? error.message : 'Failed to load file');
     }
@@ -82,8 +81,7 @@ export function useSponsorFile(file: Ref<ReadFile | undefined>) {
   async function fetchFile(file: ReadFile) {
     try {
       fileUrl.value = await retrieveFileBlob(moneiz, file);
-    }
-    catch (err) {
+    } catch (err) {
       console.error(`Failed to load file for sponsor ${file.sponsorId}:`, err);
       error.value = err instanceof Error ? err.message : 'Failed to load file';
     }

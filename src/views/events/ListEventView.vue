@@ -19,12 +19,10 @@ async function loadEvents() {
     error.value = null;
     const resp = await kalon.get<Event[]>('/events');
     events.value = resp.data;
-  }
-  catch (e) {
+  } catch (e) {
     console.error('Erreur de chargement des événements', e);
     error.value = 'Impossible de charger les événements';
-  }
-  finally {
+  } finally {
     loading.value = false;
   }
 }

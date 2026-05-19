@@ -59,13 +59,11 @@ async function handleDelete() {
     // Close modal and emit success
     closeDeleteModal();
     emit('deleted');
-  }
-  catch (e) {
+  } catch (e) {
     console.error('Erreur lors de la suppression de l\'événement', e);
     const axiosError = e as { response?: { data?: { message?: string } } };
     deleteError.value = axiosError.response?.data?.message || 'Une erreur est survenue lors de la suppression';
-  }
-  finally {
+  } finally {
     isDeleting.value = false;
   }
 }

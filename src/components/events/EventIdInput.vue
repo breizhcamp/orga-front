@@ -64,8 +64,7 @@ watch(localValue, (newValue) => {
     debounceTimer = setTimeout(async () => {
       await checkAvailability(newValue);
     }, 500);
-  }
-  else {
+  } else {
     isChecking.value = false;
     emit('validity-change', false);
   }
@@ -100,20 +99,17 @@ async function checkAvailability(id: string) {
     await kalon.head(`/events/${id}`);
     // If we get here (200 response), the event exists
     isAvailable.value = false;
-  }
-  catch (error: unknown) {
+  } catch (error: unknown) {
     const axiosError = error as { response?: { status?: number } };
     if (axiosError.response?.status === 404) {
       // 404 means the ID is available
       isAvailable.value = true;
-    }
-    else {
+    } else {
       // Other errors - treat as unavailable to be safe
       console.error('Error checking event ID availability:', error);
       isAvailable.value = false;
     }
-  }
-  finally {
+  } finally {
     isChecking.value = false;
   }
 }

@@ -15,8 +15,7 @@ export const useEventStore = defineStore('event', () => {
   watch(currentEventId, (newId) => {
     if (newId) {
       localStorage.setItem(LOCAL_STORAGE_KEY, newId);
-    }
-    else {
+    } else {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
   });
@@ -36,17 +35,14 @@ export const useEventStore = defineStore('event', () => {
         // Valider que l'ID sauvegardé existe dans la liste
         if (savedEventId && events.value.some(e => e.id === savedEventId)) {
           currentEventId.value = savedEventId;
-        }
-        else {
+        } else {
           // Sinon prendre le premier événement
           currentEventId.value = events.value[0]?.id;
         }
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Erreur lors de l\'initialisation du store d\'événements:', error);
-    }
-    finally {
+    } finally {
       loading.value = false;
     }
   }

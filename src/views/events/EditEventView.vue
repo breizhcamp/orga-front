@@ -58,12 +58,10 @@ async function loadEvent() {
     error.value = null;
     const resp = await kalon.get<Event>(`/events/${eventId.value}`);
     formData.value = { ...resp.data };
-  }
-  catch (e) {
+  } catch (e) {
     console.error('Erreur de chargement de l\'événement', e);
     error.value = 'Impossible de charger l\'événement';
-  }
-  finally {
+  } finally {
     loading.value = false;
   }
 }
@@ -83,8 +81,7 @@ function validateForm(): boolean {
     if (!eventIdValue.value) {
       formErrors.value.id = 'L\'identifiant est requis';
       isValid = false;
-    }
-    else if (!isEventIdAvailable.value) {
+    } else if (!isEventIdAvailable.value) {
       formErrors.value.id = 'L\'identifiant n\'est pas disponible';
       isValid = false;
     }
@@ -112,8 +109,7 @@ function validateForm(): boolean {
   if (formData.value.website && formData.value.website.trim()) {
     try {
       new URL(formData.value.website);
-    }
-    catch {
+    } catch {
       formErrors.value.website = 'URL invalide';
       isValid = false;
     }
@@ -150,8 +146,7 @@ async function handleSubmit() {
       // eventId.value is not undefined because isUpdateMode.value is true.
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       await kalon.put(`/events/${eventId.value}`, updatePayload);
-    }
-    else {
+    } else {
       // Create new event - include the ID
       const createPayload = {
         ...payload,
@@ -165,13 +160,11 @@ async function handleSubmit() {
     setTimeout(async () => {
       await router.push('/events');
     }, 2000);
-  }
-  catch (e) {
+  } catch (e) {
     console.error('Erreur lors de la soumission', e);
     const axiosError = e as { response?: { data?: { message?: string } } };
     error.value = axiosError.response?.data?.message || 'Une erreur est survenue lors de la sauvegarde';
-  }
-  finally {
+  } finally {
     submitting.value = false;
   }
 }
