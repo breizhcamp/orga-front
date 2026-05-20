@@ -1,14 +1,31 @@
 <script setup lang="ts">
+import axios from 'axios';
 import BiBoxArrowUpRight from 'bootstrap-icons/icons/box-arrow-up-right.svg?component';
+import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
 import dayjs from 'dayjs';
+import { ref } from 'vue';
 
 import type { LevelList } from '@/dto/moneiz/LevelList.ts';
 import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts';
+import type { SponsorList } from '@/dto/moneiz/SponsorList';
+import { useSetSponsorMutation } from '@/queries/moneiz/sponsorings.queries';
+import { useEventStore } from '@/stores/event';
 
-defineProps<{
+const props = defineProps<{
   sponsoring: SponsoringList;
   level: LevelList | undefined;
+  availableSponsors: SponsorList[];
 }>();
+
+const emit = defineEmits<{
+  error: [errorMessage: string | null];
+}>();
+
+const eventStore = useEventStore();
+
+const sponsor = ref<string>('');
+
+const setSponsorMutation = useSetSponsorMutation();
 
 function formatDate(date: string | undefined): string {
   if (!date) return '';
@@ -42,6 +59,38 @@ function getStateClass(state: string | undefined): string {
       return 'badge-secondary';
   }
 }
+
+const setErrorMessage = (message: string | null) => {
+  emit('error', message);
+};
+
+const handleSponsorSelected = async () => {
+  if (sponsor.value === '') return;
+
+  setErrorMessage(null);
+  const { id: sponsoringId } = props.sponsoring;
+  const { currentEventId } = eventStore;
+  console.assert(currentEventId !== undefined);
+  try {
+    await setSponsorMutation.mutateAsync({
+      eventId: currentEventId as string,
+      sponsoringId,
+      sponsorId: sponsor.value,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      let message = error.message;
+      if (error.response?.data.message) {
+        message += `: ${error.response.data.message as string}`;
+      }
+      setErrorMessage(message);
+    } else if (error instanceof Error) {
+      setErrorMessage(error.message);
+    } else {
+      throw error;
+    }
+  }
+};
 </script>
 
 <template>
@@ -54,11 +103,38 @@ function getStateClass(state: string | undefined): string {
     <!-- Sponsor Name -->
     <div class="sponsor-name">
       <router-link
+        v-if="sponsoring.sponsor"
         :to="{ name: 'SponsorEdit', params: { sponsorId: sponsoring.sponsor.id } }"
         class="sponsor-link"
       >
         {{ sponsoring.sponsor.name }}
       </router-link>
+      <form v-else @submit.prevent="handleSponsorSelected" class="d-flex gap-2">
+        <select
+          id="sponsor"
+          class="form-select"
+          v-model="sponsor"
+          :disabled="setSponsorMutation.isPending.value"
+          required
+        >
+          <option selected disabled value="">Sélectioner un sponsor</option>
+          <option
+            v-for="sponsor in availableSponsors"
+            :value="sponsor.id"
+            :key="sponsor.id"
+          >
+            {{ sponsor.name }}
+          </option>
+        </select>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          title="Sélectioner"
+          :disabled="setSponsorMutation.isPending.value"
+        >
+          <BiPlus />
+        </button>
+      </form>
     </div>
 
     <!-- Agreement -->

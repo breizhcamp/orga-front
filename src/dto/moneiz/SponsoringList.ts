@@ -4,7 +4,7 @@ export type SponsoringList = {
   id: SponsoringId;
 
   levelName: string;
-  sponsor: SponsoringSponsorList;
+  sponsor?: SponsoringSponsorList;
   agreementState: AgreementState | undefined;
 
   nbPresales: number | undefined;

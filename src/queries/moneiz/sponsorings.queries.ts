@@ -3,7 +3,8 @@ import { type MaybeRef, toValue } from 'vue';
 
 import type { EventId } from '@/dto/kalon/Event';
 import type { CreateSponsoringsReq } from '@/dto/moneiz/CreateSponroringsReq';
-import type { SponsoringList } from '@/dto/moneiz/SponsoringList';
+import type { SponsoringId, SponsoringList } from '@/dto/moneiz/SponsoringList';
+import type { SponsorId } from '@/dto/moneiz/SponsorList';
 import { useMoneiz } from '@/utils/useAxios';
 
 export function getListSponsoringsOptions(
@@ -55,6 +56,32 @@ export function useCreateSponsoringsMutation() {
         getListSponsoringsOptions(moneiz, eventId).queryKey,
         data,
       );
+    },
+  });
+}
+
+export function useSetSponsorMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+      sponsorId,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+      sponsorId: SponsorId;
+    }) => {
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/sponsor`,
+        { sponsor: sponsorId },
+      );
+    },
+    onSuccess: async (_data, { eventId }) => {
+      const { queryKey } = getListSponsoringsOptions(moneiz, eventId);
+      await queryClient.invalidateQueries({ queryKey });
     },
   });
 }
