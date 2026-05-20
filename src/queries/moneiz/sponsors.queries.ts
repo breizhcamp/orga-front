@@ -1,5 +1,7 @@
 import { queryOptions, useMutation, useQuery, useQueryClient, type UseQueryReturnType } from '@tanstack/vue-query';
 
+import type { ContactReq } from '@/dto/moneiz/ContactReq';
+import type { ContactRes } from '@/dto/moneiz/ContactRes';
 import type { FileCreateApi } from '@/dto/moneiz/FileCreateApi.ts';
 import type { Sponsor } from '@/dto/moneiz/Sponsor.ts';
 import type { SponsorList } from '@/dto/moneiz/SponsorList.ts';
@@ -38,6 +40,23 @@ function getSponsorOptions(moneiz: Moneiz, id: string, forEditing = false, stale
 function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQueryReturnType<Sponsor, Error> {
   const moneiz = useMoneiz();
   return useQuery(getSponsorOptions(moneiz, id, forEditing, staleTime));
+}
+
+function getSponsorContactsOptions(moneiz: Moneiz, forEditing = false, sponsorId: string, staleTime = 60_000) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
+    queryKey: ['moneiz', 'sponsors', sponsorId, 'contacts'],
+    queryFn: async (): Promise<ContactRes[]> => {
+      return (await moneiz.get<ContactRes[]>(`/api/admin/sponsors/${sponsorId}/contacts`)).data;
+    },
+    staleTime,
+    refetchOnWindowFocus: !forEditing,
+  });
+}
+
+function getSponsorContacts(sponsorId: string, forEditing = false, staleTime = 60_000): UseQueryReturnType<ContactRes[], Error> {
+  const moneiz = useMoneiz();
+  return useQuery(getSponsorContactsOptions(moneiz, forEditing, sponsorId, staleTime));
 }
 
 function useCreateSponsorMutation() {
@@ -100,4 +119,27 @@ function useUploadSponsorLogoMutation() {
   });
 }
 
-export { getSponsor, listSponsors, useCreateSponsorMutation, useUpdateSponsorMutation, useUploadSponsorLogoMutation };
+function useUpdateSponsorContactsMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ sponsorId, contacts }: { sponsorId: string; contacts: ContactReq[] }) => {
+      const response = await moneiz.post<ContactRes[]>(`/api/admin/sponsors/${sponsorId}/contacts`, contacts);
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(getSponsorContactsOptions(moneiz, false, variables.sponsorId).queryKey, data);
+    },
+  });
+}
+
+export {
+  getSponsor,
+  getSponsorContacts,
+  listSponsors,
+  useCreateSponsorMutation,
+  useUpdateSponsorContactsMutation,
+  useUpdateSponsorMutation,
+  useUploadSponsorLogoMutation,
+};
