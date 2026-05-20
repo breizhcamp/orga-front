@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
+import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { RouterLink } from 'vue-router';
 
 import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 import type { LevelList } from '@/dto/moneiz/LevelList';
@@ -8,8 +11,14 @@ import { listSponsorings } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
 
 const eventStore = useEventStore();
-const { isPending, isError, data, error } = listSponsorings(eventStore.currentEventId);
-const { isPending: isLevelPending, isError: isLevelError, data: levelData, error: levelError } = listLevels(eventStore.currentEventId);
+const { currentEventId } = storeToRefs(eventStore);
+const { isPending, isError, data, error } = listSponsorings(currentEventId);
+const {
+  isPending: isLevelPending,
+  isError: isLevelError,
+  data: levelData,
+  error: levelError,
+} = listLevels(eventStore.currentEventId);
 
 const levels = computed(() => {
   const levelMap = new Map<string, LevelList>();
@@ -30,7 +39,17 @@ const levels = computed(() => {
     <div v-else-if="isError || isLevelError" class="alert alert-danger">
       Erreur: {{ error?.message || levelError?.message }}
     </div>
-    <div v-else class="sponsorings-list">
+    <div v-else>
+      <div class="d-flex justify-content-end mb-4">
+        <RouterLink
+          :to="{ name: 'SponsoringsCreate' }"
+          class="btn btn-primary"
+          title="Ajouter des nouveaux slots de sponsorings"
+        >
+          <BiPlus />
+          Ajouter des sponsorings
+        </RouterLink>
+      </div>
       <SponsoringLine
         v-for="sponsoring in data"
         :key="sponsoring.id"
@@ -40,7 +59,3 @@ const levels = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
