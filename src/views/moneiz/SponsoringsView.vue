@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
+
+import BiPlusLg from 'bootstrap-icons/icons/plus-lg.svg?component';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
+import ErrorAlert from '@/components/ErrorAlert.vue';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 import type { LevelList } from '@/dto/moneiz/LevelList';
 import type { SponsoringList } from '@/dto/moneiz/SponsoringList';
@@ -61,15 +64,13 @@ const handleErrorMessage = (message: string | null) => {
 </script>
 
 <template>
-  <div class="container py-4">
+  <div class="container-fluid overflow-x-hidden py-4">
     <div v-if="loading" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Chargement...</span>
-      </div>
+      <LoadingSpinner />
     </div>
-    <div v-else-if="isSponsoringsError || isLevelError" class="alert alert-danger">
+    <ErrorAlert v-else-if="isSponsoringsError || isLevelError">
       Erreur: {{ sponsoringsError?.message || levelError?.message }}
-    </div>
+    </ErrorAlert>
     <div v-else>
       <div class="d-flex justify-content-end mb-4">
         <RouterLink
@@ -77,21 +78,37 @@ const handleErrorMessage = (message: string | null) => {
           class="btn btn-primary"
           title="Ajouter des nouveaux slots de sponsorings"
         >
-          <BiPlus />
+          <BiPlusLg />
           Ajouter des sponsorings
         </RouterLink>
       </div>
-      <div v-if="errorMessage" class="alert alert-danger">
+      <ErrorAlert v-if="errorMessage">
         Erreur: {{ errorMessage }}
+      </ErrorAlert>
+      <div class="overflow-x-scroll">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Nom</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Stand</th>
+              <th scope="col">Tickets</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <SponsoringLine
+              v-for="sponsoring in sponsorings"
+              :key="sponsoring.id"
+              :sponsoring="sponsoring"
+              :level="levels.get(sponsoring.levelName)"
+              :availableSponsors="availableSponsors"
+              @error="handleErrorMessage"
+            />
+          </tbody>
+        </table>
       </div>
-      <SponsoringLine
-        v-for="sponsoring in sponsorings"
-        :key="sponsoring.id"
-        :sponsoring="sponsoring"
-        :level="levels.get(sponsoring.levelName)"
-        :availableSponsors="availableSponsors"
-        @error="handleErrorMessage"
-      />
     </div>
   </div>
 </template>

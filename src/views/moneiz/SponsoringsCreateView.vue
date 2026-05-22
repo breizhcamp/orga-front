@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
+import ErrorAlert from '@/components/ErrorAlert.vue';
 import { listLevels } from '@/queries/moneiz/levels.queries';
 import { useCreateSponsoringsMutation } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
@@ -67,9 +68,9 @@ const handleSubmit = async () => {
       </div>
     </div>
 
-    <div v-else-if="levelsError" class="alert alert-danger">
+    <ErrorAlert v-else-if="levelsError">
       Erreur: {{ levelsError?.message }}
-    </div>
+    </ErrorAlert>
 
     <div v-else>
       <div v-if="errorMessage !== null" class="alert alert-danger">

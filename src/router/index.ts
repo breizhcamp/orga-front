@@ -6,6 +6,9 @@ import EditEventView from '@/views/events/EditEventView.vue';
 import ListEventView from '@/views/events/ListEventView.vue';
 import MoneizView from '@/views/moneiz/MoneizView.vue';
 import SponsorEditView from '@/views/moneiz/SponsorEditView.vue';
+import SponsoringAgreementView from '@/views/moneiz/SponsoringAgreementView.vue';
+import SponsoringDetailsView from '@/views/moneiz/SponsoringDetailsView.vue';
+import SponsoringInvoiceView from '@/views/moneiz/SponsoringInvoiceView.vue';
 import SponsoringsCreateView from '@/views/moneiz/SponsoringsCreateView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
@@ -51,6 +54,21 @@ const routes: RouteRecordRaw[] = [
           }
         },
         meta: { title: 'Création de sponsorings' },
+      }, {
+        path: 'sponsorings/:sponsoringId',
+        name: 'SponsoringDetails',
+        component: SponsoringDetailsView,
+        meta: { title: 'Détails sponsorings' },
+      }, {
+        path: 'sponsorings/:sponsoringId/agreement',
+        name: 'SponsoringAgreement',
+        component: SponsoringAgreementView,
+        meta: { title: 'Convention' },
+      }, {
+        path: 'sponsorings/:sponsoringId/invoice',
+        name: 'SponsoringInvoice',
+        component: SponsoringInvoiceView,
+        meta: { title: 'Facture' },
       }, {
         path: 'sponsors',
         name: 'Sponsors',

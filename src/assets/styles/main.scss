@@ -1,19 +1,16 @@
-// Import Bootstrap with configuration
 @use "bootstrap/scss/bootstrap" with (
   $color-mode-type: media-query,
-
-  /*$success: #28a745,
-  $danger: #dc3545,
-  $warning: #ffc107,*/
-
 );
 
-:root {
-/*  --bg-color-hover-active: #f0f0f0;*/
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+.text-bg-orange {
+  color: #fff;
+  background-color: $orange;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /*--bg-color-hover-active: #343a40;*/
-  }
+.text-bg-purple {
+  color: #fff;
+  background-color: $purple;
 }
