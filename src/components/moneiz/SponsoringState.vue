@@ -2,11 +2,9 @@
 import { computed } from 'vue';
 import type { ComponentProps } from 'vue-component-type-helpers';
 
-import {
-  AgreementState,
-  InvoiceState,
-  type SponsoringList,
-} from '@/dto/moneiz/SponsoringList';
+import { AgreementState, agreementStateColors, agreementStateToString } from '@/dto/moneiz/AgreementState';
+import { InvoiceState } from '@/dto/moneiz/InvoiceState';
+import { type SponsoringList } from '@/dto/moneiz/SponsoringList';
 
 import LabelBadge from '../LabelBadge.vue';
 
@@ -16,32 +14,13 @@ const props = defineProps<{
 
 type Badge = ComponentProps<typeof LabelBadge>;
 
-const agreementStateBadges = {
-  [AgreementState.TODO]: {
-    label: 'convention: à faire',
-    color: 'secondary',
-  },
-  [AgreementState.TO_SEND]: {
-    label: 'convention: à envoyer',
-    color: 'warning',
-  },
-  [AgreementState.MAIL_SENT]: {
-    label: 'convention: mail envoyé',
-    color: 'info',
-  },
-  [AgreementState.SENT]: {
-    label: 'convention: envoyée',
-    color: 'info',
-  },
-  [AgreementState.RECEIVED]: {
-    label: 'convention: reçue',
-    color: 'primary',
-  },
-  [AgreementState.SIGNED]: {
-    label: 'convention: signée',
-    color: 'success',
-  },
-} as const satisfies Record<AgreementState, Badge>;
+const agreementStateBadges = Object.fromEntries(
+  Object.values(AgreementState)
+    .map(state => [state, {
+      label: 'convention : ' + agreementStateToString[state],
+      color: agreementStateColors[state],
+    }]),
+) as Record<AgreementState, Badge>;
 
 const invoiceStateBadges = {
   [InvoiceState.TODO]: {

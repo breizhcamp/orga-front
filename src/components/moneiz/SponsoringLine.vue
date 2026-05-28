@@ -5,8 +5,9 @@ import { computed, ref } from 'vue';
 import type { ComponentProps } from 'vue-component-type-helpers';
 
 import type { LevelList } from '@/dto/moneiz/LevelList.ts';
-import { type SponsoringList, TicketsState } from '@/dto/moneiz/SponsoringList.ts';
+import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts';
 import type { SponsorList } from '@/dto/moneiz/SponsorList';
+import { TicketsState } from '@/dto/moneiz/TicketsState';
 import { useSetSponsorMutation } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
 
