@@ -65,12 +65,11 @@ const handleErrorMessage = (message: string | null) => {
 
 <template>
   <div class="container-fluid py-4">
-    <div v-if="loading" class="text-center py-5">
-      <LoadingSpinner />
-    </div>
-    <ErrorAlert v-else-if="isSponsoringsError || isLevelError">
-      Erreur: {{ sponsoringsError?.message || levelError?.message }}
-    </ErrorAlert>
+    <LoadingSpinner v-if="loading" />
+    <ErrorAlert
+      v-else-if="isSponsoringsError || isLevelError"
+      :message="sponsoringsError?.message || levelError?.message"
+    />
     <div v-else>
       <div class="d-flex justify-content-end mb-4">
         <RouterLink
@@ -82,9 +81,7 @@ const handleErrorMessage = (message: string | null) => {
           Ajouter des sponsorings
         </RouterLink>
       </div>
-      <ErrorAlert v-if="errorMessage">
-        Erreur: {{ errorMessage }}
-      </ErrorAlert>
+      <ErrorAlert v-if="errorMessage" :message="errorMessage" />
 
       <div
         class="overflow-x-scroll overflow-y-hidden"

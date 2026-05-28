@@ -18,6 +18,7 @@ const router = useRouter();
 const {
   data: levels,
   isPending: isLevelsPending,
+  isError: isLevelsError,
   error: levelsError,
 } = listLevels(currentEventId);
 const createSponsoringsMutation = useCreateSponsoringsMutation();
@@ -60,23 +61,12 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="container mt-4">
-    <h1>Création de sponsorings</h1>
-    <div v-if="isLevelsPending" class="d-flex justify-content-center">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Chargement des niveaux...</span>
-      </div>
-    </div>
-
-    <ErrorAlert v-else-if="levelsError">
-      Erreur: {{ levelsError?.message }}
-    </ErrorAlert>
-
-    <div v-else>
-      <div v-if="errorMessage !== null" class="alert alert-danger">
-        Erreur: {{ errorMessage }}
-      </div>
-
+  <div class="container py-4">
+    <h1 class="mb-3">Création de sponsorings</h1>
+    <LoadingSpinner v-if="isLevelsPending" />
+    <ErrorAlert v-else-if="isLevelsError" :message="levelsError?.message" />
+    <template v-else>
+      <ErrorAlert v-if="errorMessage !== null" :message="errorMessage" />
       <form @submit.prevent="handleSubmit">
         <div class="mb-3">
           <label for="level" class="form-label">Niveau</label>
@@ -121,6 +111,6 @@ const handleSubmit = async () => {
           </button>
         </div>
       </form>
-    </div>
+    </template>
   </div>
 </template>
