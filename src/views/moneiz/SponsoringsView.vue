@@ -64,7 +64,7 @@ const handleErrorMessage = (message: string | null) => {
 </script>
 
 <template>
-  <div class="container-fluid overflow-x-hidden py-4">
+  <div class="container-fluid py-4">
     <div v-if="loading" class="text-center py-5">
       <LoadingSpinner />
     </div>
@@ -85,7 +85,11 @@ const handleErrorMessage = (message: string | null) => {
       <ErrorAlert v-if="errorMessage">
         Erreur: {{ errorMessage }}
       </ErrorAlert>
-      <div class="overflow-x-scroll">
+
+      <div
+        class="overflow-x-scroll overflow-y-hidden"
+        style="padding-bottom: 150px;"
+      >
         <table class="table table-striped table-hover">
           <thead>
             <tr>
