@@ -5,6 +5,10 @@ import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import ErrorAlert from '@/components/ErrorAlert.vue';
+import FloatingNumberField from '@/components/FloatingNumberField.vue';
+import FloatingSelectField from '@/components/FloatingSelectField.vue';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
+import UiCard from '@/components/UiCard.vue';
 import { listLevels } from '@/queries/moneiz/levels.queries';
 import { useCreateSponsoringsMutation } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
@@ -24,23 +28,24 @@ const {
 const createSponsoringsMutation = useCreateSponsoringsMutation();
 
 const selectedLevel = ref<string | null>(null);
-const numberSlots = ref<number>(1);
+const numberSlots = ref<number | undefined>(1);
 const errorMessage = ref<string | null>(null);
 const disabled = computed(() => createSponsoringsMutation.isPending.value);
 
 watch(levels, (newLevels) => {
-  if (newLevels !== undefined && newLevels[0] !== undefined && selectedLevel.value === null) {
+  if (newLevels?.[0] !== undefined && selectedLevel.value === null) {
     selectedLevel.value = newLevels[0].name;
   }
 }, { immediate: true });
 
 const handleSubmit = async () => {
+  if (numberSlots.value === undefined) return;
   if (selectedLevel.value === null) return;
 
   errorMessage.value = null;
   try {
     await createSponsoringsMutation.mutateAsync({
-      eventId: currentEventId.value as string,
+      eventId: currentEventId.value!,
       createSponsoringsReq: {
         level: selectedLevel.value,
         numberSlots: numberSlots.value,
@@ -68,40 +73,36 @@ const handleSubmit = async () => {
     <template v-else>
       <ErrorAlert v-if="errorMessage !== null" :message="errorMessage" />
       <form @submit.prevent="handleSubmit">
-        <div class="mb-3">
-          <label for="level" class="form-label">Niveau</label>
-          <select
+        <UiCard class="mb-3">
+          <FloatingSelectField
             id="level"
-            class="form-select"
+            label="Niveau"
+            class="mb-3"
             v-model="selectedLevel"
             :disabled="disabled"
             required
           >
-            <option
-              v-for="level in levels"
-              :value="level.name"
-              :key="level.name"
-            >
-            {{ level.name }}
-            </option>
-          </select>
-        </div>
+              <option
+                v-for="level in levels"
+                :value="level.name"
+                :key="level.name"
+              >
+                {{ level.name }}
+              </option>
+          </FloatingSelectField>
 
-        <div class="mb-3">
-          <label for="number-slots" class="form-label">Nombre de slots</label>
-          <input
+          <FloatingNumberField
             id="number-slots"
-            type="number"
-            class="form-control"
-            min="1"
-            step="1"
-            v-model.number="numberSlots"
+            label="Nombre de slots"
+            :min="1"
+            :step="1"
+            v-model="numberSlots"
             :disabled="disabled"
             required
           />
-        </div>
+        </UiCard>
 
-        <div class="mb-3">
+        <div class="d-flex justify-content-end">
           <button
             type="submit"
             class="btn btn-primary"

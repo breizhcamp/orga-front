@@ -39,7 +39,7 @@ export default defineComponent({
   watch: {
     open() {
       if (this.open) {
-        if (document.activeElement != null) {
+        if (document.activeElement !== null) {
           (document.activeElement as HTMLElement).blur();
         }
         setTimeout(() =>
@@ -55,7 +55,7 @@ export default defineComponent({
     },
 
     closeIfEscape(e: KeyboardEvent) {
-      if (e.key == 'Escape') {
+      if (e.key === 'Escape') {
         this.close();
       }
     },

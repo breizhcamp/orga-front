@@ -9,8 +9,6 @@ import ErrorAlert from '@/components/ErrorAlert.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 import type { LevelList } from '@/dto/moneiz/LevelList';
-import type { SponsoringList } from '@/dto/moneiz/SponsoringList';
-import type { SponsorList } from '@/dto/moneiz/SponsorList';
 import { listLevels } from '@/queries/moneiz/levels.queries';
 import { listSponsorings } from '@/queries/moneiz/sponsorings.queries';
 import { listSponsors } from '@/queries/moneiz/sponsors.queries';
@@ -40,11 +38,9 @@ const errorMessage = ref<string | null>(null);
 const loading = computed(() => isSponsoringsPending.value || isLevelPending.value || isSponsorsPrending.value);
 const availableSponsors = computed(() => {
   if (loading.value) return [];
-  console.assert(sponsors.value !== undefined);
-  console.assert(sponsorings.value !== undefined);
-  const availableSponsors = (sponsors.value as SponsorList[]).filter(
-    ({ id }) => (sponsorings.value as SponsoringList[]).every(
-      ({ sponsor }) => sponsor === undefined || sponsor.id !== id,
+  const availableSponsors = sponsors.value!.filter(
+    ({ id }) => sponsorings.value!.every(
+      ({ sponsor }) => sponsor?.id !== id,
     ),
   );
   return availableSponsors;

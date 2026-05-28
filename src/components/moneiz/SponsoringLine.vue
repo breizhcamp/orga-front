@@ -65,10 +65,9 @@ const handleSponsorSelected = async () => {
   setErrorMessage(null);
   const { id: sponsoringId } = props.sponsoring;
   const { currentEventId } = eventStore;
-  console.assert(currentEventId !== undefined);
   try {
     await setSponsorMutation.mutateAsync({
-      eventId: currentEventId as string,
+      eventId: currentEventId!,
       sponsoringId,
       sponsorId: sponsor.value,
     });
@@ -151,15 +150,18 @@ const handleDelete = () => {
     </td>
 
     <td>
-        <LabelBadge v-bind="ticketsStateBadge" />
+        <LabelBadge v-if="sponsoring.sponsor" v-bind="ticketsStateBadge" />
     </td>
 
     <td class="text-end">
       <DropdownMenu>
-        <DropdownRouterLink :to="{
-          name: 'SponsoringAgreement',
-          params: { sponsoringId: sponsoring.id },
-        }">
+        <DropdownRouterLink
+          v-if="sponsoring.sponsor"
+          :to="{
+            name: 'SponsoringAgreement',
+            params: { sponsoringId: sponsoring.id },
+          }"
+        >
           Convention
         </DropdownRouterLink>
         <DropdownRouterLink :to="{

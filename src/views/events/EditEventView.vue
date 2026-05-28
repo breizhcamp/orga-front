@@ -106,7 +106,7 @@ function validateForm(): boolean {
   }
 
   // Validate website URL if provided
-  if (formData.value.website && formData.value.website.trim()) {
+  if (formData.value.website?.trim()) {
     try {
       new URL(formData.value.website);
     } catch {
