@@ -16,6 +16,7 @@
     "lint-check": "eslint . --cache"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.5.1",
     "@popperjs/core": "^2.11.8",
     "@tanstack/vue-query": "^5.92.1",
     "@tanstack/vue-query-devtools": "^6.1.3",
