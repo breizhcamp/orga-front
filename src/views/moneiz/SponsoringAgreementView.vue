@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 
 import CardTitle from '@/components/CardTitle.vue';
 import ErrorAlert from '@/components/ErrorAlert.vue';
-import FloatingNumberField from '@/components/FloatingNumberField.vue';
+import FloatingFormField from '@/components/FloatingFormField.vue';
 import FloatingSelectField from '@/components/FloatingSelectField.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import UiCard from '@/components/UiCard.vue';
@@ -115,13 +115,21 @@ const capitalize = (value: string): string => {
                   />
                 </div>
               </div>
-              <FloatingNumberField
+              <FloatingFormField
                 id="presale"
                 label="Nombre de place en prévente"
                 class="mb-3"
-                :min="0"
-                v-model="presale"
-              />
+              >
+                <input
+                  type="number"
+                  id="presale"
+                  class="form-control"
+                  min="0"
+                  step="1"
+                  placeholder="Nombre de place en prévente"
+                  v-model="presale"
+                />
+              </FloatingFormField>
               <div class="d-flex justify-content-end">
                 <button
                   class="btn btn-primary"

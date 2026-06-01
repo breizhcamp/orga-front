@@ -3,6 +3,8 @@ import { type MaybeRef, toValue } from 'vue';
 
 import type { EventId } from '@/dto/kalon/Event';
 import type { CreateSponsoringsReq } from '@/dto/moneiz/CreateSponroringsReq';
+import type { InvoiceReq } from '@/dto/moneiz/InvoiceReq';
+import type { InvoiceTemplateRes } from '@/dto/moneiz/InvoiceTemplateRes';
 import type { SponsoringId, SponsoringList } from '@/dto/moneiz/SponsoringList';
 import type { SponsoringRes } from '@/dto/moneiz/SponsoringRes';
 import type { SponsorId } from '@/dto/moneiz/SponsorList';
@@ -51,7 +53,7 @@ export function getSponsoringOptions(
     queryFn: async () => {
       const currentEventId = toValue(eventId);
       if (currentEventId === undefined) {
-        throw new Error('');
+        throw new Error('eventId must be defined');
       }
       const response = await moneiz.get<SponsoringRes>(
         `/api/admin/${currentEventId}/sponsorings/${sponsoringId}`,
@@ -70,6 +72,39 @@ export function getSponsoring(
 ) {
   const moneiz = useMoneiz();
   return useQuery(getSponsoringOptions(moneiz, eventId, sponsoringId, staleTime));
+}
+
+export function getSponsoringInvoiceTemplateOption(
+  moneiz: Moneiz,
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
+    queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'invoice'],
+    queryFn: async () => {
+      const currentEventId = toValue(eventId);
+      if (currentEventId === undefined) {
+        throw new Error('eventId must be defined');
+      }
+      const response = await moneiz.get<InvoiceTemplateRes>(
+        `/api/admin/${currentEventId}/sponsorings/${sponsoringId}/invoice`,
+      );
+      return response.data;
+    },
+    enabled: !!toValue(eventId),
+    staleTime,
+  });
+}
+
+export function getSponsoringInvoiceTemplate(
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  const moneiz = useMoneiz();
+  return useQuery(getSponsoringInvoiceTemplateOption(moneiz, eventId, sponsoringId, staleTime));
 }
 
 export function useCreateSponsoringsMutation() {
@@ -124,6 +159,26 @@ export function useSetSponsorMutation() {
           queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
         }),
       ]);
+    },
+  });
+}
+
+export function useGenerateSponsoringInvoiceMutation() {
+  const moneiz = useMoneiz();
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+      invoiceReq,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+      invoiceReq: InvoiceReq;
+    }) => {
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/invoice/generate`,
+        invoiceReq,
+      );
     },
   });
 }

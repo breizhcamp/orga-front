@@ -5,7 +5,7 @@ import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import ErrorAlert from '@/components/ErrorAlert.vue';
-import FloatingNumberField from '@/components/FloatingNumberField.vue';
+import FloatingFormField from '@/components/FloatingFormField.vue';
 import FloatingSelectField from '@/components/FloatingSelectField.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import UiCard from '@/components/UiCard.vue';
@@ -28,7 +28,7 @@ const {
 const createSponsoringsMutation = useCreateSponsoringsMutation();
 
 const selectedLevel = ref<string | null>(null);
-const numberSlots = ref<number | undefined>(1);
+const numberSlots = ref<number>(1);
 const errorMessage = ref<string | null>(null);
 const disabled = computed(() => createSponsoringsMutation.isPending.value);
 
@@ -39,7 +39,6 @@ watch(levels, (newLevels) => {
 }, { immediate: true });
 
 const handleSubmit = async () => {
-  if (numberSlots.value === undefined) return;
   if (selectedLevel.value === null) return;
 
   errorMessage.value = null;
@@ -91,15 +90,21 @@ const handleSubmit = async () => {
               </option>
           </FloatingSelectField>
 
-          <FloatingNumberField
+          <FloatingFormField
             id="number-slots"
             label="Nombre de slots"
-            :min="1"
-            :step="1"
-            v-model="numberSlots"
-            :disabled="disabled"
             required
-          />
+          >
+            <input
+              id="number-slots"
+              placeholder="Nombre de slots"
+              :min="1"
+              :step="1"
+              v-model="numberSlots"
+              :disabled="disabled"
+              required
+            />
+          </FloatingFormField>
         </UiCard>
 
         <div class="d-flex justify-content-end">
