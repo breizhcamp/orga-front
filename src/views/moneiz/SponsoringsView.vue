@@ -1,15 +1,50 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 
+import BiPlusLg from 'bootstrap-icons/icons/plus-lg.svg?component';
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { RouterLink } from 'vue-router';
+
+import ErrorAlert from '@/components/ErrorAlert.vue';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 import type { LevelList } from '@/dto/moneiz/LevelList';
 import { listLevels } from '@/queries/moneiz/levels.queries';
 import { listSponsorings } from '@/queries/moneiz/sponsorings.queries';
+import { listSponsors } from '@/queries/moneiz/sponsors.queries';
 import { useEventStore } from '@/stores/event';
 
 const eventStore = useEventStore();
-const { isPending, isError, data, error } = listSponsorings(eventStore.currentEventId);
-const { isPending: isLevelPending, isError: isLevelError, data: levelData, error: levelError } = listLevels(eventStore.currentEventId);
+const { currentEventId } = storeToRefs(eventStore);
+const {
+  isPending: isSponsoringsPending,
+  isError: isSponsoringsError,
+  data: sponsorings,
+  error: sponsoringsError,
+} = listSponsorings(currentEventId);
+const {
+  isPending: isLevelPending,
+  isError: isLevelError,
+  data: levelData,
+  error: levelError,
+} = listLevels(eventStore.currentEventId);
+const {
+  isPending: isSponsorsPrending,
+  data: sponsors,
+} = listSponsors();
+
+const errorMessage = ref<string | null>(null);
+
+const loading = computed(() => isSponsoringsPending.value || isLevelPending.value || isSponsorsPrending.value);
+const availableSponsors = computed(() => {
+  if (loading.value) return [];
+  const availableSponsors = sponsors.value!.filter(
+    ({ id }) => sponsorings.value!.every(
+      ({ sponsor }) => sponsor?.id !== id,
+    ),
+  );
+  return availableSponsors;
+});
 
 const levels = computed(() => {
   const levelMap = new Map<string, LevelList>();
@@ -18,29 +53,59 @@ const levels = computed(() => {
   });
   return levelMap;
 });
+
+const handleErrorMessage = (message: string | null) => {
+  errorMessage.value = message;
+};
 </script>
 
 <template>
-  <div class="container py-4">
-    <div v-if="isPending || isLevelPending" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Chargement...</span>
+  <div class="container-fluid py-4">
+    <LoadingSpinner v-if="loading" />
+    <ErrorAlert
+      v-else-if="isSponsoringsError || isLevelError"
+      :message="sponsoringsError?.message || levelError?.message"
+    />
+    <div v-else>
+      <div class="d-flex justify-content-end mb-4">
+        <RouterLink
+          :to="{ name: 'SponsoringsCreate' }"
+          class="btn btn-primary"
+          title="Ajouter des nouveaux slots de sponsorings"
+        >
+          <BiPlusLg />
+          Ajouter des sponsorings
+        </RouterLink>
       </div>
-    </div>
-    <div v-else-if="isError || isLevelError" class="alert alert-danger">
-      Erreur: {{ error?.message || levelError?.message }}
-    </div>
-    <div v-else class="sponsorings-list">
-      <SponsoringLine
-        v-for="sponsoring in data"
-        :key="sponsoring.id"
-        :sponsoring="sponsoring"
-        :level="levels.get(sponsoring.levelName)"
-      />
+      <ErrorAlert v-if="errorMessage" :message="errorMessage" />
+
+      <div
+        class="overflow-x-scroll overflow-y-hidden"
+        style="padding-bottom: 150px;"
+      >
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Nom</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Stand</th>
+              <th scope="col">Tickets</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <SponsoringLine
+              v-for="sponsoring in sponsorings"
+              :key="sponsoring.id"
+              :sponsoring="sponsoring"
+              :level="levels.get(sponsoring.levelName)"
+              :availableSponsors="availableSponsors"
+              @error="handleErrorMessage"
+            />
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>

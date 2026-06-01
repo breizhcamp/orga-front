@@ -55,7 +55,7 @@ export default defineComponent({
     },
 
     closeIfEscape(e: KeyboardEvent) {
-      if (e.key == 'Escape') {
+      if (e.key === 'Escape') {
         this.close();
       }
     },

@@ -121,7 +121,6 @@ const saveSponsor = async () => {
         <SponsorContactForm
           v-if="sponsorId !== undefined"
           :sponsor-id="sponsorId"
-          :disabled="disabled"
         />
       </div>
     </div>

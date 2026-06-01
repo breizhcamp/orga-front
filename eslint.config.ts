@@ -16,7 +16,7 @@ export default defineConfigWithVueTs(
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.strictTypeChecked,
-  vueTsConfigs.stylistic,
+  vueTsConfigs.stylisticTypeChecked,
   stylistic.configs.customize({
     semi: true,
     braceStyle: '1tbs',
@@ -28,7 +28,10 @@ export default defineConfigWithVueTs(
       'import': importPlugin,
     },
     rules: {
+      'eqeqeq': 'error',
       '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
       'import/first': 'error',

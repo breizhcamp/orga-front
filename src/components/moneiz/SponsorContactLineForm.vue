@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
 
-import type { ContactReq } from '@/dto/moneiz/ContactReq';
 import { CONTACT_TYPES, type ContactType } from '@/dto/moneiz/ContactType';
 
 import type { ContactWithKey } from './SponsorContactForm.vue';
@@ -12,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: ContactReq];
+  'update:modelValue': [value: ContactWithKey];
   'delete': [contactKey: string];
 }>();
 

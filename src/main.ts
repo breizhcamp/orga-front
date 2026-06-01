@@ -1,8 +1,10 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './assets/styles/main.scss';
+import '@/assets/styles/main.scss';
 import 'dayjs/locale/fr';
 
 import { VueQueryPlugin } from '@tanstack/vue-query';
+// We need to import Popover for the dropdown menu to work.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Popover } from 'bootstrap';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import Keycloak from 'keycloak-js';
