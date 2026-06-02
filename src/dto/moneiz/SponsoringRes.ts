@@ -1,4 +1,5 @@
 import type { AgreementState } from './AgreementState';
+import type { InvoiceId } from './InvoiceId';
 import type { InvoiceState } from './InvoiceState';
 import type { TicketsState } from './TicketsState';
 
@@ -7,6 +8,7 @@ export type SponsoringRes = {
   levelName: string;
   sponsor?: SponsoringSponsorRes;
   agreementState?: AgreementState;
+  invoiceId?: InvoiceId;
   invoiceState?: InvoiceState;
   standNumber?: string;
   ticketsState?: TicketsState;

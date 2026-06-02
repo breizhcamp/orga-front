@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, watch } from 'vue';
+import { capitalize, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import CardTitle from '@/components/CardTitle.vue';
@@ -38,13 +38,6 @@ watch(sponsoring, (sponsoring) => {
   agreementState.value = sponsoring.agreementState;
   presale.value = sponsoring.presale;
 });
-
-const capitalize = (value: string): string => {
-  if (!value) return value;
-  const firstLetter = value.charAt(0);
-  const remain = value.substring(1);
-  return firstLetter.toUpperCase() + remain;
-};
 </script>
 
 <template>

@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import type { ComponentProps } from 'vue-component-type-helpers';
 
 import { AgreementState, agreementStateColors, agreementStateToString } from '@/dto/moneiz/AgreementState';
-import { InvoiceState } from '@/dto/moneiz/InvoiceState';
+import { InvoiceState, invoiceStateColors, invoiceStateToString } from '@/dto/moneiz/InvoiceState';
 import { type SponsoringList } from '@/dto/moneiz/SponsoringList';
 
 import LabelBadge from '../LabelBadge.vue';
@@ -22,36 +22,13 @@ const agreementStateBadges = Object.fromEntries(
     }]),
 ) as Record<AgreementState, Badge>;
 
-const invoiceStateBadges = {
-  [InvoiceState.TODO]: {
-    label: 'facture: à faire',
-    color: 'secondary',
-  },
-  [InvoiceState.ORDER_FORM]: {
-    label: 'facture: att. bon comm.',
-    color: 'purple',
-  },
-  [InvoiceState.TO_SEND]: {
-    label: 'facture: à envoyer',
-    color: 'warning',
-  },
-  [InvoiceState.SENT]: {
-    label: 'facture: envoyée',
-    color: 'info',
-  },
-  [InvoiceState.REMINDED]: {
-    label: 'facture: relancée',
-    color: 'orange',
-  },
-  [InvoiceState.PAYED]: {
-    label: 'facture: payée',
-    color: 'success',
-  },
-  [InvoiceState.REFUNDED]: {
-    label: 'facture: remboursée',
-    color: 'danger',
-  },
-} as const satisfies Record<InvoiceState, Badge>;
+const invoiceStateBadges = Object.fromEntries(
+  Object.values(InvoiceState)
+    .map(state => [state, {
+      label: 'facture : ' + invoiceStateToString[state],
+      color: invoiceStateColors[state],
+    }]),
+) as Record<InvoiceState, Badge>;
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 const badge = computed<Badge | null>(() => {
