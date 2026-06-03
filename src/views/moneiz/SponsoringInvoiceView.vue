@@ -39,8 +39,9 @@ const {
     <ErrorAlert v-else-if="isError" :message="error?.message" />
   </div>
   <template v-else>
-    <InvoiceForm v-if="!sponsoring?.invoiceState" />
+    <InvoiceForm v-if="!sponsoring?.invoiceId" />
     <SponsoringInvoice
+      v-else
       :eventId="currentEventId!"
       :sponsoring="sponsoring!"
     />
