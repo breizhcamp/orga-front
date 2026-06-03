@@ -4,6 +4,7 @@ import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
 import { computed, ref } from 'vue';
 import type { ComponentProps } from 'vue-component-type-helpers';
 
+import type { EventId } from '@/dto/kalon/Event';
 import type { LevelList } from '@/dto/moneiz/LevelList.ts';
 import type { SponsoringList } from '@/dto/moneiz/SponsoringList.ts';
 import type { SponsorList } from '@/dto/moneiz/SponsorList';
@@ -16,9 +17,11 @@ import DropdownDivider from '../DropdownDivider.vue';
 import DropdownMenu from '../DropdownMenu.vue';
 import DropdownRouterLink from '../DropdownRouterLink.vue';
 import LabelBadge from '../LabelBadge.vue';
+import DeleteSponsoringModal from './DeleteSponsoringModal.vue';
 import SponsoringState from './SponsoringState.vue';
 
 const props = defineProps<{
+  eventId: EventId;
   sponsoring: SponsoringList;
   level: LevelList | undefined;
   availableSponsors: SponsorList[];
@@ -31,6 +34,7 @@ const emit = defineEmits<{
 const eventStore = useEventStore();
 
 const sponsor = ref<string>('');
+const openDeleteModal = ref<boolean>(false);
 const setSponsorMutation = useSetSponsorMutation();
 
 type Badge = ComponentProps<typeof LabelBadge>;
@@ -88,7 +92,7 @@ const handleSponsorSelected = async () => {
 };
 
 const handleDelete = () => {
-  console.log('delete');
+  openDeleteModal.value = true;
 };
 </script>
 
@@ -191,6 +195,12 @@ const handleDelete = () => {
           Supprimer
         </DropdownButton>
       </DropdownMenu>
+
+      <DeleteSponsoringModal
+        :eventId="eventId"
+        :sponsoring="sponsoring"
+        v-model:open="openDeleteModal"
+      />
     </td>
   </tr>
 </template>

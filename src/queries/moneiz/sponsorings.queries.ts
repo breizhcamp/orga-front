@@ -215,3 +215,30 @@ export function useGenerateSponsoringInvoiceMutation() {
     },
   });
 }
+
+export function useDeleteSponsoringMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+    }) => {
+      await moneiz.delete(`/api/admin/${eventId}/sponsorings/${sponsoringId}`);
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
+    },
+  });
+}
