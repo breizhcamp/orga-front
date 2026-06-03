@@ -168,10 +168,13 @@ const handleDelete = () => {
         >
           Convention
         </DropdownRouterLink>
-        <DropdownRouterLink :to="{
-          name: 'SponsoringInvoice',
-          params: { sponsoringId: sponsoring.id },
-        }">
+        <DropdownRouterLink
+          v-if="sponsoring.sponsor"
+          :to="{
+            name: 'SponsoringInvoice',
+            params: { sponsoringId: sponsoring.id },
+          }"
+        >
           Facture
         </DropdownRouterLink>
         <DropdownRouterLink :to="{
