@@ -7,6 +7,7 @@ import { capitalize, computed, ref } from 'vue';
 import type { EventId } from '@/dto/kalon/Event';
 import { InvoiceState, invoiceStateToString } from '@/dto/moneiz/InvoiceState';
 import type { SponsoringRes } from '@/dto/moneiz/SponsoringRes';
+import { getSponsoringInvoiceEmailUrl } from '@/queries/moneiz/sponsorings.queries';
 import { getSponsorContacts } from '@/queries/moneiz/sponsors.queries';
 
 import CardTitle from '../CardTitle.vue';
@@ -15,7 +16,6 @@ import FloatingFormField from '../FloatingFormField.vue';
 import FloatingSelectField from '../FloatingSelectField.vue';
 import UiCard from '../UiCard.vue';
 import SponsoringInvoicePdf from './SponsoringInvoicePdf.vue';
-import { getSponsoringInvoiceEmailUrl } from '@/queries/moneiz/sponsorings.queries';
 
 const props = defineProps<{
   eventId: EventId;
