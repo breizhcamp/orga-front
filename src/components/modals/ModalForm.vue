@@ -1,3 +1,39 @@
+<script setup lang="ts">
+import type { Size } from './ModalInfo.vue';
+
+withDefaults(defineProps<{
+  loading?: boolean;
+  title: string;
+  size?: Size;
+  saveButtonText?: string;
+  saveButtonVariant?: string;
+}>(), {
+  loading: false,
+  saveButtonText: 'Sauvegarder',
+  saveButtonVariant: 'primary',
+});
+
+const open = defineModel<boolean>('open', { required: true });
+
+const emit = defineEmits<{
+  save: [];
+}>();
+
+const close = () => {
+  open.value = false;
+};
+
+const save = () => {
+  emit('save');
+};
+
+const closeIfEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    close();
+  }
+};
+</script>
+
 <template>
   <div class="modal show d-block" role="dialog" tabindex="-1" v-if="open" @click="close()" @keyup.stop="closeIfEscape">
     <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
@@ -25,40 +61,3 @@
   </div>
   <div class="modal-backdrop show" v-if="open"></div>
 </template>
-
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-
-import type { Size } from './ModalInfo.vue';
-
-export default defineComponent({
-  name: 'ModalForm',
-
-  props: {
-    open: { type: Boolean, required: true, default: false },
-    loading: { type: Boolean, default: false },
-    title: { type: String, required: true },
-    size: { type: String as PropType<Size>, required: false },
-    saveButtonText: { type: String, default: 'Sauvegarder' },
-    saveButtonVariant: { type: String, default: 'primary' },
-  },
-
-  emits: ['update:open', 'save'],
-
-  methods: {
-    close() {
-      this.$emit('update:open', false);
-    },
-
-    save() {
-      this.$emit('save');
-    },
-
-    closeIfEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        this.close();
-      }
-    },
-  },
-});
-</script>
