@@ -10,6 +10,7 @@ import SponsoringAgreementView from '@/views/moneiz/SponsoringAgreementView.vue'
 import SponsoringDetailsView from '@/views/moneiz/SponsoringDetailsView.vue';
 import SponsoringInvoiceView from '@/views/moneiz/SponsoringInvoiceView.vue';
 import SponsoringsCreateView from '@/views/moneiz/SponsoringsCreateView.vue';
+import SponsoringStandView from '@/views/moneiz/SponsoringStandView.vue';
 import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
 import SponsorsView from '@/views/moneiz/SponsorsView.vue';
 
@@ -69,6 +70,11 @@ const routes: RouteRecordRaw[] = [
         name: 'SponsoringInvoice',
         component: SponsoringInvoiceView,
         meta: { title: 'Facture' },
+      }, {
+        path: 'sponsorings/:sponsoringId/stand',
+        name: 'SponsoringStand',
+        component: SponsoringStandView,
+        meta: { title: 'Stand' },
       }, {
         path: 'sponsors',
         name: 'Sponsors',

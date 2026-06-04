@@ -242,3 +242,35 @@ export function useDeleteSponsoringMutation() {
     },
   });
 }
+
+export function useSetPlaceMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+      place,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+      place: string | undefined;
+    }) => {
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/place`,
+        { place },
+      );
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
+    },
+  });
+}

@@ -142,7 +142,10 @@ const handleCopyLink = async () => {
             <CardTitle :loading="isPending">
               Facture
             </CardTitle>
-            <p class="card-text">
+            <CardText
+              :loading="isPending"
+              placeholderClass="col-3"
+            >
               <span class="fw-medium me-2">
                 Statut :
               </span>
@@ -150,7 +153,7 @@ const handleCopyLink = async () => {
                 color="primary"
                 label="TODO"
               />
-            </p>
+            </CardText>
           </UiCard>
         </div>
         <div class="col-12 mb-4">
