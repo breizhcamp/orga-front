@@ -7,6 +7,7 @@ import CardText from '@/components/CardText.vue';
 import CardTitle from '@/components/CardTitle.vue';
 import ErrorAlert from '@/components/ErrorAlert.vue';
 import FloatingTextField from '@/components/FloatingTextField.vue';
+import StandMap from '@/components/shared/StandMap.vue';
 import UiCard from '@/components/UiCard.vue';
 import type { SponsoringId } from '@/dto/moneiz/SponsoringList';
 import { getSponsoring, useSetPlaceMutation } from '@/queries/moneiz/sponsorings.queries';
@@ -19,7 +20,6 @@ const eventStore = useEventStore();
 const { currentEventId } = storeToRefs(eventStore);
 
 const assignedStand: string[] = [];
-const { MONEIZ_URL } = window.env;
 
 const {
   isPending: isSponsoringPending,
@@ -29,7 +29,7 @@ const {
 } = getSponsoring(currentEventId, sponsoringId);
 const setPlaceMutation = useSetPlaceMutation();
 
-const standNumber = ref('');
+const standNumber = ref<string | undefined>();
 const disabled = computed(() => {
   return isSponsoringPending.value || setPlaceMutation.isPending.value;
 });
@@ -102,10 +102,10 @@ const handleSubmit = async () => {
     </UiCard>
 
     <div class="d-flex justify-content-center">
-      <img
-        :src="`${MONEIZ_URL}/img/plan-bc-2026.png`"
-        class="w-100"
-        alt="Plan du Breizhcamp"
+      <StandMap
+        :level="'P'"
+        :filledPlaces="['P2']"
+        v-model="standNumber"
       />
     </div>
   </div>
