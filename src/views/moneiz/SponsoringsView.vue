@@ -98,6 +98,7 @@ const handleErrorMessage = (message: string | null) => {
             <SponsoringLine
               v-for="sponsoring in sponsorings"
               :key="sponsoring.id"
+              :eventId="currentEventId!"
               :sponsoring="sponsoring"
               :level="levels.get(sponsoring.levelName)"
               :availableSponsors="availableSponsors"
