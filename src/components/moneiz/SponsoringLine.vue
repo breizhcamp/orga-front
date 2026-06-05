@@ -51,7 +51,8 @@ const ticketsStateBadges = {
 } as const satisfies Record<TicketsState, Badge>;
 
 const ticketsStateBadge = computed(() => {
-  const ticketsState = props.sponsoring.ticketsState || TicketsState.TODO;
+  if (props.sponsoring.ticketsState === undefined) return null;
+  const ticketsState = props.sponsoring.ticketsState;
   return ticketsStateBadges[ticketsState];
 });
 
@@ -150,7 +151,10 @@ const handleDelete = () => {
     </td>
 
     <td>
-        <LabelBadge v-if="sponsoring.sponsor" v-bind="ticketsStateBadge" />
+        <LabelBadge
+          v-if="sponsoring.sponsor && ticketsStateBadge !== null"
+          v-bind="ticketsStateBadge"
+        />
     </td>
 
     <td class="text-end">
@@ -164,10 +168,13 @@ const handleDelete = () => {
         >
           Convention
         </DropdownRouterLink>
-        <DropdownRouterLink :to="{
-          name: 'SponsoringInvoice',
-          params: { sponsoringId: sponsoring.id },
-        }">
+        <DropdownRouterLink
+          v-if="sponsoring.sponsor"
+          :to="{
+            name: 'SponsoringInvoice',
+            params: { sponsoringId: sponsoring.id },
+          }"
+        >
           Facture
         </DropdownRouterLink>
         <DropdownRouterLink :to="{

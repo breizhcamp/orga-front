@@ -4,7 +4,7 @@ import type { ContactReq } from '@/dto/moneiz/ContactReq';
 import type { ContactRes } from '@/dto/moneiz/ContactRes';
 import type { FileCreateApi } from '@/dto/moneiz/FileCreateApi.ts';
 import type { Sponsor } from '@/dto/moneiz/Sponsor.ts';
-import type { SponsorList } from '@/dto/moneiz/SponsorList.ts';
+import type { SponsorId, SponsorList } from '@/dto/moneiz/SponsorList.ts';
 import { useMoneiz } from '@/utils/useAxios.ts';
 
 type Moneiz = ReturnType<typeof useMoneiz>;
@@ -42,21 +42,32 @@ function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQuer
   return useQuery(getSponsorOptions(moneiz, id, forEditing, staleTime));
 }
 
-function getSponsorContactsOptions(moneiz: Moneiz, forEditing = false, sponsorId: string, staleTime = 60_000) {
+function getSponsorContactsOptions(
+  moneiz: Moneiz,
+  sponsorId: SponsorId | undefined,
+  forEditing = false,
+  staleTime = 60_000,
+) {
   // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', 'sponsors', sponsorId, 'contacts'],
     queryFn: async (): Promise<ContactRes[]> => {
+      if (sponsorId === undefined) return [];
       return (await moneiz.get<ContactRes[]>(`/api/admin/sponsors/${sponsorId}/contacts`)).data;
     },
     staleTime,
+    enabled: sponsorId !== undefined,
     refetchOnWindowFocus: !forEditing,
   });
 }
 
-function getSponsorContacts(sponsorId: string, forEditing = false, staleTime = 60_000): UseQueryReturnType<ContactRes[], Error> {
+function getSponsorContacts(
+  sponsorId: SponsorId | undefined,
+  forEditing = false,
+  staleTime = 60_000,
+): UseQueryReturnType<ContactRes[], Error> {
   const moneiz = useMoneiz();
-  return useQuery(getSponsorContactsOptions(moneiz, forEditing, sponsorId, staleTime));
+  return useQuery(getSponsorContactsOptions(moneiz, sponsorId, forEditing, staleTime));
 }
 
 function useCreateSponsorMutation() {
@@ -129,7 +140,7 @@ function useUpdateSponsorContactsMutation() {
       return response.data;
     },
     onSuccess: (data, variables) => {
-      queryClient.setQueryData(getSponsorContactsOptions(moneiz, false, variables.sponsorId).queryKey, data);
+      queryClient.setQueryData(getSponsorContactsOptions(moneiz, variables.sponsorId).queryKey, data);
     },
   });
 }
