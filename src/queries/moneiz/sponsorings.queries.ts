@@ -140,6 +140,72 @@ export function getSponsoringInvoiceEmailUrl(
   return useQuery(getSponsoringInvoiceEmailUrlOptions(moneiz, eventId, sponsoringId, staleTime));
 }
 
+export function getSponsoringPlaceRequestEmailUrlOptions(
+  moneiz: Moneiz,
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
+    queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'place', 'email'],
+    queryFn: async () => {
+      const currentEventId = toValue(eventId);
+      if (currentEventId === undefined) {
+        throw new Error('eventId must be defined');
+      }
+      const response = await moneiz.get<string>(
+        `/api/admin/${currentEventId}/sponsorings/${sponsoringId}/place/email`,
+      );
+      return response.data;
+    },
+    enabled: !!toValue(eventId),
+    staleTime,
+  });
+}
+
+export function getSponsoringPlaceRequestEmailUrl(
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  const moneiz = useMoneiz();
+  return useQuery(getSponsoringPlaceRequestEmailUrlOptions(moneiz, eventId, sponsoringId, staleTime));
+}
+
+export function getSponsoringPlaceInstallationEmailUrlOptions(
+  moneiz: Moneiz,
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
+    queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'place', 'installation-email'],
+    queryFn: async () => {
+      const currentEventId = toValue(eventId);
+      if (currentEventId === undefined) {
+        throw new Error('eventId must be defined');
+      }
+      const response = await moneiz.get<string>(
+        `/api/admin/${currentEventId}/sponsorings/${sponsoringId}/place/installation-email`,
+      );
+      return response.data;
+    },
+    enabled: !!toValue(eventId),
+    staleTime,
+  });
+}
+
+export function getSponsoringPlaceInstallationEmailUrl(
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  const moneiz = useMoneiz();
+  return useQuery(getSponsoringPlaceInstallationEmailUrlOptions(moneiz, eventId, sponsoringId, staleTime));
+}
+
 export function getAlreadyAssignedStandsOptions(
   moneiz: Moneiz,
   eventId: MaybeRef<EventId | undefined>,
