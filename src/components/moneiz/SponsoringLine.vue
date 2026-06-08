@@ -110,7 +110,7 @@ const handleDelete = () => {
     <td class="sponsor-name">
       <RouterLink
         v-if="sponsoring.sponsor"
-        :to="{ name: 'SponsorEdit', params: { sponsorId: sponsoring.sponsor.id } }"
+        :to="{ name: 'SponsoringDetails', params: { sponsoringId: sponsoring.id } }"
         class="fw-medium link-underline link-underline-opacity-0 link-underline-opacity-100-hover"
         :title="`Modifier ${sponsoring.sponsor.name}`"
       >
