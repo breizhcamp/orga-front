@@ -187,6 +187,12 @@ const handleDelete = () => {
         }">
           Détails
         </DropdownRouterLink>
+        <DropdownRouterLink :to="{
+          name: 'SponsoringStand',
+          params: { sponsoringId: sponsoring.id },
+        }">
+          Stand
+        </DropdownRouterLink>
         <DropdownDivider />
         <DropdownButton
           class="text-danger"

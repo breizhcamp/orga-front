@@ -95,59 +95,57 @@ const paiementDate = ref<string | undefined>();
       <div class="row">
         <div class="col-12 col-md-6">
           <div class="card mb-3" :aria-hidden="isContactsPending && isEmailUrlPending">
-            <template v-if="1">
-              <div class="card-body">
-                <CardTitle :loading="isContactsPending && isEmailUrlPending">
-                  Contacts
-                </CardTitle>
-                <ErrorAlert
-                  v-if="isEmailUrlError"
-                  class="mb-0"
-                  :message="emailUrlError?.message"
-                />
-                <button
-                  v-else-if="isEmailUrlPending"
-                  class="btn btn-primary disabled placeholder col-2"
-                  disabled="true"
-                  aria-disabled="true"
-                ></button>
-                <a
-                  v-else
-                  :href="emailUrl"
-                  class="btn btn-primary"
-                >
-                  <BiEnvelope class="me-2" />
-                  Send
-                </a>
-              </div>
-              <div v-if="isContactsError" class="card-body">
-                <ErrorAlert class="mb-0" :message="contactsError?.message" />
-              </div>
-              <ul v-else class="list-group list-group-flush">
-                <template v-if="isContactsPending">
-                  <li class="list-group-item">
-                    <p class="card-text placeholder-glow">
-                      <span class="placeholder col-5"></span>
-                    </p>
-                  </li>
-                  <li class="list-group-item">
-                    <p class="card-text placeholder-glow">
-                      <span class="placeholder col-4"></span>
-                    </p>
-                  </li>
-                </template>
-                <li
-                  v-else
-                  v-for="contact, index in contacts"
-                  :key="contact.id"
-                  class="list-group-item"
-                >
-                <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
-                    <BiPersonFill class="me-2" />{{ contactsName[index] }} (principal)
-                  </a>
+            <div class="card-body">
+              <CardTitle :loading="isContactsPending && isEmailUrlPending">
+                Contacts
+              </CardTitle>
+              <ErrorAlert
+                v-if="isEmailUrlError"
+                class="mb-0"
+                :message="emailUrlError?.message"
+              />
+              <button
+                v-else-if="isEmailUrlPending"
+                class="btn btn-primary disabled placeholder col-2"
+                disabled="true"
+                aria-disabled="true"
+              ></button>
+              <a
+                v-else
+                :href="emailUrl"
+                class="btn btn-primary"
+              >
+                <BiEnvelope class="me-2" />
+                Send
+              </a>
+            </div>
+            <div v-if="isContactsError" class="card-body">
+              <ErrorAlert class="mb-0" :message="contactsError?.message" />
+            </div>
+            <ul v-else class="list-group list-group-flush">
+              <template v-if="isContactsPending">
+                <li class="list-group-item">
+                  <p class="card-text placeholder-glow">
+                    <span class="placeholder col-5"></span>
+                  </p>
                 </li>
-              </ul>
-            </template>
+                <li class="list-group-item">
+                  <p class="card-text placeholder-glow">
+                    <span class="placeholder col-4"></span>
+                  </p>
+                </li>
+              </template>
+              <li
+                v-else
+                v-for="contact, index in contacts"
+                :key="contact.id"
+                class="list-group-item"
+              >
+              <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
+                  <BiPersonFill class="me-2" />{{ contactsName[index] }} (principal)
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 

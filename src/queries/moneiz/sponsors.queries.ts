@@ -1,4 +1,5 @@
 import { queryOptions, useMutation, useQuery, useQueryClient, type UseQueryReturnType } from '@tanstack/vue-query';
+import { computed, type MaybeRef, toValue } from 'vue';
 
 import type { ContactReq } from '@/dto/moneiz/ContactReq';
 import type { ContactRes } from '@/dto/moneiz/ContactRes';
@@ -44,7 +45,7 @@ function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQuer
 
 function getSponsorContactsOptions(
   moneiz: Moneiz,
-  sponsorId: SponsorId | undefined,
+  sponsorId: MaybeRef<SponsorId | undefined>,
   forEditing = false,
   staleTime = 60_000,
 ) {
@@ -52,17 +53,18 @@ function getSponsorContactsOptions(
   return queryOptions({
     queryKey: ['moneiz', 'sponsors', sponsorId, 'contacts'],
     queryFn: async (): Promise<ContactRes[]> => {
-      if (sponsorId === undefined) return [];
-      return (await moneiz.get<ContactRes[]>(`/api/admin/sponsors/${sponsorId}/contacts`)).data;
+      const id = toValue(sponsorId);
+      if (id === undefined) return [];
+      return (await moneiz.get<ContactRes[]>(`/api/admin/sponsors/${id}/contacts`)).data;
     },
     staleTime,
-    enabled: sponsorId !== undefined,
+    enabled: computed(() => toValue(sponsorId) !== undefined),
     refetchOnWindowFocus: !forEditing,
   });
 }
 
 function getSponsorContacts(
-  sponsorId: SponsorId | undefined,
+  sponsorId: MaybeRef<SponsorId | undefined>,
   forEditing = false,
   staleTime = 60_000,
 ): UseQueryReturnType<ContactRes[], Error> {
