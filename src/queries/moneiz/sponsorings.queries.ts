@@ -140,6 +140,37 @@ export function getSponsoringInvoiceEmailUrl(
   return useQuery(getSponsoringInvoiceEmailUrlOptions(moneiz, eventId, sponsoringId, staleTime));
 }
 
+export function getAlreadyAssignedStandsOptions(
+  moneiz: Moneiz,
+  eventId: MaybeRef<EventId | undefined>,
+  staleTime = 60_000,
+) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
+    queryKey: ['moneiz', eventId, 'sponsorings', 'already-assigned-places'],
+    queryFn: async () => {
+      const currentEventId = toValue(eventId);
+      if (currentEventId === undefined) {
+        throw new Error('eventId must be defined');
+      }
+      const response = await moneiz.get<string[]>(
+        `/api/admin/${currentEventId}/sponsorings/already-assigned-places`,
+      );
+      return response.data;
+    },
+    enabled: !!toValue(eventId),
+    staleTime,
+  });
+}
+
+export function getAlreadyAssignedStands(
+  eventId: MaybeRef<EventId | undefined>,
+  staleTime = 60_000,
+) {
+  const moneiz = useMoneiz();
+  return useQuery(getAlreadyAssignedStandsOptions(moneiz, eventId, staleTime));
+}
+
 export function useCreateSponsoringsMutation() {
   const moneiz = useMoneiz();
   const queryClient = useQueryClient();

@@ -3,14 +3,13 @@ import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import CardText from '@/components/CardText.vue';
 import CardTitle from '@/components/CardTitle.vue';
 import ErrorAlert from '@/components/ErrorAlert.vue';
 import FloatingTextField from '@/components/FloatingTextField.vue';
 import StandMap from '@/components/shared/StandMap.vue';
 import UiCard from '@/components/UiCard.vue';
 import type { SponsoringId } from '@/dto/moneiz/SponsoringList';
-import { getSponsoring, useSetPlaceMutation } from '@/queries/moneiz/sponsorings.queries';
+import { getAlreadyAssignedStands, getSponsoring, useSetPlaceMutation } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
 
 const route = useRoute();
@@ -19,14 +18,18 @@ const sponsoringId = route.params.sponsoringId as SponsoringId;
 const eventStore = useEventStore();
 const { currentEventId } = storeToRefs(eventStore);
 
-const assignedStand: string[] = [];
-
 const {
   isPending: isSponsoringPending,
   isError: isSponsoringError,
   error: sponsoringError,
   data: sponsoring,
 } = getSponsoring(currentEventId, sponsoringId);
+const {
+  isPending: isAlreadyAssignedStandsPending,
+  isError: isAlreadyAssignedStandsError,
+  error: alreadyAssignedStandsError,
+  data: alreadyAssignedStands,
+} = getAlreadyAssignedStands(currentEventId);
 const setPlaceMutation = useSetPlaceMutation();
 
 const standNumber = ref<string | undefined>();
@@ -69,15 +72,6 @@ const handleSubmit = async () => {
     />
     <UiCard v-else class="mb-3" :loading="isSponsoringPending">
       <CardTitle :loading="isSponsoringPending">Stand</CardTitle>
-      <CardText :loading="isSponsoringPending">
-        <template v-if="assignedStand.length">
-          Stand déjà alloués :
-          {{ assignedStand.join(', ') }}
-        </template>
-        <template v-else>
-          Aucun stand n'est alloué pour le moment.
-        </template>
-      </CardText>
       <form @submit.prevent="handleSubmit">
         <div class="row">
           <div class="col">
@@ -101,12 +95,17 @@ const handleSubmit = async () => {
       </form>
     </UiCard>
 
-    <div class="d-flex justify-content-center">
+    <div v-if="!isSponsoringError && !isAlreadyAssignedStandsError" class="d-flex justify-content-center">
       <StandMap
-        :level="'P'"
-        :filledPlaces="['P2']"
+        :level="sponsoring?.levelName.charAt(0) || ''"
+        :filledPlaces="alreadyAssignedStands || []"
         v-model="standNumber"
+        :disabled="isAlreadyAssignedStandsPending || isSponsoringPending"
       />
     </div>
+    <ErrorAlert
+      v-else-if="isAlreadyAssignedStandsError"
+      :message="alreadyAssignedStandsError?.message"
+    />
   </div>
 </template>

@@ -15,6 +15,7 @@ const { MONEIZ_URL } = window.env;
 const props = defineProps<{
   level: string;
   filledPlaces: string[];
+  disabled: boolean;
 }>();
 
 const selectedStand = defineModel<string>();
@@ -25,6 +26,7 @@ let draw: Svg | undefined = undefined;
 const levelLetter = computed(() => props.level.charAt(0));
 
 const handleClick = (stand: string): void => {
+  if (props.disabled) return;
   if (!stand.startsWith(levelLetter.value) || props.filledPlaces.includes(stand)) return;
   selectedStand.value = stand;
 };
@@ -54,14 +56,14 @@ const updateTspan = (tspanElement: Tspan): void => {
     tspanElement.fill(TEXT_COLOR);
     background.fill(SELECTED_BACKGROUND_COLOR);
     parent.css('cursor', 'pointer');
-  } else if (stand.startsWith(levelLetter.value) && !props.filledPlaces.includes(stand)) {
-    tspanElement.fill(TEXT_COLOR);
-    background.fill(AVAILABLE_BACKGROUND_COLOR);
-    parent.css('cursor', 'pointer');
-  } else {
+  } else if (props.disabled || !stand.startsWith(levelLetter.value) || props.filledPlaces.includes(stand)) {
     background.fill(DISABLE_BACKGROUND_COLOR);
     tspanElement.fill(DISABLE_TEXT_COLOR);
     parent.css('cursor', 'not-allowed');
+  } else {
+    tspanElement.fill(TEXT_COLOR);
+    background.fill(AVAILABLE_BACKGROUND_COLOR);
+    parent.css('cursor', 'pointer');
   }
 };
 
@@ -94,7 +96,12 @@ onMounted(async () => {
   });
 });
 
-watch([selectedStand, levelLetter, () => props.filledPlaces], () => {
+watch([
+  selectedStand,
+  levelLetter,
+  () => props.filledPlaces,
+  () => props.disabled,
+], () => {
   forEachTspan(updateTspan);
 });
 </script>
