@@ -269,6 +269,9 @@ export function useDeleteSponsoringMutation() {
         queryClient.invalidateQueries({
           queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
         }),
+        queryClient.invalidateQueries({
+          queryKey: getAlreadyAssignedStandsOptions(moneiz, eventId).queryKey,
+        }),
       ]);
     },
   });
@@ -300,6 +303,9 @@ export function useSetPlaceMutation() {
         }),
         queryClient.invalidateQueries({
           queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getAlreadyAssignedStandsOptions(moneiz, eventId).queryKey,
         }),
       ]);
     },
