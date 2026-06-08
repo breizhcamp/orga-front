@@ -98,6 +98,7 @@ const handleSubmit = async () => {
             <input
               id="number-slots"
               placeholder="Nombre de slots"
+              class="form-control"
               :min="1"
               :step="1"
               v-model="numberSlots"
