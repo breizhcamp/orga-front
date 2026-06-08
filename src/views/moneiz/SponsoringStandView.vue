@@ -98,7 +98,7 @@ const handleSubmit = async () => {
     <div v-if="!isSponsoringError && !isAlreadyAssignedStandsError" class="d-flex justify-content-center">
       <StandMap
         :level="sponsoring?.levelName.charAt(0) || ''"
-        :filledPlaces="alreadyAssignedStands || []"
+        :filledPlaces="alreadyAssignedStands?.filter(stand => stand !== sponsoring?.standNumber) || []"
         v-model="standNumber"
         :disabled="isAlreadyAssignedStandsPending || isSponsoringPending"
       />
