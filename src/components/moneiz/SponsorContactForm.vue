@@ -14,12 +14,15 @@ const props = defineProps<{
 
 export type ContactWithKey = ContactReq & { key: string };
 
+const updateSponsorContactsMutation = useUpdateSponsorContactsMutation();
+
 const contacts = ref<ContactWithKey[]>([]);
 const dataInitialized = ref(false);
-const disabled = ref(false);
+const disabled = computed(() => updateSponsorContactsMutation.isPending.value);
 
 const contactsQuery = getSponsorContacts(props.sponsorId, true);
 
+const lines = ref<InstanceType<typeof SponsorContactLineForm>[]>([]);
 const loading = computed<boolean>(() => contactsQuery.isPending.value);
 
 const normalizeContacts = (contacts: ContactRes[]): ContactWithKey[] => {
@@ -38,27 +41,21 @@ watch(contactsQuery.data, (newData) => {
   }
 }, { immediate: true });
 
-const updateSponsorContactsMutation = useUpdateSponsorContactsMutation();
-
 const handleSubmit = async () => {
-  disabled.value = true;
-  try {
-    const result = await updateSponsorContactsMutation.mutateAsync({
-      sponsorId: props.sponsorId,
-      contacts: contacts.value.map(({ id, firstname, lastname, email, type }) => {
-        return {
-          id,
-          firstname: firstname?.trim(),
-          lastname: lastname.trim(),
-          email: email.trim(),
-          type,
-        };
-      }),
-    });
-    contacts.value = normalizeContacts(result);
-  } finally {
-    disabled.value = false;
-  }
+  if (lines.value.some(line => line !== null && !line.validate())) return;
+  const result = await updateSponsorContactsMutation.mutateAsync({
+    sponsorId: props.sponsorId,
+    contacts: contacts.value.map(({ id, firstname, lastname, email, type }) => {
+      return {
+        id,
+        firstname: firstname?.trim(),
+        lastname: lastname.trim(),
+        email: email.trim(),
+        type,
+      };
+    }),
+  });
+  contacts.value = normalizeContacts(result);
 };
 
 const handleContactDelete = (contactKey: string) => {
@@ -95,6 +92,7 @@ const handleCancel = () => {
         <SponsorContactLineForm
           v-for="contact, index in contacts"
           v-model="contacts[index]!"
+          :ref="line => lines[index] = line"
           :disabled="disabled"
           :key="contact.key"
           @delete="handleContactDelete"
@@ -103,6 +101,7 @@ const handleCancel = () => {
         <div class="mb-2">
           <button
             class="btn btn-outline-primary text-body "
+            type="button"
             :disabled="disabled"
             @click.prevent="handleAddContact"
           >
@@ -113,6 +112,7 @@ const handleCancel = () => {
         <div class="d-flex justify-content-end gap-2">
           <button
             class="btn btn-secondary"
+            type="button"
             :disabled="disabled"
             @click.prevent="handleCancel"
           >

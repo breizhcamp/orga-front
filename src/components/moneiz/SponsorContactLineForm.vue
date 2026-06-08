@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BiTrash from 'bootstrap-icons/icons/trash.svg?component';
+import { ref, watch } from 'vue';
 
 import { CONTACT_TYPES, type ContactType } from '@/dto/moneiz/ContactType';
 
@@ -14,6 +15,27 @@ const emit = defineEmits<{
   'update:modelValue': [value: ContactWithKey];
   'delete': [contactKey: string];
 }>();
+
+const missingType = ref(false);
+
+const validate = (): boolean => {
+  if (props.modelValue.type.length) return true;
+  missingType.value = true;
+  return false;
+};
+
+defineExpose({ validate });
+
+watch(() => props.modelValue.type, (type, oldType) => {
+  if (type.length) {
+    missingType.value = false;
+    return;
+  }
+
+  if (oldType.length) {
+    missingType.value = !type.length;
+  }
+});
 
 const handleFirstnameChange = (event: InputEvent) => {
   const firstname = (event.target as HTMLInputElement).value;
@@ -82,6 +104,7 @@ const handleDeleteButtonClick = () => {
         :value="modelValue.lastname"
         :disabled="disabled"
         @input="handleLastnameChange"
+        required
       />
     </div>
 
@@ -94,23 +117,26 @@ const handleDeleteButtonClick = () => {
         :value="modelValue.email"
         :disabled="disabled"
         @input="handleEmailChange"
+        required
       />
     </div>
 
     <div class="col-sm">
       <label>Type de contact</label>
-      <div>
+      <div class="row">
         <div
-          class="form-check form-check-inline"
+          class="col-auto form-check"
           v-for="contactType, index in CONTACT_TYPES"
           :key="index"
         >
           <input
             type="checkbox"
             class="form-check-input"
+            :class="{ 'is-invalid': missingType }"
             :id="`type-${contactType.toLowerCase()}-${modelValue.key}`"
             :checked="modelValue.type.indexOf(contactType) != -1"
             :disabled="disabled"
+            aria-describedby="contact-type-error"
             @change="handleCheckboxChange($event as InputEvent, contactType)"
           />
           <label
@@ -121,11 +147,15 @@ const handleDeleteButtonClick = () => {
           </label>
         </div>
       </div>
+      <div v-if="missingType" id="contact-type-error" class="text-danger-emphasis">
+        Vous devez sélectionner au moins un type de contact.
+      </div>
     </div>
 
     <div class="col-auto align-self-center">
       <button
         class="btn btn-outline-secondary"
+        type="button"
         :disabled="disabled"
         title="Supprimer"
         @click.prevent="handleDeleteButtonClick"
