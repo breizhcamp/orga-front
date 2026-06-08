@@ -4,7 +4,7 @@ import BiEnvelope from 'bootstrap-icons/icons/envelope.svg?component';
 import BiLink45deg from 'bootstrap-icons/icons/link-45deg.svg?component';
 import BiPersonFill from 'bootstrap-icons/icons/person-fill.svg?component';
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { capitalize, computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import CardTitle from '@/components/CardTitle.vue';
@@ -58,17 +58,20 @@ const {
 
 const setPlaceMutation = useSetPlaceMutation();
 
-const contactsName = computed(() => {
-  if (contacts.value === undefined) return [];
-  return contacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
-});
-
 const standNumber = ref<string | undefined>();
 const disabled = computed(() => {
   return isSponsoringPending.value || setPlaceMutation.isPending.value;
 });
 const contactCardLoading = computed<boolean>(() => {
   return isContactsPending.value && isPlaceRequestEmailUrlPending.value && isPlaceInstallationEmailUrlPending.value;
+});
+const filteredContacts = computed(() => {
+  return contacts
+    .value
+    ?.filter(contact => contact.type.includes('PRINCIPAL') || contact.type.includes('COMMUNICATION')) ?? [];
+});
+const contactsName = computed(() => {
+  return filteredContacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
 });
 
 watch(sponsoring, (sponsoring) => {
@@ -223,12 +226,12 @@ const handleSubmit = async () => {
             </template>
             <li
               v-else
-              v-for="contact, index in contacts"
+              v-for="contact, index in filteredContacts"
               :key="contact.id"
               class="list-group-item"
             >
               <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
-                <BiPersonFill class="me-2" />{{ contactsName[index] }} (principal)
+                <BiPersonFill class="me-2" />{{ contactsName[index] }} ({{ capitalize(contact.type.join(', ').toLowerCase()) }})
               </a>
             </li>
           </ul>
