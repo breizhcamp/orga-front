@@ -22,7 +22,8 @@ const disabled = computed(() => updateSponsorContactsMutation.isPending.value);
 
 const contactsQuery = getSponsorContacts(props.sponsorId, true);
 
-const lines = ref<InstanceType<typeof SponsorContactLineForm>[]>([]);
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+const lines = ref<(InstanceType<typeof SponsorContactLineForm> | null)[]>([]);
 const loading = computed<boolean>(() => contactsQuery.isPending.value);
 
 const normalizeContacts = (contacts: ContactRes[]): ContactWithKey[] => {
@@ -92,7 +93,7 @@ const handleCancel = () => {
         <SponsorContactLineForm
           v-for="contact, index in contacts"
           v-model="contacts[index]!"
-          :ref="line => lines[index] = line"
+          :ref="line => lines[index] = line as InstanceType<typeof SponsorContactLineForm>"
           :disabled="disabled"
           :key="contact.key"
           @delete="handleContactDelete"
