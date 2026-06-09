@@ -1,7 +1,7 @@
-import type { InvoiceId } from './InvoiceId';
+import type { InvoiceReference } from './InvoiceReference';
 
 export type InvoiceTemplateRes = {
-  reference: InvoiceId;
+  reference: InvoiceReference;
   location: string;
   invoiceName?: string;
   address?: string;
