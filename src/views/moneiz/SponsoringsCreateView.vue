@@ -81,13 +81,13 @@ const handleSubmit = async () => {
             :disabled="disabled"
             required
           >
-              <option
-                v-for="level in levels"
-                :value="level.name"
-                :key="level.name"
-              >
-                {{ level.name }}
-              </option>
+            <option
+              v-for="level in levels"
+              :value="level.name"
+              :key="level.name"
+            >
+              {{ level.name }}
+            </option>
           </FloatingSelectField>
 
           <FloatingFormField

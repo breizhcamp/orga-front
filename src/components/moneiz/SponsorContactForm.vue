@@ -101,7 +101,7 @@ const handleCancel = () => {
 
         <div class="mb-2">
           <button
-            class="btn btn-outline-primary text-body "
+            class="btn btn-outline-primary text-body"
             type="button"
             :disabled="disabled"
             @click.prevent="handleAddContact"
