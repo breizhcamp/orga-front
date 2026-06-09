@@ -80,7 +80,7 @@ const handleErrorMessage = (message: string | null) => {
       <ErrorAlert v-if="errorMessage" :message="errorMessage" />
 
       <div
-        class="overflow-x-scroll overflow-y-hidden"
+        class="overflow-x-auto overflow-y-hidden"
         style="padding-bottom: 150px;"
       >
         <table class="table table-striped table-hover">

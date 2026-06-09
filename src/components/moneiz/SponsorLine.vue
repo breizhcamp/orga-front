@@ -49,7 +49,7 @@ async function editSponsor() {
       </div>
 
       <div class="col-lg-1 col-sm-2 flex-fill text-end buttons my-auto">
-        <a v-if="sponsor.url" :href="sponsor.url" target="_blank" class="btn btn-sm btn-outline-secondary"><BiBoxArrowUpRight /></a>
+        <a v-if="sponsor.url" :href="sponsor.url" target="_blank" class="btn btn-sm btn-outline-secondary"  @click.stop><BiBoxArrowUpRight /></a>
         <router-link :to="{ name: 'SponsorEdit', params: { sponsorId: sponsor.id } }" class="btn btn-sm btn-outline-primary ms-2">
           <BiPen />
         </router-link>

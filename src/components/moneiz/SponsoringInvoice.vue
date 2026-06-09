@@ -36,13 +36,18 @@ const {
   data: emailUrl,
 } = getSponsoringInvoiceEmailUrl(props.eventId, props.sponsoring.id);
 
-const contactsName = computed(() => {
-  if (contacts.value === undefined) return [];
-  return contacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
-});
-
 const state = ref<InvoiceState>(props.sponsoring.invoiceState || InvoiceState.TODO);
 const paiementDate = ref<string | undefined>();
+
+const filteredContacts = computed(() => {
+  return contacts
+    .value
+    ?.filter(contact => contact.type.includes('PRINCIPAL') || contact.type.includes('INVOICE')) ?? [];
+});
+const contactsName = computed(() => {
+  return filteredContacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
+});
+
 </script>
 
 <template>
@@ -137,12 +142,12 @@ const paiementDate = ref<string | undefined>();
               </template>
               <li
                 v-else
-                v-for="contact, index in contacts"
+                v-for="contact, index in filteredContacts"
                 :key="contact.id"
                 class="list-group-item"
               >
-              <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
-                  <BiPersonFill class="me-2" />{{ contactsName[index] }} (principal)
+                <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
+                  <BiPersonFill class="me-2" />{{ contactsName[index] }} ({{ capitalize(contact.type.join(', ').toLowerCase()) }})
                 </a>
               </li>
             </ul>

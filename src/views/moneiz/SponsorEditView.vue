@@ -86,6 +86,8 @@ const saveSponsor = async () => {
 
     // Success - could add toast notification here
     console.log('Sponsor saved successfully', savedSponsorId);
+
+    await router.push({ name: 'Sponsors' });
   } catch (error) {
     console.error('Error saving sponsor:', error);
     // Could add error notification here

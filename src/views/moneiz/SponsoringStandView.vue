@@ -4,7 +4,7 @@ import BiEnvelope from 'bootstrap-icons/icons/envelope.svg?component';
 import BiLink45deg from 'bootstrap-icons/icons/link-45deg.svg?component';
 import BiPersonFill from 'bootstrap-icons/icons/person-fill.svg?component';
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { capitalize, computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import CardTitle from '@/components/CardTitle.vue';
@@ -58,17 +58,20 @@ const {
 
 const setPlaceMutation = useSetPlaceMutation();
 
-const contactsName = computed(() => {
-  if (contacts.value === undefined) return [];
-  return contacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
-});
-
 const standNumber = ref<string | undefined>();
 const disabled = computed(() => {
   return isSponsoringPending.value || setPlaceMutation.isPending.value;
 });
 const contactCardLoading = computed<boolean>(() => {
   return isContactsPending.value && isPlaceRequestEmailUrlPending.value && isPlaceInstallationEmailUrlPending.value;
+});
+const filteredContacts = computed(() => {
+  return contacts
+    .value
+    ?.filter(contact => contact.type.includes('PRINCIPAL') || contact.type.includes('COMMUNICATION')) ?? [];
+});
+const contactsName = computed(() => {
+  return filteredContacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
 });
 
 watch(sponsoring, (sponsoring) => {
@@ -104,130 +107,136 @@ const handleSubmit = async () => {
       v-else-if="!isSponsoringPending && !sponsoring?.sponsor"
       message="ce sponsoring n'a pas de sponsor assigné."
     />
-    <UiCard v-else class="mb-3" :loading="isSponsoringPending">
-      <CardTitle :loading="isSponsoringPending">Stand</CardTitle>
-      <form @submit.prevent="handleSubmit">
-        <div class="row">
-          <div class="col">
-            <FloatingTextField
-              id="stand"
-              label="Stand"
-              :disabled="disabled"
-              v-model="standNumber"
+    <div v-else class="row mb-3">
+      <div class="col-12 col-lg-6">
+        <UiCard :loading="isSponsoringPending">
+          <CardTitle :loading="isSponsoringPending">Stand</CardTitle>
+          <form @submit.prevent="handleSubmit">
+            <div class="row">
+              <div class="col">
+                <FloatingTextField
+                  id="stand"
+                  label="Stand"
+                  :disabled="disabled"
+                  v-model="standNumber"
+                />
+              </div>
+              <div class="col-auto d-flex align-items-center">
+                <button
+                  class="btn btn-primary"
+                  type="submit"
+                  :disabled="disabled"
+                >
+                  Enregister
+                </button>
+              </div>
+            </div>
+          </form>
+        </UiCard>
+      </div>
+
+      <div class="col-12 col-lg-6">
+        <div class="card" :aria-hidden="contactCardLoading">
+          <div class="card-body">
+            <CardTitle :loading="contactCardLoading">
+              Contacts
+            </CardTitle>
+            <ErrorAlert
+              v-if="isPlaceRequestEmailUrlError"
+              :message="placeRequestEmailUrlError?.message"
             />
-          </div>
-          <div class="col-auto d-flex align-items-center">
-            <button
-              class="btn btn-primary"
-              type="submit"
-              :disabled="disabled"
-            >
-              Enregister
-            </button>
-          </div>
-        </div>
-      </form>
-    </UiCard>
+            <ErrorAlert
+              v-if="isPlaceInstallationEmailUrlError"
+              :message="placeInstallationEmailUrlError?.message"
+            />
 
-    <div class="card mb-3" :aria-hidden="contactCardLoading">
-      <div class="card-body">
-        <CardTitle :loading="contactCardLoading">
-          Contacts
-        </CardTitle>
-        <ErrorAlert
-          v-if="isPlaceRequestEmailUrlError"
-          :message="placeRequestEmailUrlError?.message"
-        />
-        <ErrorAlert
-          v-if="isPlaceInstallationEmailUrlError"
-          :message="placeInstallationEmailUrlError?.message"
-        />
+            <div class="row g-2">
+              <div v-if="!isPlaceRequestEmailUrlError" class="col-auto">
+                <button
+                  v-if="isPlaceRequestEmailUrlPending"
+                  class="btn btn-primary disabled placeholder"
+                  style="width: 120px"
+                  disabled="true"
+                  aria-disabled="true"
+                ></button>
+                <a
+                  v-else
+                  :href="placeRequestEmailUrl"
+                  class="btn btn-primary"
+                >
+                  <BiEnvelope class="me-2" />
+                  Envoyer
+                </a>
+              </div>
 
-        <div class="row">
-          <div v-if="!isPlaceRequestEmailUrlError" class="col-auto">
-            <button
-              v-if="isPlaceRequestEmailUrlPending"
-              class="btn btn-primary disabled placeholder"
-              style="width: 120px"
-              disabled="true"
-              aria-disabled="true"
-            ></button>
-            <a
+              <div v-if="sponsoring?.sponsor" class="col-auto">
+                <button
+                  v-if="isSponsoringPending"
+                  class="btn btn-primary disabled placeholder"
+                  style="width: 85px"
+                  disabled="true"
+                  aria-disabled="true"
+                ></button>
+                <a
+                  v-else
+                  :href="`${MONEIZ_URL}/sponsors/${sponsoring.sponsor.token}/place`"
+                  class="btn btn-primary"
+                  target="_blank"
+                >
+                  <BiLink45deg class="me-2" />
+                  Lien
+                </a>
+              </div>
+
+              <div v-if="!isPlaceInstallationEmailUrlError" class="col-auto">
+                <button
+                  v-if="isPlaceInstallationEmailUrlPending"
+                  class="btn btn-primary disabled placeholder"
+                  style="width: 85px"
+                  disabled="true"
+                  aria-disabled="true"
+                ></button>
+                <a
+                  v-else
+                  :href="placeInstallationEmailUrl"
+                  class="btn btn-primary"
+                  target="_blank"
+                >
+                  <BiCarFrontFill class="me-2" />
+                  Envoyer les informations d'installation
+                </a>
+              </div>
+            </div>
+          </div>
+          <div v-if="isContactsError" class="card-body">
+            <ErrorAlert class="mb-0" :message="contactsError?.message" />
+          </div>
+          <ul v-else class="list-group list-group-flush">
+            <template v-if="isContactsPending">
+              <li class="list-group-item">
+                <p class="card-text placeholder-glow">
+                  <span class="placeholder col-5"></span>
+                </p>
+              </li>
+              <li class="list-group-item">
+                <p class="card-text placeholder-glow">
+                  <span class="placeholder col-4"></span>
+                </p>
+              </li>
+            </template>
+            <li
               v-else
-              :href="placeRequestEmailUrl"
-              class="btn btn-primary"
+              v-for="contact, index in filteredContacts"
+              :key="contact.id"
+              class="list-group-item"
             >
-              <BiEnvelope class="me-2" />
-              Envoyer
-            </a>
-          </div>
-
-          <div v-if="sponsoring?.sponsor" class="col-auto">
-            <button
-              v-if="isSponsoringPending"
-              class="btn btn-primary disabled placeholder"
-              style="width: 85px"
-              disabled="true"
-              aria-disabled="true"
-            ></button>
-            <a
-              v-else
-              :href="`${MONEIZ_URL}/sponsors/${sponsoring.sponsor.token}/place`"
-              class="btn btn-primary"
-              target="_blank"
-            >
-              <BiLink45deg class="me-2" />
-              Lien
-            </a>
-          </div>
-
-          <div v-if="!isPlaceInstallationEmailUrlError" class="col-auto">
-            <button
-              v-if="isPlaceInstallationEmailUrlPending"
-              class="btn btn-primary disabled placeholder"
-              style="width: 85px"
-              disabled="true"
-              aria-disabled="true"
-            ></button>
-            <a
-              v-else
-              :href="placeInstallationEmailUrl"
-              class="btn btn-primary"
-              target="_blank"
-            >
-              <BiCarFrontFill class="me-2" />
-              Envoyer les informations d'installation
-            </a>
-          </div>
+              <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
+                <BiPersonFill class="me-2" />{{ contactsName[index] }} ({{ capitalize(contact.type.join(', ').toLowerCase()) }})
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-      <div v-if="isContactsError" class="card-body">
-        <ErrorAlert class="mb-0" :message="contactsError?.message" />
-      </div>
-      <ul v-else class="list-group list-group-flush">
-        <template v-if="isContactsPending">
-          <li class="list-group-item">
-            <p class="card-text placeholder-glow">
-              <span class="placeholder col-5"></span>
-            </p>
-          </li>
-          <li class="list-group-item">
-            <p class="card-text placeholder-glow">
-              <span class="placeholder col-4"></span>
-            </p>
-          </li>
-        </template>
-        <li
-          v-else
-          v-for="contact, index in contacts"
-          :key="contact.id"
-          class="list-group-item"
-        >
-          <a :href="`mailto:?to=${contactsName[index]} <${contact.email}>`">
-            <BiPersonFill class="me-2" />{{ contactsName[index] }} (principal)
-          </a>
-        </li>
-      </ul>
     </div>
 
     <div v-if="!isSponsoringError && !isAlreadyAssignedStandsError" class="d-flex justify-content-center">
