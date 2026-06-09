@@ -1,8 +1,8 @@
-import type { InvoiceId } from './InvoiceId';
+import type { InvoiceReference } from './InvoiceReference';
 import type { InvoiceType } from './InvoiceType';
 
 export type InvoiceReq = {
-  reference: InvoiceId;
+  reference: InvoiceReference;
   /** yyyy-MM-dd */
   creationDate: string;
   buyer: InvoiceBuyerReq;
