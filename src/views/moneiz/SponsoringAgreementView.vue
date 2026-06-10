@@ -14,7 +14,7 @@ import {
   agreementStateToString,
 } from '@/dto/moneiz/AgreementState';
 import type { SponsoringId } from '@/dto/moneiz/SponsoringList';
-import { getSponsoring } from '@/queries/moneiz/sponsorings.queries';
+import { getSponsoring, useSetAgreementStateMutation } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
 
 const route = useRoute();
@@ -30,6 +30,8 @@ const {
   data: sponsoring,
 } = getSponsoring(currentEventId, sponsoringId);
 
+const setAgreementStateMutation = useSetAgreementStateMutation();
+
 const agreementState = ref<AgreementState | undefined>();
 const presale = ref<number | undefined>();
 
@@ -38,6 +40,16 @@ watch(sponsoring, (sponsoring) => {
   agreementState.value = sponsoring.agreementState;
   presale.value = sponsoring.presale;
 });
+
+const handleStateSubmit = async () => {
+  if (currentEventId.value === undefined) return;
+  if (agreementState.value === undefined) return;
+  await setAgreementStateMutation.mutateAsync({
+    eventId: currentEventId.value,
+    sponsoringId: sponsoringId,
+    agreementState: agreementState.value,
+  });
+};
 </script>
 
 <template>
@@ -59,12 +71,13 @@ watch(sponsoring, (sponsoring) => {
         <div class="col-12 col-xl-6">
           <UiCard class="mb-3">
             <CardTitle>Convention en ligne</CardTitle>
-            <form class="card-text" @submit.prevent>
+            <form class="card-text" @submit.prevent="handleStateSubmit">
               <FloatingSelectField
                 id="agreement-state"
                 label="Statut"
                 class="mb-3"
                 v-model="agreementState"
+                :disabled="setAgreementStateMutation.isPending.value"
                 required
               >
                 <option
@@ -80,6 +93,7 @@ watch(sponsoring, (sponsoring) => {
                 <button
                   class="btn btn-primary"
                   type="submit"
+                  :disabled="setAgreementStateMutation.isPending.value"
                >
                   Enregistrer
                 </button>

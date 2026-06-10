@@ -2,6 +2,7 @@ import { queryOptions, useMutation, useQuery, useQueryClient, type UseQueryRetur
 import { type MaybeRef, toValue } from 'vue';
 
 import type { EventId } from '@/dto/kalon/Event';
+import type { AgreementState } from '@/dto/moneiz/AgreementState';
 import type { CreateSponsoringsReq } from '@/dto/moneiz/CreateSponroringsReq';
 import type { InvoiceReq } from '@/dto/moneiz/InvoiceReq';
 import type { InvoiceTemplateRes } from '@/dto/moneiz/InvoiceTemplateRes';
@@ -278,6 +279,38 @@ export function useSetSponsorMutation() {
       await moneiz.post(
         `/api/admin/${eventId}/sponsorings/${sponsoringId}/sponsor`,
         { sponsor: sponsorId },
+      );
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
+    },
+  });
+}
+
+export function useSetAgreementStateMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+      agreementState,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+      agreementState: AgreementState;
+    }) => {
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/agreement-state`,
+        { agreementState: agreementState },
       );
     },
     onSuccess: async (_data, { eventId, sponsoringId }) => {
