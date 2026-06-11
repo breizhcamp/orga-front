@@ -10,12 +10,12 @@ const SELECTED_BACKGROUND_COLOR = '#0095ff';
 const AVAILABLE_BACKGROUND_COLOR = '#65ff00';
 const DISABLE_TEXT_COLOR = '#626262';
 const DISABLE_BACKGROUND_COLOR = '#7e7e7e';
-const { MONEIZ_URL } = window.env;
 
 const props = defineProps<{
   level: string;
   filledPlaces: string[];
   disabled: boolean;
+  svgUrl: string;
 }>();
 
 const selectedStand = defineModel<string>();
@@ -81,7 +81,7 @@ const forEachTspan = (callback: (tspanElement: Tspan) => void) => {
 onMounted(async () => {
   if (!svg.value) return;
 
-  const response = await axios.get<string>(`${MONEIZ_URL}/img/plan.svg`);
+  const response = await axios.get<string>(props.svgUrl);
   draw = SVG().addTo(svg.value).size('100%', '100%');
   draw.svg(response.data);
   draw.viewbox(0, 0, SVG_WIDTH, SVG_HEIGHT);

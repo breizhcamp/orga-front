@@ -245,6 +245,7 @@ const handleSubmit = async () => {
         :filledPlaces="alreadyAssignedStands?.filter(stand => stand !== sponsoring?.standNumber) || []"
         v-model="standNumber"
         :disabled="isAlreadyAssignedStandsPending || isSponsoringPending"
+        :svgUrl="`${MONEIZ_URL}/img/plan.svg`"
       />
     </div>
     <ErrorAlert
