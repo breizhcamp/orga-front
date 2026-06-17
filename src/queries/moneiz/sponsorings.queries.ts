@@ -75,7 +75,7 @@ export function getSponsoring(
   return useQuery(getSponsoringOptions(moneiz, eventId, sponsoringId, staleTime));
 }
 
-export function getSponsoringInvoiceTemplateOption(
+export function getSponsoringInvoiceTemplateOptions(
   moneiz: Moneiz,
   eventId: MaybeRef<EventId | undefined>,
   sponsoringId: SponsoringId,
@@ -105,7 +105,7 @@ export function getSponsoringInvoiceTemplate(
   staleTime = 60_000,
 ) {
   const moneiz = useMoneiz();
-  return useQuery(getSponsoringInvoiceTemplateOption(moneiz, eventId, sponsoringId, staleTime));
+  return useQuery(getSponsoringInvoiceTemplateOptions(moneiz, eventId, sponsoringId, staleTime));
 }
 
 export function getSponsoringInvoiceEmailUrlOptions(
@@ -328,6 +328,7 @@ export function useSetAgreementStateMutation() {
 
 export function useGenerateSponsoringInvoiceMutation() {
   const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       eventId,
@@ -342,6 +343,19 @@ export function useGenerateSponsoringInvoiceMutation() {
         `/api/admin/${eventId}/sponsorings/${sponsoringId}/invoice/generate`,
         invoiceReq,
       );
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringInvoiceTemplateOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
     },
   });
 }
