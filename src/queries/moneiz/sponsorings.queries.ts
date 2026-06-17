@@ -363,6 +363,35 @@ export function useSetAgreementStateMutation() {
   });
 }
 
+export function useCreateOnlineAgreementMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+    }) => {
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/agreement/online`,
+      );
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
+    },
+  });
+}
+
 export function useGenerateSponsoringInvoiceMutation() {
   const moneiz = useMoneiz();
   return useMutation({
