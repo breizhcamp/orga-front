@@ -7,7 +7,7 @@ import { capitalize, computed, ref } from 'vue';
 import type { EventId } from '@/dto/kalon/Event';
 import { InvoiceState, invoiceStateToString } from '@/dto/moneiz/InvoiceState';
 import type { SponsoringRes } from '@/dto/moneiz/SponsoringRes';
-import { getSponsoringInvoiceEmailUrl } from '@/queries/moneiz/sponsorings.queries';
+import { getSponsoringInvoiceEmailUrl, useUpdateInvoiceMutation } from '@/queries/moneiz/sponsorings.queries';
 import { getSponsorContacts } from '@/queries/moneiz/sponsors.queries';
 
 import CardTitle from '../CardTitle.vue';
@@ -35,6 +35,7 @@ const {
   error: emailUrlError,
   data: emailUrl,
 } = getSponsoringInvoiceEmailUrl(props.eventId, props.sponsoring.id);
+const updateInvoiceMutation = useUpdateInvoiceMutation();
 
 const state = ref<InvoiceState>(props.sponsoring.invoiceState || InvoiceState.TODO);
 const paiementDate = ref<string | undefined>();
@@ -48,6 +49,16 @@ const contactsName = computed(() => {
   return filteredContacts.value.map(({ firstname, lastname }) => (firstname ? `${firstname} ${lastname}` : lastname));
 });
 
+const handleSubmit = async () => {
+  await updateInvoiceMutation.mutateAsync({
+    eventId: props.eventId,
+    sponsoringId: props.sponsoring.id,
+    updateInvoiceReq: {
+      invoiceState: state.value,
+      paymentDate: paiementDate.value,
+    },
+  });
+};
 </script>
 
 <template>
@@ -57,12 +68,17 @@ const contactsName = computed(() => {
         Facture {{ sponsoring.sponsor?.invoiceName }} - {{ sponsoring.levelName }}
       </h1>
       <UiCard class="container mb-3">
-        <form @submit.prevent>
+        <ErrorAlert
+          v-if="updateInvoiceMutation.isError.value"
+          :message="updateInvoiceMutation.error.value?.message"
+        />
+        <form @submit.prevent="handleSubmit">
           <FloatingSelectField
             id="invoice-state"
             class="mb-3"
             label="Statut"
             v-model="state"
+            :disabled="updateInvoiceMutation.isPending.value"
             required
           >
             <option
@@ -84,13 +100,22 @@ const contactsName = computed(() => {
               class="form-control"
               placeholder="Date paiement"
               v-model="paiementDate"
+              :disabled="updateInvoiceMutation.isPending.value"
             >
           </FloatingFormField>
           <div class="d-flex justify-content-end">
-            <button class="btn btn-primary me-2" type="submit">
+            <button
+              class="btn btn-primary me-2"
+              type="submit"
+              :disabled="updateInvoiceMutation.isPending.value"
+            >
               Enregistrer
             </button>
-            <button class="btn btn-outline-danger text-body">
+            <button
+              class="btn btn-outline-danger text-body"
+              type="button"
+              :disabled="updateInvoiceMutation.isPending.value"
+            >
               Rembourser
             </button>
           </div>

@@ -10,6 +10,7 @@ import type { SponsoringId, SponsoringList } from '@/dto/moneiz/SponsoringList';
 import type { SponsoringRes } from '@/dto/moneiz/SponsoringRes';
 import type { SponsorId } from '@/dto/moneiz/SponsorList';
 import { useMoneiz } from '@/utils/useAxios';
+import type { UpdateInvoiceReq } from '@/dto/moneiz/UpdateInvoiceReq';
 
 type Moneiz = ReturnType<typeof useMoneiz>;
 
@@ -420,6 +421,38 @@ export function useGenerateSponsoringInvoiceMutation() {
         }),
         queryClient.invalidateQueries({
           queryKey: getSponsoringInvoiceTemplateOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
+    },
+  });
+}
+
+export function useUpdateInvoiceMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+      updateInvoiceReq,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+      updateInvoiceReq: UpdateInvoiceReq;
+    }) => {
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/invoice`,
+        updateInvoiceReq,
+      );
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
         }),
       ]);
     },
