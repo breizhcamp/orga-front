@@ -17,7 +17,7 @@ export function getListLevelsOptions(
       const currentEventId = toValue(eventId);
       if (currentEventId === undefined) return [];
       const response = await moneiz.get<LevelList[]>(
-        `/api/admin/${currentEventId}/levels`,
+        `/api/public/${currentEventId}/levels`,
       );
       return response.data;
     },
