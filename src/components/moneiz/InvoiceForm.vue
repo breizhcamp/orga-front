@@ -123,6 +123,10 @@ const handleSubmit = async () => {
       <h1 class="mb-4">
         Facture {{ invoiceTemplate?.invoiceName }}
       </h1>
+      <ErrorAlert
+        v-if="generateSponsoringInvoiceMutation.isError.value"
+        :message="generateSponsoringInvoiceMutation.error.value?.message"
+      />
       <form @submit.prevent="handleSubmit">
         <UiCard class="mb-3">
           <div class="row">
@@ -133,6 +137,7 @@ const handleSubmit = async () => {
                     id="reference"
                     label="Reférence"
                     v-model="reference"
+                    :disabled="generateSponsoringInvoiceMutation.isPending.value"
                     required
                   />
                 </div>
@@ -141,6 +146,7 @@ const handleSubmit = async () => {
                     id="creation-date"
                     label="Date de création"
                     v-model="creationDate"
+                    :disabled="generateSponsoringInvoiceMutation.isPending.value"
                     required
                   />
                 </div>
@@ -150,6 +156,7 @@ const handleSubmit = async () => {
                 label="Raison sociale"
                 class="mb-3"
                 v-model="buyerName"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
                 required
               />
               <FloatingTextareaField
@@ -158,12 +165,14 @@ const handleSubmit = async () => {
                 class="mb-3"
                 style="height: 132px;"
                 v-model="buyerAddress"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
                 required
               />
               <FloatingTextField
                 id="service"
                 label="Service"
                 v-model="service"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
               />
             </div>
             <div class="col-12 col-lg-6">
@@ -172,6 +181,7 @@ const handleSubmit = async () => {
                 label="Localité"
                 class="mb-3"
                 v-model="location"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
                 required
               />
               <FloatingTextField
@@ -179,24 +189,28 @@ const handleSubmit = async () => {
                 label="N° de bon de commande"
                 class="mb-3"
                 v-model="purchaseOrderReference"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
               />
               <FloatingTextField
                 id="buyer-vat-id"
                 label="Numéro de TVA"
                 class="mb-3"
                 v-model="buyerVatId"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
               />
               <FloatingTextField
                 id="buyer-siret"
                 label="SIRET"
                 class="mb-3"
                 v-model="buyerSiret"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
                 required
               />
               <FloatingSelectField
                 id="type"
                 label="Type"
                 v-model="type"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
                 required
               >
                 <option :value="InvoiceType.QUOTE">Devis</option>
@@ -216,6 +230,7 @@ const handleSubmit = async () => {
                 :id="`description-${index}`"
                 label="Description"
                 v-model="line.description"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
                 required
               />
             </div>
@@ -233,6 +248,7 @@ const handleSubmit = async () => {
                   :step="0.01"
                   placeholder="Montant"
                   v-model="line.amount"
+                  :disabled="generateSponsoringInvoiceMutation.isPending.value"
                   required
                 />
                 </FloatingFormField>
@@ -245,6 +261,7 @@ const handleSubmit = async () => {
                 class="btn-close"
                 title="Supprimer la ligne"
                 @click.prevent="removeLine(index)"
+                :disabled="generateSponsoringInvoiceMutation.isPending.value"
               />
             </div>
           </div>
@@ -275,13 +292,17 @@ const handleSubmit = async () => {
               type="button"
               class="btn btn-outline-primary text-body"
               @click.prevent="addLine"
+              :disabled="generateSponsoringInvoiceMutation.isPending.value"
             >
               <BiPlusLg class="me-2" />
               Ajouter une ligne
             </button>
         </UiCard>
         <div class="d-flex justify-content-end">
-          <button class="btn btn-primary">
+          <button
+            class="btn btn-primary"
+            :disabled="generateSponsoringInvoiceMutation.isPending.value"
+          >
             Créer
           </button>
         </div>
