@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BiPlusLg from 'bootstrap-icons/icons/plus-lg.svg?component';
 import { storeToRefs } from 'pinia';
 import { capitalize, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -14,7 +15,12 @@ import {
   agreementStateToString,
 } from '@/dto/moneiz/AgreementState';
 import type { SponsoringId } from '@/dto/moneiz/SponsoringList';
-import { getSponsoring, useManualUpdateAgreementMutation, useSetAgreementStateMutation } from '@/queries/moneiz/sponsorings.queries';
+import {
+  getSponsoring,
+  useCreateOnlineAgreementMutation,
+  useManualUpdateAgreementMutation,
+  useSetAgreementStateMutation,
+} from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
 
 const route = useRoute();
@@ -32,6 +38,7 @@ const {
 
 const setAgreementStateMutation = useSetAgreementStateMutation();
 const manualUpdateAgreementMutation = useManualUpdateAgreementMutation();
+const createOnlineAgreementMutation = useCreateOnlineAgreementMutation();
 
 const agreementState = ref<AgreementState | undefined>();
 const presale = ref<number | undefined>();
@@ -50,6 +57,15 @@ const handleStateSubmit = async () => {
     eventId: currentEventId.value,
     sponsoringId: sponsoringId,
     agreementState: agreementState.value,
+  });
+};
+
+const handleCreateOnlineAgreement = async () => {
+  if (!currentEventId.value) return;
+
+  await createOnlineAgreementMutation.mutateAsync({
+    eventId: currentEventId.value,
+    sponsoringId: sponsoringId,
   });
 };
 
@@ -90,34 +106,52 @@ const handleManualUpdateSubmit = async () => {
         <div class="col-12 col-xl-6">
           <UiCard class="mb-3">
             <CardTitle>Convention en ligne</CardTitle>
-            <form class="card-text" @submit.prevent="handleStateSubmit">
-              <FloatingSelectField
-                id="agreement-state"
-                label="Statut"
-                class="mb-3"
-                v-model="agreementState"
-                :disabled="setAgreementStateMutation.isPending.value"
-                required
-              >
-                <option
-                  v-for="state in Object.values(AgreementState)"
-                  :value="state"
-                  class="text-capitalize"
-                  :key="state"
+            <template v-if="sponsoring?.agreementState">
+              <form class="card-text" @submit.prevent="handleStateSubmit">
+                <FloatingSelectField
+                  id="agreement-state"
+                  label="Statut"
+                  class="mb-3"
+                  v-model="agreementState"
+                  :disabled="setAgreementStateMutation.isPending.value"
+                  required
                 >
-                  {{ capitalize(agreementStateToString[state]) }}
-                </option>
-              </FloatingSelectField>
-              <div class="d-flex justify-content-end">
+                  <option
+                    v-for="state in Object.values(AgreementState)"
+                    :value="state"
+                    class="text-capitalize"
+                    :key="state"
+                  >
+                    {{ capitalize(agreementStateToString[state]) }}
+                  </option>
+                </FloatingSelectField>
+                <div class="d-flex justify-content-end">
+                  <button
+                    class="btn btn-primary"
+                    type="submit"
+                    :disabled="setAgreementStateMutation.isPending.value"
+                 >
+                    Enregistrer
+                  </button>
+                </div>
+              </form>
+            </template>
+            <template v-else>
+              <ErrorAlert
+                v-if="createOnlineAgreementMutation.isError.value"
+                :message="createOnlineAgreementMutation.error.value?.message"
+              />
+              <form class="card-text" @submit.prevent="handleCreateOnlineAgreement">
                 <button
                   class="btn btn-primary"
                   type="submit"
-                  :disabled="setAgreementStateMutation.isPending.value"
-               >
-                  Enregistrer
+                  :disabled="createOnlineAgreementMutation.isPending.value"
+                >
+                  <BiPlusLg class="me-2"/>
+                  Créer la convention en-ligne
                 </button>
-              </div>
-            </form>
+              </form>
+            </template>
           </UiCard>
         </div>
         <div class="col-12 col-xl-6">
