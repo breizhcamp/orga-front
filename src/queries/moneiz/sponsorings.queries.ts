@@ -294,6 +294,43 @@ export function useSetSponsorMutation() {
   });
 }
 
+export function useManualUpdateAgreementMutation() {
+  const moneiz = useMoneiz();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      sponsoringId,
+      presale,
+      file,
+    }: {
+      eventId: EventId;
+      sponsoringId: SponsoringId;
+      presale: number;
+      file?: File;
+    }) => {
+      const formData = new FormData();
+      formData.append('presale', presale.toString());
+      if (file) formData.append('file', file);
+      await moneiz.post(
+        `/api/admin/${eventId}/sponsorings/${sponsoringId}/agreement`,
+        formData,
+      );
+    },
+    onSuccess: async (_data, { eventId, sponsoringId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getListSponsoringsOptions(moneiz, eventId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: getSponsoringOptions(moneiz, eventId, sponsoringId).queryKey,
+        }),
+      ]);
+    },
+  });
+}
+
 export function useSetAgreementStateMutation() {
   const moneiz = useMoneiz();
   const queryClient = useQueryClient();

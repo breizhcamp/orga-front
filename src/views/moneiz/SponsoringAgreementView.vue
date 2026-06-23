@@ -14,7 +14,7 @@ import {
   agreementStateToString,
 } from '@/dto/moneiz/AgreementState';
 import type { SponsoringId } from '@/dto/moneiz/SponsoringList';
-import { getSponsoring, useSetAgreementStateMutation } from '@/queries/moneiz/sponsorings.queries';
+import { getSponsoring, useManualUpdateAgreementMutation, useSetAgreementStateMutation } from '@/queries/moneiz/sponsorings.queries';
 import { useEventStore } from '@/stores/event';
 
 const route = useRoute();
@@ -31,9 +31,11 @@ const {
 } = getSponsoring(currentEventId, sponsoringId);
 
 const setAgreementStateMutation = useSetAgreementStateMutation();
+const manualUpdateAgreementMutation = useManualUpdateAgreementMutation();
 
 const agreementState = ref<AgreementState | undefined>();
 const presale = ref<number | undefined>();
+const file = ref<File | undefined>();
 
 watch(sponsoring, (sponsoring) => {
   if (sponsoring === undefined) return;
@@ -48,6 +50,23 @@ const handleStateSubmit = async () => {
     eventId: currentEventId.value,
     sponsoringId: sponsoringId,
     agreementState: agreementState.value,
+  });
+};
+
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  file.value = target.files?.[0];
+};
+
+const handleManualUpdateSubmit = async () => {
+  if (!currentEventId.value) return;
+  if (!presale.value) return;
+
+  await manualUpdateAgreementMutation.mutateAsync({
+    eventId: currentEventId.value,
+    sponsoringId: sponsoringId,
+    presale: presale.value,
+    file: file.value,
   });
 };
 </script>
@@ -104,7 +123,7 @@ const handleStateSubmit = async () => {
         <div class="col-12 col-xl-6">
           <UiCard class="mb-3">
             <CardTitle>Mise à jour manuelle</CardTitle>
-            <form @submit.prevent>
+            <form @submit.prevent="handleManualUpdateSubmit">
               <div class="row mb-3">
                 <div class="col-auto">
                   <label
@@ -119,6 +138,8 @@ const handleStateSubmit = async () => {
                     class="form-control"
                     type="file"
                     id="input-file"
+                    @change="handleFileChange"
+                    :disabled="manualUpdateAgreementMutation.isPending.value"
                   />
                 </div>
               </div>
@@ -135,12 +156,14 @@ const handleStateSubmit = async () => {
                   step="1"
                   placeholder="Nombre de place en prévente"
                   v-model="presale"
+                  :disabled="manualUpdateAgreementMutation.isPending.value"
                 />
               </FloatingFormField>
               <div class="d-flex justify-content-end">
                 <button
                   class="btn btn-primary"
                   type="submit"
+                  :disabled="manualUpdateAgreementMutation.isPending.value"
                 >
                   Enregistrer
                 </button>
