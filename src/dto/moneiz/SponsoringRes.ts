@@ -10,7 +10,7 @@ export type SponsoringRes = {
   agreementState?: AgreementState;
   invoiceId?: InvoiceId;
   invoiceState?: InvoiceState;
-  standNumber?: string;
+  standNumber: string;
   ticketsState?: TicketsState;
   presale?: number;
 };

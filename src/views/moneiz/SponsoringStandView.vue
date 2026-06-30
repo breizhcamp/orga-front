@@ -58,7 +58,7 @@ const {
 
 const setPlaceMutation = useSetPlaceMutation();
 
-const standNumber = ref<string | undefined>();
+const standNumber = ref<string>('');
 const disabled = computed(() => {
   return isSponsoringPending.value || setPlaceMutation.isPending.value;
 });
@@ -76,7 +76,7 @@ const contactsName = computed(() => {
 
 watch(sponsoring, (sponsoring) => {
   if (sponsoring === undefined) return;
-  standNumber.value = sponsoring.standNumber ?? '';
+  standNumber.value = sponsoring.standNumber;
 }, { immediate: true });
 
 const handleSubmit = async () => {

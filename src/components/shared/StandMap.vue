@@ -18,7 +18,7 @@ const props = defineProps<{
   svgUrl: string;
 }>();
 
-const selectedStand = defineModel<string>();
+const selectedStand = defineModel<string>({ required: true });
 
 const svg = useTemplateRef('svg');
 let draw: Svg | undefined = undefined;

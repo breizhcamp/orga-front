@@ -76,6 +76,39 @@ export function getSponsoring(
   return useQuery(getSponsoringOptions(moneiz, eventId, sponsoringId, staleTime));
 }
 
+export function getSponsoringAgreementSendEmailUrlOptions(
+  moneiz: Moneiz,
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
+  return queryOptions({
+    queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'agreement', 'email'],
+    queryFn: async () => {
+      const currentEventId = toValue(eventId);
+      if (currentEventId === undefined) {
+        throw new Error('eventId must be defined');
+      }
+      const response = await moneiz.get<string>(
+        `/api/admin/${currentEventId}/sponsorings/${sponsoringId}/agreement/email`,
+      );
+      return response.data;
+    },
+    enabled: !!toValue(eventId),
+    staleTime,
+  });
+}
+
+export function getSponsoringAgreementSendEmailUrl(
+  eventId: MaybeRef<EventId | undefined>,
+  sponsoringId: SponsoringId,
+  staleTime = 60_000,
+) {
+  const moneiz = useMoneiz();
+  return useQuery(getSponsoringAgreementSendEmailUrlOptions(moneiz, eventId, sponsoringId, staleTime));
+}
+
 export function getSponsoringInvoiceTemplateOptions(
   moneiz: Moneiz,
   eventId: MaybeRef<EventId | undefined>,

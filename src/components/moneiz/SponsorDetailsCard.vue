@@ -62,7 +62,8 @@ const {
       </CardText>
       <button
         v-if="loading"
-        class="btn btn-primary disabled placeholder col-5"
+        class="btn btn-primary disabled placeholder"
+        style="width: 115px;"
         disabled="true"
         aria-disabled="true"
       ></button>

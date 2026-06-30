@@ -1,3 +1,3 @@
 export type SetPlaceReq = {
-  place?: string;
+  place: string;
 };
