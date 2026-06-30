@@ -1,53 +1,41 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
 
 import { useEventStore } from '@/stores/event';
-import DashboardView from '@/views/DashboardView.vue';
-import EditEventView from '@/views/events/EditEventView.vue';
-import ListEventView from '@/views/events/ListEventView.vue';
-import MoneizView from '@/views/moneiz/MoneizView.vue';
-import SponsorEditView from '@/views/moneiz/SponsorEditView.vue';
-import SponsoringAgreementView from '@/views/moneiz/SponsoringAgreementView.vue';
-import SponsoringDetailsView from '@/views/moneiz/SponsoringDetailsView.vue';
-import SponsoringInvoiceView from '@/views/moneiz/SponsoringInvoiceView.vue';
-import SponsoringsCreateView from '@/views/moneiz/SponsoringsCreateView.vue';
-import SponsoringStandView from '@/views/moneiz/SponsoringStandView.vue';
-import SponsoringsView from '@/views/moneiz/SponsoringsView.vue';
-import SponsorsView from '@/views/moneiz/SponsorsView.vue';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
-    component: DashboardView,
+    component: () => import('@/views/DashboardView.vue'),
     meta: { title: 'Home' },
   }, {
     path: '/events',
     children: [{
       path: '',
       name: 'ListEvent',
-      component: ListEventView,
+      component: () => import('@/views/events/ListEventView.vue'),
       meta: { title: 'Liste des évènements' },
     }, {
       path: '/events/:eventId',
       name: 'Ajout/modif d\'un évènement',
-      component: EditEventView,
+      component: () => import('@/views/events/EditEventView.vue'),
       meta: { title: 'Ajout/modif d\'un évènement' },
     }],
   }, {
     path: '/moneiz',
     name: 'Moneiz',
-    component: MoneizView,
+    component: () => import('@/views/moneiz/MoneizView.vue'),
     redirect: '/moneiz/sponsorings',
     children: [
       {
         path: 'sponsorings',
         name: 'Sponsorings',
-        component: SponsoringsView,
+        component: () => import('@/views/moneiz/SponsoringsView.vue'),
         meta: { title: 'Sponsorings' },
       }, {
         path: 'sponsorings/new',
         name: 'SponsoringsCreate',
-        component: SponsoringsCreateView,
+        component: () => import('@/views/moneiz/SponsoringsCreateView.vue'),
         beforeEnter: () => {
           const eventStore = useEventStore();
           if (eventStore.currentEventId === undefined) {
@@ -58,32 +46,32 @@ const routes: RouteRecordRaw[] = [
       }, {
         path: 'sponsorings/:sponsoringId',
         name: 'SponsoringDetails',
-        component: SponsoringDetailsView,
+        component: () => import('@/views/moneiz/SponsoringDetailsView.vue'),
         meta: { title: 'Détails sponsorings' },
       }, {
         path: 'sponsorings/:sponsoringId/agreement',
         name: 'SponsoringAgreement',
-        component: SponsoringAgreementView,
+        component: () => import('@/views/moneiz/SponsoringAgreementView.vue'),
         meta: { title: 'Convention' },
       }, {
         path: 'sponsorings/:sponsoringId/invoice',
         name: 'SponsoringInvoice',
-        component: SponsoringInvoiceView,
+        component: () => import('@/views/moneiz/SponsoringInvoiceView.vue'),
         meta: { title: 'Facture' },
       }, {
         path: 'sponsorings/:sponsoringId/stand',
         name: 'SponsoringStand',
-        component: SponsoringStandView,
+        component: () => import('@/views/moneiz/SponsoringStandView.vue'),
         meta: { title: 'Stand' },
       }, {
         path: 'sponsors',
         name: 'Sponsors',
-        component: SponsorsView,
+        component: () => import('@/views/moneiz/SponsorsView.vue'),
         meta: { title: 'Sponsors' },
       }, {
         path: 'sponsors/:sponsorId',
         name: 'SponsorEdit',
-        component: SponsorEditView,
+        component: () => import('@/views/moneiz/SponsorEditView.vue'),
         meta: { title: 'Ajout/modif d\'un sponsor' },
       },
     ],
