@@ -66,6 +66,20 @@ const handleErrorMessage = (message: string | null) => {
       v-else-if="isSponsoringsError || isLevelError"
       :message="sponsoringsError?.message || levelError?.message"
     />
+    <div
+      v-else-if="sponsorings?.length === 0"
+      class="d-flex flex-column align-items-center"
+    >
+      <p>Aucun slot de sponsoring n'a été créé.</p>
+      <RouterLink
+        :to="{ name: 'SponsoringsCreate' }"
+        class="btn btn-primary"
+        title="Ajouter des nouveaux slots de sponsorings"
+      >
+        <BiPlusLg />
+        Ajouter des sponsorings
+      </RouterLink>
+    </div>
     <div v-else>
       <div class="d-flex justify-content-end mb-4">
         <RouterLink
@@ -86,12 +100,12 @@ const handleErrorMessage = (message: string | null) => {
         <table class="table table-striped table-hover">
           <thead>
             <tr>
-              <th scope="col"></th>
+              <th scope="col" aria-label="Niveau"></th>
               <th scope="col">Nom</th>
               <th scope="col">Statut</th>
               <th scope="col">Stand</th>
               <th scope="col">Tickets</th>
-              <th scope="col"></th>
+              <th scope="col" aria-label="Actions"></th>
             </tr>
           </thead>
           <tbody>
