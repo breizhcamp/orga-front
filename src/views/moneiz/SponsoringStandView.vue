@@ -13,7 +13,13 @@ import FloatingTextField from '@/components/FloatingTextField.vue';
 import StandMap from '@/components/shared/StandMap.vue';
 import UiCard from '@/components/UiCard.vue';
 import type { SponsoringId } from '@/dto/moneiz/SponsoringList';
-import { getAlreadyAssignedStands, getSponsoring, getSponsoringPlaceInstallationEmailUrl, getSponsoringPlaceRequestEmailUrl, useSetPlaceMutation } from '@/queries/moneiz/sponsorings.queries';
+import {
+  getAlreadyAssignedStands,
+  getSponsoring,
+  getSponsoringPlaceInstallationEmailUrl,
+  getSponsoringPlaceRequestEmailUrl,
+  useSetPlaceMutation,
+} from '@/queries/moneiz/sponsorings.queries';
 import { getSponsorContacts } from '@/queries/moneiz/sponsors.queries';
 import { useEventStore } from '@/stores/event';
 
@@ -239,7 +245,10 @@ const handleSubmit = async () => {
       </div>
     </div>
 
-    <div v-if="!isSponsoringError && !isAlreadyAssignedStandsError" class="d-flex justify-content-center">
+    <div
+      v-if="!isSponsoringError && !isAlreadyAssignedStandsError && sponsoring?.sponsor"
+      class="d-flex justify-content-center"
+    >
       <StandMap
         :level="sponsoring?.levelName.charAt(0) || ''"
         :filledPlaces="alreadyAssignedStands?.filter(stand => stand !== sponsoring?.standNumber) || []"

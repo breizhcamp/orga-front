@@ -163,37 +163,37 @@ const handleDelete = () => {
 
     <td class="text-end">
       <DropdownMenu>
-        <DropdownRouterLink
-          v-if="sponsoring.sponsor"
-          :to="{
-            name: 'SponsoringAgreement',
-            params: { sponsoringId: sponsoring.id },
-          }"
-        >
-          Convention
-        </DropdownRouterLink>
-        <DropdownRouterLink
-          v-if="sponsoring.sponsor"
-          :to="{
-            name: 'SponsoringInvoice',
+        <template v-if="sponsoring.sponsor">
+          <DropdownRouterLink
+            :to="{
+              name: 'SponsoringAgreement',
+              params: { sponsoringId: sponsoring.id },
+            }"
+          >
+            Convention
+          </DropdownRouterLink>
+          <DropdownRouterLink
+            :to="{
+              name: 'SponsoringInvoice',
+              params: { sponsoringId: sponsoring.id },
+            }"
+          >
+            Facture
+          </DropdownRouterLink>
+          <DropdownRouterLink :to="{
+            name: 'SponsoringDetails',
             params: { sponsoringId: sponsoring.id },
-          }"
-        >
-          Facture
-        </DropdownRouterLink>
-        <DropdownRouterLink :to="{
-          name: 'SponsoringDetails',
-          params: { sponsoringId: sponsoring.id },
-        }">
-          Détails
-        </DropdownRouterLink>
-        <DropdownRouterLink :to="{
-          name: 'SponsoringStand',
-          params: { sponsoringId: sponsoring.id },
-        }">
-          Stand
-        </DropdownRouterLink>
-        <DropdownDivider />
+          }">
+            Détails
+          </DropdownRouterLink>
+          <DropdownRouterLink :to="{
+            name: 'SponsoringStand',
+            params: { sponsoringId: sponsoring.id },
+          }">
+            Stand
+          </DropdownRouterLink>
+          <DropdownDivider />
+        </template>
         <DropdownButton
           class="text-danger"
           @click="handleDelete"
