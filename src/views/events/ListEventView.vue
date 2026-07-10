@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import BiPlus from 'bootstrap-icons/icons/plus-lg.svg?component';
+import BiStarFill from 'bootstrap-icons/icons/star-fill.svg?component';
+import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import ErrorAlert from '@/components/ErrorAlert.vue';
+import { getDefaultEvent } from '@/queries/kalon/config.queries';
 import { listEvents } from '@/queries/kalon/events.queries';
 import { formatDateRange } from '@/utils/dateFormat';
 
@@ -12,6 +15,17 @@ const {
   error: errorEvents,
   data: events,
 } = listEvents();
+
+const {
+  isPending: isDefaultEventPending,
+  isError: isDefaultEventError,
+  error: errorDefaultEvent,
+  data: defaultEvent,
+} = getDefaultEvent();
+
+const loading = computed(() => {
+  return isEventsPending.value || isDefaultEventPending.value;
+});
 </script>
 
 <template>
@@ -36,7 +50,7 @@ const {
 
     <!-- Loading state -->
     <div
-      v-if="isEventsPending"
+      v-if="loading"
       class="d-flex align-items-center gap-2 mb-4 text-secondary"
     >
       <span
@@ -50,6 +64,11 @@ const {
     <ErrorAlert
       v-else-if="isEventsError"
       :message="`Impossible de charger les événements : ${errorEvents?.message}`"
+    />
+
+    <ErrorAlert
+      v-else-if="isDefaultEventError"
+      :message="`Impossible de charger l'événement par défaut : ${errorDefaultEvent?.message}`"
     />
 
     <!-- Empty state -->
@@ -89,7 +108,11 @@ const {
       v-else
       class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4"
     >
-      <div v-for="event in events" :key="event.id" class="col">
+      <div
+        v-for="event in events"
+        :key="event.id"
+        class="col position-relative"
+      >
         <RouterLink
           :to="{ name: 'EditEvent', params: { eventId: event.id } }"
           class="text-decoration-none"
@@ -99,7 +122,13 @@ const {
             :data-testid="`event-card-${event.id}`"
           >
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-2">{{ event.name }}</h5>
+              <h5 class="card-title fw-semibold mb-2 d-flex justify-content-between">
+                <span>{{ event.name }}</span>
+                <BiStarFill
+                  v-if="event.id === defaultEvent?.id"
+                  class="text-warning"
+                />
+              </h5>
               <p
                 v-if="event.startDate && event.endDate"
                 class="card-text text-muted mb-0"
