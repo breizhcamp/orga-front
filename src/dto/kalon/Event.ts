@@ -6,7 +6,7 @@ export type EventSummary = {
 export type EventId = string;
 
 export type Event = {
-  id: string;
+  id: EventId;
   name: string;
   startDate: string; // LocalDate, ISO format
   endDate: string; // LocalDate, ISO format

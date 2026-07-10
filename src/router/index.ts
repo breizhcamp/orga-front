@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
       meta: { title: 'Liste des évènements' },
     }, {
       path: '/events/:eventId',
-      name: 'Ajout/modif d\'un évènement',
+      name: 'EditEvent',
       component: () => import('@/views/events/EditEventView.vue'),
       meta: { title: 'Ajout/modif d\'un évènement' },
     }],
