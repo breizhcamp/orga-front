@@ -19,7 +19,6 @@ export function getListSponsoringsOptions(
   eventId: MaybeRef<EventId | undefined>,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings'],
     queryFn: async (): Promise<SponsoringList[]> => {
@@ -49,7 +48,6 @@ export function getSponsoringOptions(
   sponsoringId: SponsoringId,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId],
     queryFn: async () => {
@@ -82,7 +80,6 @@ export function getSponsoringAgreementSendEmailUrlOptions(
   sponsoringId: SponsoringId,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'agreement', 'email'],
     queryFn: async () => {
@@ -115,7 +112,6 @@ export function getSponsoringInvoiceTemplateOptions(
   sponsoringId: SponsoringId,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'invoice'],
     queryFn: async () => {
@@ -148,7 +144,6 @@ export function getSponsoringInvoiceEmailUrlOptions(
   sponsoringId: SponsoringId,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'invoice', 'email'],
     queryFn: async () => {
@@ -181,7 +176,6 @@ export function getSponsoringPlaceRequestEmailUrlOptions(
   sponsoringId: SponsoringId,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'place', 'email'],
     queryFn: async () => {
@@ -214,7 +208,6 @@ export function getSponsoringPlaceInstallationEmailUrlOptions(
   sponsoringId: SponsoringId,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', sponsoringId, 'place', 'installation-email'],
     queryFn: async () => {
@@ -246,7 +239,6 @@ export function getAlreadyAssignedStandsOptions(
   eventId: MaybeRef<EventId | undefined>,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'sponsorings', 'already-assigned-places'],
     queryFn: async () => {

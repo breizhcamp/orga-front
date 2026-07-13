@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useQueryClient } from '@tanstack/vue-query';
 import BiCheckLg from 'bootstrap-icons/icons/check-lg.svg?component';
 import BiXLg from 'bootstrap-icons/icons/x-lg.svg?component';
 import { computed, ref, watch } from 'vue';
 
+import type { EventId } from '@/dto/kalon/Event';
+import { useEventExistsOptions } from '@/queries/kalon/events.queries';
 import { useKalon } from '@/utils/useAxios';
 
 const props = defineProps<{
@@ -17,6 +20,7 @@ const emit = defineEmits<{
 }>();
 
 const kalon = useKalon();
+const queryClient = useQueryClient();
 
 // Local state
 const localValue = ref(props.modelValue);
@@ -93,22 +97,16 @@ function handleFocus() {
 }
 
 // Check ID availability on backend
-async function checkAvailability(id: string) {
+async function checkAvailability(id: EventId) {
+  isChecking.value = true;
   try {
-    isChecking.value = true;
-    await kalon.head(`/events/${id}`);
-    // If we get here (200 response), the event exists
-    isAvailable.value = false;
+    isAvailable.value = await queryClient.fetchQuery(
+      useEventExistsOptions(kalon, id),
+    );
   } catch (error: unknown) {
-    const axiosError = error as { response?: { status?: number } };
-    if (axiosError.response?.status === 404) {
-      // 404 means the ID is available
-      isAvailable.value = true;
-    } else {
-      // Other errors - treat as unavailable to be safe
-      console.error('Error checking event ID availability:', error);
-      isAvailable.value = false;
-    }
+    // Other errors - treat as unavailable to be safe
+    console.error('Error checking event ID availability:', error);
+    isAvailable.value = false;
   } finally {
     isChecking.value = false;
   }

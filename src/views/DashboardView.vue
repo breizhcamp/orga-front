@@ -1,86 +1,29 @@
 <script setup lang="ts">
 import BiPencil from 'bootstrap-icons/icons/pencil.svg?component';
-import { onMounted, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 
 import EventDateTile from '@/components/dashboard/EventDateTile.vue';
 import EventVenueTile from '@/components/dashboard/EventVenueTile.vue';
-import type { Event } from '@/dto/kalon/Event.ts';
+import { useEvent } from '@/queries/kalon/events.queries';
 import { useEventStore } from '@/stores/event.ts';
-import { useKalon } from '@/utils/useAxios';
 
 const eventStore = useEventStore();
-const kalon = useKalon();
+const { currentEventId } = storeToRefs(eventStore);
 
-const event = ref<Event | undefined>();
-const loading = ref(false);
-
-async function loadEvent() {
-  const id = eventStore.currentEventId;
-  if (!id) {
-    event.value = undefined;
-    return;
-  }
-  try {
-    loading.value = true;
-    const resp = await kalon.get<Event>(`/events/${id}`);
-    event.value = resp.data;
-  } catch (e) {
-    console.error('Erreur de chargement de l\'évènement', e);
-    event.value = undefined;
-  } finally {
-    loading.value = false;
-  }
-}
-
-onMounted(async () => {
-  await loadEvent();
-});
-
-watch(() => eventStore.currentEventId, async () => {
-  await loadEvent();
-});
+const {
+  isPending: isEventPending,
+  data: event,
+} = useEvent(currentEventId);
 </script>
 
 <template>
   <div class="container py-3">
-    <!-- Header / Hero -->
-    <div v-if="event" class="card border-0 shadow-sm mb-4 hero hero-colored">
-      <div class="card-body d-flex align-items-center">
-        <div class="flex-grow-1">
-          <h1 class="hero-title mb-1 text-white">{{ event.name }}</h1>
-          <p class="text-white-50 mb-0">Vue d'ensemble de l'évènement</p>
-        </div>
-        <RouterLink :to="`/events/${event.id}`" class="icon-link me-2" aria-label="Modifier l'évènement" title="Modifier l'évènement">
-          <BiPencil />
-        </RouterLink>
-        <a
-          v-if="event.website"
-          :href="event.website"
-          class="icon-link"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Ouvrir le site de l'évènement"
-          title="Ouvrir le site de l'évènement"
-        >
-          <!-- Inline SVG globe icon -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Z" stroke="#ffffff" stroke-width="1.5"/>
-            <path d="M3.5 9.5h17M3.5 14.5h17" stroke="#ffffff" stroke-width="1.2"/>
-            <path d="M12 2.5c-3 3-4.5 6.5-4.5 9.5s1.5 6.5 4.5 9.5c3-3 4.5-6.5 4.5-9.5S15 5.5 12 2.5Z" stroke="#ffffff" stroke-width="1.2"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-
-    <!-- Loader -->
-    <div v-if="loading" class="d-flex align-items-center gap-2 mb-4 text-secondary">
-      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-      <span>Chargement du tableau de bord…</span>
-    </div>
-
     <!-- Empty state -->
-    <div v-else-if="!event" class="card border-0 shadow-sm mb-4">
+    <div
+      v-if="!currentEventId"
+      class="card border-0 shadow-sm mb-4"
+    >
       <div class="card-body d-flex flex-column flex-md-row align-items-md-center gap-3">
         <div class="flex-grow-1">
           <h2 class="h5 mb-1">Aucun évènement courant</h2>
@@ -92,27 +35,67 @@ watch(() => eventStore.currentEventId, async () => {
       </div>
     </div>
 
-    <!-- Tiles grid -->
-    <div v-if="event" class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-4">
-      <div class="col">
-        <div class="tile-card">
-          <EventDateTile :start-date="event.startDate" :end-date="event.endDate" variant="primary" />
+    <!-- Loader -->
+    <div
+      v-else-if="isEventPending"
+      class="d-flex align-items-center gap-2 mb-4 text-secondary"
+    >
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span>Chargement du tableau de bord…</span>
+    </div>
+
+    <!-- Header / Hero -->
+    <template v-else-if="event">
+      <div class="card border-0 shadow-sm mb-4 hero hero-colored">
+        <div class="card-body d-flex align-items-center">
+          <div class="flex-grow-1">
+            <h1 class="hero-title mb-1 text-white">{{ event.name }}</h1>
+            <p class="text-white-50 mb-0">Vue d'ensemble de l'évènement</p>
+          </div>
+          <RouterLink :to="`/events/${event.id}`" class="icon-link me-2" aria-label="Modifier l'évènement" title="Modifier l'évènement">
+            <BiPencil />
+          </RouterLink>
+          <a
+            v-if="event.website"
+            :href="event.website"
+            class="icon-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Ouvrir le site de l'évènement"
+            title="Ouvrir le site de l'évènement"
+          >
+            <!-- Inline SVG globe icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Z" stroke="#ffffff" stroke-width="1.5"/>
+              <path d="M3.5 9.5h17M3.5 14.5h17" stroke="#ffffff" stroke-width="1.2"/>
+              <path d="M12 2.5c-3 3-4.5 6.5-4.5 9.5s1.5 6.5 4.5 9.5c3-3 4.5-6.5 4.5-9.5S15 5.5 12 2.5Z" stroke="#ffffff" stroke-width="1.2"/>
+            </svg>
+          </a>
         </div>
       </div>
-      <div class="col">
-        <div class="tile-card">
-          <EventVenueTile :venue="event.venue" variant="success" />
+
+      <!-- Tiles grid -->
+      <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-4">
+        <div class="col">
+          <div class="tile-card">
+            <EventDateTile :start-date="event.startDate" :end-date="event.endDate" variant="primary" />
+          </div>
         </div>
-      </div>
-      <!-- Emplacements pour futures tuiles -->
-      <div class="col placeholder-tile">
-        <div class="card h-100 border-0 dashed tile-card">
-          <div class="card-body d-flex align-items-center justify-content-center text-muted">
-            <small>Tuile à venir</small>
+        <div class="col">
+          <div class="tile-card">
+            <EventVenueTile :venue="event.venue" variant="success" />
+          </div>
+        </div>
+        <!-- Emplacements pour futures tuiles -->
+        <div class="col placeholder-tile">
+          <div class="card h-100 border-0 dashed tile-card">
+            <div class="card-body d-flex align-items-center justify-content-center text-muted">
+              <small>Tuile à venir</small>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 

@@ -4,10 +4,15 @@ import BiHouseDoor from 'bootstrap-icons/icons/house-door.svg?component';
 import BiMic from 'bootstrap-icons/icons/mic.svg?component';
 
 import Logo from '@/assets/breizhcamp-logo-2026.svg?component';
+import { useEventSummaries } from '@/queries/kalon/events.queries';
 import { useEventStore } from '@/stores/event.ts';
 
 const eventStore = useEventStore();
 
+const {
+  isPending: isEventsPending,
+  data: events,
+} = useEventSummaries();
 </script>
 
 <template>
@@ -16,8 +21,9 @@ const eventStore = useEventStore();
     <Logo width="158" height="51"/>
   </a>
   <hr>
-  <select class="form-select mb-3" data-testid="current-event-chooser" v-model="eventStore.currentEventId" :disabled="eventStore.loading">
-    <option v-for="e in eventStore.events" v-bind:key="e.id" :value="e.id">
+  <select class="form-select mb-3" data-testid="current-event-chooser" v-model="eventStore.currentEventId" :disabled="isEventsPending">
+    <option selected disabled :value="undefined">Sélectioner un évènement</option>
+    <option v-for="e in events" v-bind:key="e.id" :value="e.id">
       {{ e.name }}
     </option>
   </select>

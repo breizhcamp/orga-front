@@ -5,8 +5,8 @@ import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import ErrorAlert from '@/components/ErrorAlert.vue';
-import { getDefaultEvent } from '@/queries/kalon/config.queries';
-import { listEvents } from '@/queries/kalon/events.queries';
+import { useDefaultEvent } from '@/queries/kalon/config.queries';
+import { useEvents } from '@/queries/kalon/events.queries';
 import { formatDateRange } from '@/utils/dateFormat';
 
 const {
@@ -14,14 +14,14 @@ const {
   isError: isEventsError,
   error: errorEvents,
   data: events,
-} = listEvents();
+} = useEvents();
 
 const {
   isPending: isDefaultEventPending,
   isError: isDefaultEventError,
   error: errorDefaultEvent,
   data: defaultEvent,
-} = getDefaultEvent();
+} = useDefaultEvent();
 
 const loading = computed(() => {
   return isEventsPending.value || isDefaultEventPending.value;

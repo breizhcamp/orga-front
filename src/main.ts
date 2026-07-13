@@ -12,7 +12,6 @@ import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 
 import { initRouter } from '@/router';
-import { useEventStore } from '@/stores/event';
 
 import App from './App.vue';
 import { kalonAxiosKey, moneizAxiosKey } from './provide-keys';
@@ -47,10 +46,6 @@ window.envLoaded.then(async () => {
   app.provide(moneizAxiosKey, moneizClient);
 
   app.use(createPinia());
-
-  // Initialiser le store d'événements
-  const eventStore = useEventStore();
-  await eventStore.loadEvents(kalonClient);
 
   app.use(initRouter());
   app.mount('#app');

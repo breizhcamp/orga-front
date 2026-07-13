@@ -37,6 +37,7 @@ export default defineConfigWithVueTs(
       'import/first': 'error',
       'import/newline-after-import': 'error',
       'import/no-duplicates': 'error',
+      '@tanstack/query/exhaustive-deps': 'off',
     },
   },
 );

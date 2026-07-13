@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component';
 import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import ErrorAlert from '@/components/ErrorAlert.vue';
 import EventDeleteModal from '@/components/events/EventDeleteModal.vue';
 import EventIdInput from '@/components/events/EventIdInput.vue';
 import type { Event } from '@/dto/kalon/Event';
-import { useEventStore } from '@/stores/event';
-import { useKalon } from '@/utils/useAxios';
+import {
+  useCreateEventMutation,
+  useEvent,
+  useUpdateEventMutation,
+} from '@/queries/kalon/events.queries';
 
-const kalon = useKalon();
 const route = useRoute();
 const router = useRouter();
-const eventStore = useEventStore();
 
 // Determine if we're creating or updating
 const eventId = computed(() => {
@@ -22,8 +24,19 @@ const eventId = computed(() => {
 });
 const isUpdateMode = computed(() => !!eventId.value);
 
+const {
+  isPending: isEventPending,
+  error: errorEvent,
+  isError: isEventError,
+  data: event,
+} = useEvent(eventId);
+
+const createEventMutation = useCreateEventMutation();
+const updateEventMutation = useUpdateEventMutation();
+
 // Form data
-const formData = ref<Partial<Event>>({
+const formData = ref<Event>({
+  id: '',
   name: '',
   startDate: '',
   endDate: '',
@@ -32,13 +45,11 @@ const formData = ref<Partial<Event>>({
 });
 
 // UI state
-const loading = ref(false);
 const submitting = ref(false);
 const error = ref<string | null>();
 const success = ref(false);
 
 // Event ID state (only for create mode)
-const eventIdValue = ref('');
 const isEventIdAvailable = ref(false);
 
 // Form validation
@@ -49,36 +60,19 @@ function handleIdValidityChange(isValid: boolean) {
   isEventIdAvailable.value = isValid;
 }
 
-// Load existing event data in update mode
-async function loadEvent() {
-  if (!eventId.value) return;
-
-  try {
-    loading.value = true;
-    error.value = null;
-    const resp = await kalon.get<Event>(`/events/${eventId.value}`);
-    formData.value = { ...resp.data };
-  } catch (e) {
-    console.error('Erreur de chargement de l\'événement', e);
-    error.value = 'Impossible de charger l\'événement';
-  } finally {
-    loading.value = false;
-  }
-}
-
 // Validate form
 function validateForm(): boolean {
   formErrors.value = {};
   let isValid = true;
 
-  if (!formData.value.name?.trim()) {
+  if (!formData.value.name.trim()) {
     formErrors.value.name = 'Le nom est requis';
     isValid = false;
   }
 
   // Validate event ID in create mode
   if (!isUpdateMode.value) {
-    if (!eventIdValue.value) {
+    if (!formData.value.id) {
       formErrors.value.id = 'L\'identifiant est requis';
       isValid = false;
     } else if (!isEventIdAvailable.value) {
@@ -129,8 +123,9 @@ async function handleSubmit() {
     error.value = null;
     success.value = false;
 
-    const payload: Partial<Event> = {
-      name: formData.value.name?.trim(),
+    const payload: Event = {
+      id: eventId.value !== undefined ? eventId.value : formData.value.id.trim(),
+      name: formData.value.name.trim(),
       startDate: formData.value.startDate,
       endDate: formData.value.endDate,
       website: formData.value.website?.trim() || undefined,
@@ -138,25 +133,12 @@ async function handleSubmit() {
     };
 
     if (isUpdateMode.value) {
-      // Update existing event
-      const updatePayload = {
-        ...payload,
-        id: eventId.value,
-      };
-      // eventId.value is not undefined because isUpdateMode.value is true.
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      await kalon.put(`/events/${eventId.value}`, updatePayload);
+      await updateEventMutation.mutateAsync(payload);
     } else {
-      // Create new event - include the ID
-      const createPayload = {
-        ...payload,
-        id: eventIdValue.value,
-      };
-      await kalon.post<Event>('/events', createPayload);
+      await createEventMutation.mutateAsync(payload);
     }
 
     success.value = true;
-    await eventStore.loadEvents(kalon);
     setTimeout(async () => {
       await router.push('/events');
     }, 2000);
@@ -182,15 +164,13 @@ function updateEndDate() {
 
 // Handle successful deletion
 async function handleDeleted() {
-  await eventStore.loadEvents(kalon);
   await router.push('/events');
 }
 
-onMounted(async () => {
-  if (isUpdateMode.value) {
-    await loadEvent();
-  }
-});
+watch(event, (event) => {
+  if (event === undefined) return;
+  formData.value = { ...event };
+}, { immediate: true });
 </script>
 
 <template>
@@ -204,7 +184,7 @@ onMounted(async () => {
     </div>
 
     <!-- Loading state -->
-    <div v-if="loading" class="d-flex align-items-center gap-2 mb-4 text-secondary">
+    <div v-if="isUpdateMode && isEventPending" class="d-flex align-items-center gap-2 mb-4 text-secondary">
       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
       <span>Chargement de l'événement…</span>
     </div>
@@ -225,6 +205,8 @@ onMounted(async () => {
           <BiXCircleFill class="flex-shrink-0 me-2" />
           <div>{{ error }}</div>
         </div>
+
+        <ErrorAlert v-if="isEventError" :message="errorEvent?.message" />
 
         <form @submit.prevent="handleSubmit">
           <!-- Name field -->
@@ -250,7 +232,7 @@ onMounted(async () => {
           <!-- Event ID field (only in create mode) -->
           <EventIdInput
             v-if="!isUpdateMode"
-            v-model="eventIdValue"
+            v-model="formData.id"
             :event-name="formData.name || ''"
             :disabled="submitting"
             @validity-change="handleIdValidityChange"

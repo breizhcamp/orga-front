@@ -10,7 +10,6 @@ export function getListLevelsOptions(
   eventId: MaybeRef<EventId | undefined>,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', eventId, 'levels'],
     queryFn: async (): Promise<LevelList[]> => {

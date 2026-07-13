@@ -11,7 +11,6 @@ import { useMoneiz } from '@/utils/useAxios.ts';
 type Moneiz = ReturnType<typeof useMoneiz>;
 
 function getListSponsorsOptions(moneiz: Moneiz, staleTime = 60_000) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', 'sponsors'],
     queryFn: async (): Promise<SponsorList[]> => {
@@ -27,7 +26,6 @@ function listSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Err
 }
 
 function getSponsorOptions(moneiz: Moneiz, id: string, forEditing = false, staleTime = 60_000) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', 'sponsors', id],
     queryFn: async (): Promise<Sponsor> => {
@@ -49,7 +47,6 @@ function getSponsorContactsOptions(
   forEditing = false,
   staleTime = 60_000,
 ) {
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return queryOptions({
     queryKey: ['moneiz', 'sponsors', sponsorId, 'contacts'],
     queryFn: async (): Promise<ContactRes[]> => {

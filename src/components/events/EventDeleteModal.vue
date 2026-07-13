@@ -5,7 +5,7 @@ import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
 import { computed, ref } from 'vue';
 
 import ModalForm from '@/components/modals/ModalForm.vue';
-import { useKalon } from '@/utils/useAxios';
+import { useDeleteEventMutation } from '@/queries/kalon/events.queries';
 
 const props = defineProps<{
   eventId: string;
@@ -16,7 +16,7 @@ const emit = defineEmits<{
   deleted: [];
 }>();
 
-const kalon = useKalon();
+const deleteEventMutation = useDeleteEventMutation();
 
 // Modal state
 const showDeleteModal = ref(false);
@@ -54,7 +54,7 @@ async function handleDelete() {
     isDeleting.value = true;
     deleteError.value = null;
 
-    await kalon.delete(`/events/${props.eventId}`);
+    await deleteEventMutation.mutateAsync(props.eventId);
 
     // Close modal and emit success
     closeDeleteModal();
