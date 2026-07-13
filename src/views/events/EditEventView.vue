@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BiCheckCircleFill from 'bootstrap-icons/icons/check-circle-fill.svg?component';
+import BiStarFill from 'bootstrap-icons/icons/star-fill.svg?component';
 import BiXCircleFill from 'bootstrap-icons/icons/x-circle-fill.svg?component';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -7,7 +8,9 @@ import { useRoute, useRouter } from 'vue-router';
 import ErrorAlert from '@/components/ErrorAlert.vue';
 import EventDeleteModal from '@/components/events/EventDeleteModal.vue';
 import EventIdInput from '@/components/events/EventIdInput.vue';
+import SmallSpinner from '@/components/SmallSpinner.vue';
 import type { Event } from '@/dto/kalon/Event';
+import { useDefaultEvent, useUpdateDefaultEventMutation } from '@/queries/kalon/config.queries';
 import {
   useCreateEventMutation,
   useEvent,
@@ -31,8 +34,14 @@ const {
   data: event,
 } = useEvent(eventId);
 
+const {
+  isPending: isDefaultEventPending,
+  data: defaultEvent,
+} = useDefaultEvent();
+
 const createEventMutation = useCreateEventMutation();
 const updateEventMutation = useUpdateEventMutation();
+const updateDefaultEventMutation = useUpdateDefaultEventMutation();
 
 // Form data
 const formData = ref<Event>({
@@ -167,6 +176,11 @@ async function handleDeleted() {
   await router.push('/events');
 }
 
+const handleSetDefaultEventClick = async () => {
+  if (!eventId.value) return;
+  await updateDefaultEventMutation.mutateAsync(eventId.value);
+};
+
 watch(event, (event) => {
   if (event === undefined) return;
   formData.value = { ...event };
@@ -178,8 +192,47 @@ watch(event, (event) => {
     <!-- Header -->
     <div class="card border-0 shadow-sm mb-4">
       <div class="card-body">
-        <h1 class="h3 mb-1">{{ isUpdateMode ? 'Modifier l\'événement' : 'Créer un événement' }}</h1>
-        <p class="text-muted mb-0">{{ isUpdateMode ? 'Modifiez les informations de l\'événement' : 'Créez un nouvel événement' }}</p>
+        <div class="row align-items-center">
+          <div class="col">
+            <h1 class="h3 mb-1">
+              {{ isUpdateMode ? 'Modifier l\'événement' : 'Créer un événement' }}
+            </h1>
+            <p class="text-muted mb-0">
+              {{ isUpdateMode ? 'Modifiez les informations de l\'événement' : 'Créez un nouvel événement' }}
+            </p>
+          </div>
+          <div v-if="eventId !== undefined" class="col-auto">
+            <div
+              v-if="isDefaultEventPending"
+              class="placeholder-glow"
+            >
+              <button
+                class="btn btn-secondary disabled placeholder"
+                style="width: 150px;"
+                disabled="true"
+                aria-disabled="true"
+              ></button>
+            </div>
+            <button
+              v-else-if="eventId !== defaultEvent?.id"
+              type="button"
+              class="btn btn-outline-primary"
+              title="Définir cette évènement comme l'évènement par défaut"
+              @click="handleSetDefaultEventClick"
+              :disabled="updateDefaultEventMutation.isPending.value"
+            >
+              <SmallSpinner
+                v-if="updateDefaultEventMutation.isPending.value"
+                class="me-2"
+              />
+              Définir par défaut
+            </button>
+            <div v-else class="d-flex align-items-center">
+              <BiStarFill class="me-2 text-warning" />
+              Évènement par défaut
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
