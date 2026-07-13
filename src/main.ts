@@ -11,6 +11,7 @@ import Keycloak from 'keycloak-js';
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 
+import { queryClient } from '@/queries/queryClient';
 import { initRouter } from '@/router';
 
 import App from './App.vue';
@@ -19,7 +20,7 @@ import { createAxiosClient } from './utils/createAxios';
 
 window.envLoaded.then(async () => {
   const app = createApp(App);
-  app.use(VueQueryPlugin);
+  app.use(VueQueryPlugin, { queryClient });
 
   // Activer la locale française pour Dayjs
   dayjs.extend(localizedFormat);

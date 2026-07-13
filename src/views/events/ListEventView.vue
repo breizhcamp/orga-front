@@ -48,6 +48,11 @@ const loading = computed(() => {
       </div>
     </div>
 
+    <ErrorAlert
+      v-if="isDefaultEventError"
+      :message="`Impossible de charger l'événement par défaut : ${errorDefaultEvent?.message}`"
+    />
+
     <!-- Loading state -->
     <div
       v-if="loading"
@@ -64,11 +69,6 @@ const loading = computed(() => {
     <ErrorAlert
       v-else-if="isEventsError"
       :message="`Impossible de charger les événements : ${errorEvents?.message}`"
-    />
-
-    <ErrorAlert
-      v-else-if="isDefaultEventError"
-      :message="`Impossible de charger l'événement par défaut : ${errorDefaultEvent?.message}`"
     />
 
     <!-- Empty state -->
