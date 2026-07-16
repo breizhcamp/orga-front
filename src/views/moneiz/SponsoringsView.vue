@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
+import AppTable from '@/components/AppTable.vue';
 import ErrorAlert from '@/components/ErrorAlert.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
@@ -93,34 +94,27 @@ const handleErrorMessage = (message: string | null) => {
       </div>
       <ErrorAlert v-if="errorMessage" :message="errorMessage" />
 
-      <div
-        class="overflow-x-auto overflow-y-hidden"
-        style="padding-bottom: 150px;"
-      >
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th scope="col" aria-label="Niveau"></th>
-              <th scope="col">Nom</th>
-              <th scope="col">Statut</th>
-              <th scope="col">Stand</th>
-              <th scope="col">Tickets</th>
-              <th scope="col" aria-label="Actions"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <SponsoringLine
-              v-for="sponsoring in sponsorings"
-              :key="sponsoring.id"
-              :eventId="currentEventId!"
-              :sponsoring="sponsoring"
-              :level="levels.get(sponsoring.levelName)"
-              :availableSponsors="availableSponsors"
-              @error="handleErrorMessage"
-            />
-          </tbody>
-        </table>
-      </div>
+      <AppTable style="padding-bottom: 170px;">
+        <template #header>
+          <th scope="col" aria-label="Niveau"></th>
+          <th scope="col">Nom</th>
+          <th scope="col">Statut</th>
+          <th scope="col">Stand</th>
+          <th scope="col">Tickets</th>
+          <th scope="col" aria-label="Actions"></th>
+        </template>
+        <template #body>
+          <SponsoringLine
+            v-for="sponsoring in sponsorings"
+            :key="sponsoring.id"
+            :eventId="currentEventId!"
+            :sponsoring="sponsoring"
+            :level="levels.get(sponsoring.levelName)"
+            :availableSponsors="availableSponsors"
+            @error="handleErrorMessage"
+          />
+        </template>
+      </AppTable>
     </div>
   </div>
 </template>
