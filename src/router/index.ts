@@ -73,6 +73,13 @@ const routes: RouteRecordRaw[] = [
         name: 'SponsorEdit',
         component: () => import('@/views/moneiz/SponsorEditView.vue'),
         meta: { title: 'Ajout/modif d\'un sponsor' },
+      }, {
+        path: 'sponsor-applications',
+        name: 'SponsorApplicationsList',
+        component: () => import(
+          '@/views/moneiz/SponsorApplicationsListView.vue',
+        ),
+        meta: { title: 'Demande de sponsor' },
       },
     ],
   },

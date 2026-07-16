@@ -9,6 +9,15 @@
           <li class="nav-item dropdown">
             <router-link to="/moneiz/sponsors" class="nav-link" active-class="active">Sponsors</router-link>
           </li>
+          <li class="nav-item dropdown">
+            <router-link
+              :to="{ name: 'SponsorApplicationsList' }"
+              class="nav-link"
+              active-class="active"
+            >
+              Demande de sponsor
+            </router-link>
+          </li>
         </ul>
       </div>
 
