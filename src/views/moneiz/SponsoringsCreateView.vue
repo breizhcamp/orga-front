@@ -24,7 +24,7 @@ const {
   isPending: isLevelsPending,
   isError: isLevelsError,
   error: levelsError,
-} = listLevels(currentEventId);
+} = listLevels();
 const createSponsoringsMutation = useCreateSponsoringsMutation();
 
 const selectedLevel = ref<string | null>(null);

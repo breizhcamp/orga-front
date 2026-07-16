@@ -28,7 +28,7 @@ const {
   isError: isLevelError,
   data: levelData,
   error: levelError,
-} = listLevels(eventStore.currentEventId);
+} = listLevels();
 const {
   isPending: isSponsorsPrending,
   data: sponsors,
