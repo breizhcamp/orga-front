@@ -22,7 +22,7 @@ const {
   </a>
   <hr>
   <select class="form-select mb-3" data-testid="current-event-chooser" v-model="eventStore.currentEventId" :disabled="isEventsPending">
-    <option selected disabled :value="undefined">Sélectioner un évènement</option>
+    <option selected disabled :value="undefined">Sélectionner un évènement</option>
     <option v-for="e in events" v-bind:key="e.id" :value="e.id">
       {{ e.name }}
     </option>

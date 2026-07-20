@@ -123,10 +123,10 @@ const handleDelete = () => {
           class="form-select form-select-sm"
           v-model="sponsor"
           :disabled="setSponsorMutation.isPending.value"
-          aria-label="Sélectioner un sponsor"
+          aria-label="Sélectionner un sponsor"
           required
         >
-          <option selected disabled value="">Sélectioner un sponsor</option>
+          <option selected disabled value="">Sélectionner un sponsor</option>
           <option
             v-for="sponsor in availableSponsors"
             :value="sponsor.id"
@@ -138,7 +138,7 @@ const handleDelete = () => {
         <button
           class="btn btn-sm btn-primary"
           type="submit"
-          title="Sélectioner"
+          title="Sélectionner"
           :disabled="setSponsorMutation.isPending.value"
         >
           <BiPlus />

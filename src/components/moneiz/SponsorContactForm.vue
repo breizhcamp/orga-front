@@ -124,7 +124,7 @@ const handleCancel = () => {
             type="submit"
             :disabled="disabled"
           >
-            Enregister les contacts
+            Enregistrer les contacts
           </button>
         </div>
       </form>
