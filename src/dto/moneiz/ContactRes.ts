@@ -1,7 +1,9 @@
+import type { ContactId } from '@/dto/moneiz/ContactId';
+
 import type { ContactType } from './ContactType';
 
 export type ContactRes = {
-  id: number;
+  id: ContactId;
   firstname?: string;
   lastname: string;
   email: string;

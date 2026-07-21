@@ -4,8 +4,9 @@ export type SponsorApplicationRes = {
   id: SponsorApplicationId;
   companyName: string;
   contact: SponsorApplicationContactRes;
-  sponsoringLevel: string;
+  sponsoringLevel?: string;
   additionalInformations?: string;
+  createdAt: string;
 };
 
 export type SponsorApplicationContactId = string;

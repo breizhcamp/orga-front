@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import type { Size } from './ModalInfo.vue';
-
 withDefaults(defineProps<{
   loading?: boolean;
   title: string;
-  size?: Size;
+  size?: 'sm' | 'lg' | 'xl';
   saveButtonText?: string;
   saveButtonVariant?: string;
 }>(), {

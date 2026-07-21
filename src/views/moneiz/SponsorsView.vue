@@ -2,9 +2,9 @@
 /// <reference types="vite-svg-loader" />
 
 import SponsorLine from '@/components/moneiz/SponsorLine.vue';
-import { listSponsors } from '@/queries/moneiz/sponsors.queries';
+import { useSponsors } from '@/queries/moneiz/sponsors.queries';
 
-const { isPending, isError, data, error } = listSponsors();
+const { isPending, isError, data, error } = useSponsors();
 
 </script>
 

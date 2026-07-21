@@ -12,7 +12,7 @@ import SponsoringLine from '@/components/moneiz/SponsoringLine.vue';
 import type { LevelList } from '@/dto/moneiz/LevelList';
 import { listLevels } from '@/queries/moneiz/levels.queries';
 import { listSponsorings } from '@/queries/moneiz/sponsorings.queries';
-import { listSponsors } from '@/queries/moneiz/sponsors.queries';
+import { useSponsors } from '@/queries/moneiz/sponsors.queries';
 import { useEventStore } from '@/stores/event';
 
 const eventStore = useEventStore();
@@ -32,7 +32,7 @@ const {
 const {
   isPending: isSponsorsPrending,
   data: sponsors,
-} = listSponsors();
+} = useSponsors();
 
 const errorMessage = ref<string | null>(null);
 

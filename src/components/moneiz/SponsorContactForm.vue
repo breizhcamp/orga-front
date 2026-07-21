@@ -27,12 +27,14 @@ const lines = ref<(InstanceType<typeof SponsorContactLineForm> | null)[]>([]);
 const loading = computed<boolean>(() => contactsQuery.isPending.value);
 
 const normalizeContacts = (contacts: ContactRes[]): ContactWithKey[] => {
-  return contacts.toSorted((a, b) => a.id - b.id).map((contact) => {
-    return {
-      ...contact,
-      key: crypto.randomUUID(),
-    };
-  });
+  return contacts
+    .toSorted((a, b) => a.id.localeCompare(b.id))
+    .map((contact) => {
+      return {
+        ...contact,
+        key: crypto.randomUUID(),
+      };
+    });
 };
 
 watch(contactsQuery.data, (newData) => {

@@ -1,64 +1,71 @@
+<script lang="ts" setup>
+import { Modal } from 'bootstrap';
+import { onMounted, ref } from 'vue';
+
+defineProps<{
+  name: string;
+}>();
+
+const modalElement = ref<HTMLDivElement | null>(null);
+let modal: Modal | null = null;
+
+const show = () => {
+  modal?.show();
+};
+
+const close = () => {
+  modal?.hide();
+};
+
+defineExpose({
+  show,
+  close,
+});
+
+onMounted(() => {
+  if (modalElement.value === null) {
+    throw new Error('modalElement is null');
+  }
+  modal = new Modal(modalElement.value);
+});
+</script>
+
 <template>
-  <div id="modal-element" class="modal show d-block" tabindex="-1" v-if="open" @click="close()" @keyup.stop="closeIfEscape">
-    <div class="modal-dialog" @click.stop :class="size? 'modal-' + size : ''">
+  <div
+    class="modal fade"
+    tabindex="-1"
+    ref="modalElement"
+    aria-hidden="true"
+    :aria-labelledby="`${name}-modal-title`"
+  >
+    <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-3">{{title}}</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="close()"></button>
+        <div v-if="$slots.title" class="modal-header">
+          <h5 :id="`${name}-modal-title`" class="modal-title">
+            <slot name="title" />
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            @click="close"
+            aria-label="Fermer"
+          ></button>
         </div>
-
         <div class="modal-body">
-          <slot></slot>
+          <slot />
         </div>
-
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="close()">Close</button>
+          <slot name="footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="close"
+            >
+              Fermer
+            </button>
+          </slot>
         </div>
       </div>
     </div>
   </div>
-  <div class="modal-backdrop show" v-if="open" />
 </template>
-
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-
-export type Size = 'sm' | 'lg' | 'xl';
-
-export default defineComponent({
-  name: 'ModalInfo',
-
-  props: {
-    open: { type: Boolean, required: true, default: false },
-    title: { type: String, required: true },
-    size: { type: String as PropType<Size>, required: false },
-  },
-
-  emits: ['update:open'],
-
-  watch: {
-    open() {
-      if (this.open) {
-        if (document.activeElement !== null) {
-          (document.activeElement as HTMLElement).blur();
-        }
-        setTimeout(() =>
-          document.getElementById('modal-element')?.focus(),
-        100);
-      }
-    },
-  },
-
-  methods: {
-    close() {
-      this.$emit('update:open', false);
-    },
-
-    closeIfEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        this.close();
-      }
-    },
-  },
-});
-</script>

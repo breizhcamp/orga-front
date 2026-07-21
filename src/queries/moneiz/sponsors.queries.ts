@@ -10,7 +10,7 @@ import { useMoneiz } from '@/utils/useAxios.ts';
 
 type Moneiz = ReturnType<typeof useMoneiz>;
 
-function getListSponsorsOptions(moneiz: Moneiz, staleTime = 60_000) {
+export function useSponsorsOptions(moneiz: Moneiz, staleTime = 60_000) {
   return queryOptions({
     queryKey: ['moneiz', 'sponsors'],
     queryFn: async (): Promise<SponsorList[]> => {
@@ -20,12 +20,12 @@ function getListSponsorsOptions(moneiz: Moneiz, staleTime = 60_000) {
   });
 }
 
-function listSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Error> {
+function useSponsors(staleTime = 60_000): UseQueryReturnType<SponsorList[], Error> {
   const moneiz = useMoneiz();
-  return useQuery(getListSponsorsOptions(moneiz, staleTime));
+  return useQuery(useSponsorsOptions(moneiz, staleTime));
 }
 
-function getSponsorOptions(moneiz: Moneiz, id: string, forEditing = false, staleTime = 60_000) {
+export function getSponsorOptions(moneiz: Moneiz, id: string, forEditing = false, staleTime = 60_000) {
   return queryOptions({
     queryKey: ['moneiz', 'sponsors', id],
     queryFn: async (): Promise<Sponsor> => {
@@ -41,7 +41,7 @@ function getSponsor(id: string, forEditing = false, staleTime = 60_000): UseQuer
   return useQuery(getSponsorOptions(moneiz, id, forEditing, staleTime));
 }
 
-function getSponsorContactsOptions(
+export function getSponsorContactsOptions(
   moneiz: Moneiz,
   sponsorId: MaybeRef<SponsorId | undefined>,
   forEditing = false,
@@ -80,7 +80,7 @@ function useCreateSponsorMutation() {
     },
     onSuccess: async () => {
       // Invalidate the sponsors list to refetch it
-      await queryClient.invalidateQueries({ queryKey: getListSponsorsOptions(moneiz).queryKey });
+      await queryClient.invalidateQueries({ queryKey: useSponsorsOptions(moneiz).queryKey });
     },
   });
 }
@@ -97,7 +97,7 @@ function useUpdateSponsorMutation() {
     onSuccess: async (_data, variables) => {
       // Invalidate both the list and the specific sponsor query
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: getListSponsorsOptions(moneiz).queryKey }),
+        queryClient.invalidateQueries({ queryKey: useSponsorsOptions(moneiz).queryKey }),
         queryClient.invalidateQueries({ queryKey: getSponsorOptions(moneiz, variables.id).queryKey }),
       ]);
     },
@@ -122,7 +122,7 @@ function useUploadSponsorLogoMutation() {
     onSuccess: async (_data, variables) => {
       // Invalidate the specific sponsor query to refetch with new logo
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: getListSponsorsOptions(moneiz).queryKey }),
+        queryClient.invalidateQueries({ queryKey: useSponsorsOptions(moneiz).queryKey }),
         queryClient.invalidateQueries({ queryKey: getSponsorOptions(moneiz, variables.sponsorId).queryKey }),
       ]);
     },
@@ -147,8 +147,8 @@ function useUpdateSponsorContactsMutation() {
 export {
   getSponsor,
   getSponsorContacts,
-  listSponsors,
   useCreateSponsorMutation,
+  useSponsors,
   useUpdateSponsorContactsMutation,
   useUpdateSponsorMutation,
   useUploadSponsorLogoMutation,
